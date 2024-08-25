@@ -8,7 +8,7 @@ DrakonHub for desktop is based on [DrakonWidget library](https://github.com/step
 
 ## What is DrakonHub for desktop
 
-DrakonHub for Desktop is a diagram editor that supports three types of diagrams.
+DrakonHub for desktop is a diagram editor that supports three types of diagrams.
 
 - Drakon-charts, flowcharts from the aerospace industry that visualize algorithms.
 - Mind-maps.
