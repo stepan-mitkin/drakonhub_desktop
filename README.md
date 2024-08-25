@@ -31,3 +31,8 @@ DrakonHub takes care of the routine:
 ## Download DrakonHub
 
 Download DrakonHub from [GitHub releases](https://github.com/stepan-mitkin/drakonhub_desktop/releases)
+
+## Example diagrams
+
+- [Drakon examples](https://github.com/stepan-mitkin/drakonhub_desktop/tree/main/drakon_examples)
+- [Mind-map examples](https://github.com/stepan-mitkin/drakonhub_desktop/tree/main/mind-map_examples)
