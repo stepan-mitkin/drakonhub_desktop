@@ -4,7 +4,7 @@ The desktop version of the DrakonHub diagram editor
 
 DrakonHub for desktop is based on [DrakonWidget library](https://github.com/stepan-mitkin/drakonwidget)
 
-![Drakon example: Should I make art?](images/exampleshould_i_make_art.png)
+![Drakon example: Should I make art?](images/should_i_make_art.png)
 
 ## What is DrakonHub for desktop
 
