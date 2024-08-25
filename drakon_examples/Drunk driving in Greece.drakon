@@ -1,0 +1,88 @@
+{
+    "type": "drakon",
+    "items": {
+        "2": {
+            "type": "end",
+            "style": "{\"iconBack\":\"#191970\",\"borderWidth\":0,\"color\":\"#ffffff\",\"lineWidth\":0}"
+        },
+        "4": {
+            "type": "select",
+            "one": "5",
+            "content": "What is the breath alcohol content of the driver?",
+            "style": "{\"iconBack\":\"#191970\",\"borderWidth\":0,\"color\":\"#ffffff\",\"lineWidth\":0}"
+        },
+        "5": {
+            "type": "case",
+            "one": "27",
+            "content": "0 - 250",
+            "two": "8",
+            "style": "{\"iconBack\":\"#191970\",\"borderWidth\":0,\"color\":\"#ffffff\",\"lineWidth\":0}"
+        },
+        "8": {
+            "type": "case",
+            "one": "30",
+            "content": "250 - 400",
+            "two": "9",
+            "style": "{\"iconBack\":\"#666666\",\"borderWidth\":0,\"color\":\"#ffffff\",\"lineWidth\":0}"
+        },
+        "9": {
+            "type": "case",
+            "one": "33",
+            "content": "400 - 600",
+            "two": "36",
+            "style": "{\"iconBack\":\"#666666\",\"borderWidth\":0,\"color\":\"#ffffff\",\"lineWidth\":0}"
+        },
+        "27": {
+            "type": "action",
+            "one": "2",
+            "content": "No punishment",
+            "style": "{\"iconBack\":\"#191970\",\"borderWidth\":0,\"color\":\"#ffffff\",\"lineWidth\":0}"
+        },
+        "30": {
+            "type": "action",
+            "one": "2",
+            "content": "EUR 200 fine",
+            "style": "{\"iconBack\":\"#666666\",\"borderWidth\":0,\"color\":\"#ffffff\",\"lineWidth\":0}"
+        },
+        "33": {
+            "type": "action",
+            "one": "2",
+            "content": "- Suspension of driving license for 90 days\n- EUR 700 fine",
+            "style": "{\"iconBack\":\"#666666\",\"borderWidth\":0,\"color\":\"#ffffff\",\"lineWidth\":0}"
+        },
+        "36": {
+            "type": "case",
+            "one": "51",
+            "content": "",
+            "style": "{\"iconBack\":\"#800000\",\"borderWidth\":0,\"color\":\"#ffffff\",\"lineWidth\":0}"
+        },
+        "51": {
+            "type": "action",
+            "one": "2",
+            "content": "- 2 month imprisonment\n- Suspension of driving license for 180 days\n- EUR 1200 fine",
+            "style": "{\"iconBack\":\"#800000\",\"borderWidth\":0,\"color\":\"#ffffff\",\"lineWidth\":0}"
+        },
+        "54": {
+            "type": "callout",
+            "left": 610,
+            "top": 70,
+            "width": 110,
+            "height": 40,
+            "content": "micrograms",
+            "style": "{\"iconBack\":\"#ffffff\"}",
+            "px": -75,
+            "py": 50,
+            "zIndex": 1
+        },
+        "55": {
+            "type": "branch",
+            "branchId": 0,
+            "one": "4"
+        },
+        "header": {
+            "type": "header",
+            "style": "{\"iconBack\":\"#191970\",\"borderWidth\":0,\"color\":\"#ffffff\",\"lineWidth\":0,\"font\":\"bold 16px Arimo\"}"
+        }
+    },
+    "style": "{\"background\":\"#e6e6fa\",\"lines\":\"#191970\",\"backText\":\"#191970\"}"
+}

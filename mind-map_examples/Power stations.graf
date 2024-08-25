@@ -1,0 +1,116 @@
+{
+    "items": {
+        "2": {
+            "type": "ridea",
+            "content": "Thermal",
+            "style": "{\"textAlign\":\"center\"}",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "3": {
+            "type": "idea",
+            "content": "Coal",
+            "style": "{\"iconBack\":\"#ffc3a0\",\"color\":\"#000000\",\"iconBorder\":\"#000000\",\"lines\":\"#000000\"}",
+            "parent": "2",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "4": {
+            "type": "idea",
+            "content": "Gas",
+            "style": "{\"iconBack\":\"#ffc3a0\",\"color\":\"#000000\",\"iconBorder\":\"#000000\",\"lines\":\"#000000\"}",
+            "parent": "2",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "5": {
+            "type": "idea",
+            "content": "Oil",
+            "style": "{\"iconBack\":\"#ffc3a0\",\"color\":\"#000000\",\"iconBorder\":\"#000000\",\"lines\":\"#000000\"}",
+            "parent": "2",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "18": {
+            "type": "ridea",
+            "content": "Renewable",
+            "style": "{\"textAlign\":\"center\"}",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "19": {
+            "type": "idea",
+            "content": "Hydroelectric",
+            "style": "{\"iconBack\":\"#ffc3a0\",\"color\":\"#000000\",\"iconBorder\":\"#000000\",\"lines\":\"#000000\"}",
+            "parent": "18",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "20": {
+            "type": "idea",
+            "content": "Wind",
+            "parent": "18",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "21": {
+            "type": "idea",
+            "content": "Solar",
+            "parent": "18",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "22": {
+            "type": "idea",
+            "content": "Tide",
+            "parent": "18",
+            "treeType": "treeview",
+            "ordinal": 3
+        },
+        "23": {
+            "type": "idea",
+            "content": "Geothermal",
+            "parent": "18",
+            "treeType": "treeview",
+            "ordinal": 4
+        },
+        "50": {
+            "type": "ridea",
+            "content": "Nuclear",
+            "style": "{\"textAlign\":\"center\"}",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "51": {
+            "type": "idea",
+            "content": "Thermal-neutron",
+            "style": "{\"iconBack\":\"#ffc3a0\",\"color\":\"#000000\",\"iconBorder\":\"#000000\",\"lines\":\"#000000\"}",
+            "parent": "50",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "52": {
+            "type": "idea",
+            "content": "Fast-neutron",
+            "parent": "50",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "53": {
+            "type": "idea",
+            "content": "Radioisotope",
+            "parent": "50",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "root": {
+            "type": "header",
+            "style": "",
+            "treeType": "vertical"
+        }
+    },
+    "type": "graf"
+}

@@ -1,0 +1,85 @@
+{
+    "items": {
+        "2": {
+            "type": "end"
+        },
+        "4": {
+            "type": "question",
+            "flag1": 1,
+            "one": "14",
+            "two": "17",
+            "content": "Do you have a formal arts education?"
+        },
+        "14": {
+            "type": "action",
+            "one": "20",
+            "content": "Great! Use it"
+        },
+        "17": {
+            "type": "action",
+            "one": "20",
+            "content": "Doesn't matter"
+        },
+        "20": {
+            "type": "question",
+            "flag1": 1,
+            "one": "30",
+            "two": "33",
+            "content": "Do you know anyone in the arts scene?"
+        },
+        "30": {
+            "type": "action",
+            "one": "36",
+            "content": "Wonderful. They can help"
+        },
+        "33": {
+            "type": "action",
+            "one": "36",
+            "content": "That doesn't matter either"
+        },
+        "36": {
+            "type": "question",
+            "flag1": 1,
+            "one": "46",
+            "two": "49",
+            "content": "Have you made art before?"
+        },
+        "46": {
+            "type": "action",
+            "one": "52",
+            "content": "Why are we talking then?"
+        },
+        "49": {
+            "type": "action",
+            "one": "52",
+            "content": "<p>OK listen, not all arts has to be in a gallery or a book or on stage, just make something for yourself or your friends or just because you are alive and you are contributing to the masterpiece of humanity, OK?</p><p>I love you.</p>"
+        },
+        "52": {
+            "type": "action",
+            "one": "2",
+            "content": "MAKE ART",
+            "style": "{\"borderWidth\":2,\"lineWidth\":2,\"iconBorder\":\"#800000\",\"lines\":\"#800000\",\"font\":\"18px Arimo\"}"
+        },
+        "55": {
+            "type": "callout",
+            "left": 150,
+            "top": -20,
+            "width": 160,
+            "height": 40,
+            "content": "by John Osebold",
+            "px": -60,
+            "py": 20,
+            "zIndex": 1
+        },
+        "56": {
+            "type": "branch",
+            "branchId": 0,
+            "one": "4"
+        },
+        "header": {
+            "type": "header",
+            "style": ""
+        }
+    },
+    "type": "drakon"
+}

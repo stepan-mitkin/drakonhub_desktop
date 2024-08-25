@@ -1,0 +1,152 @@
+{
+    "items": {
+        "7": {
+            "type": "action",
+            "one": "27",
+            "content": "Listen to the whole phrase without subtitles"
+        },
+        "26": {
+            "type": "branch",
+            "branchId": 1,
+            "one": "152",
+            "content": "Familiarize yourself"
+        },
+        "27": {
+            "type": "branch",
+            "branchId": 2,
+            "one": "95",
+            "content": "Write down"
+        },
+        "28": {
+            "type": "branch",
+            "branchId": 4,
+            "one": "133",
+            "content": "Repeat out loud"
+        },
+        "34": {
+            "type": "end",
+            "style": ""
+        },
+        "59": {
+            "type": "loopbegin",
+            "one": "169",
+            "content": "For each word in the phrase"
+        },
+        "60": {
+            "type": "loopend",
+            "one": "82",
+            "content": "Next word"
+        },
+        "64": {
+            "type": "question",
+            "flag1": 1,
+            "one": "74",
+            "two": "77",
+            "content": "Did you understand the word?"
+        },
+        "74": {
+            "type": "action",
+            "one": "60",
+            "content": "Write the word down"
+        },
+        "77": {
+            "type": "action",
+            "one": "60",
+            "content": "Write down the sounds that you recognized"
+        },
+        "82": {
+            "type": "question",
+            "flag1": 1,
+            "one": "107",
+            "two": "95",
+            "content": "Have you reached the limit of understanding for the phrase?"
+        },
+        "95": {
+            "type": "arrow-loop",
+            "one": "100",
+            "content": ""
+        },
+        "100": {
+            "type": "action",
+            "one": "59",
+            "content": "Rewind to the start of the phrase"
+        },
+        "107": {
+            "type": "branch",
+            "branchId": 3,
+            "one": "156",
+            "content": "Verify against the subtitles"
+        },
+        "123": {
+            "type": "action",
+            "one": "127",
+            "content": "Listen to the phrase with subtitles"
+        },
+        "127": {
+            "type": "action",
+            "one": "130",
+            "content": "Verify your notes against the subtitles"
+        },
+        "130": {
+            "type": "action",
+            "one": "28",
+            "content": "Add what you have not understood to your notes"
+        },
+        "133": {
+            "type": "comment",
+            "one": "139",
+            "content": "This is the most important step!"
+        },
+        "139": {
+            "type": "loopbegin",
+            "one": "165",
+            "content": "Several times"
+        },
+        "140": {
+            "type": "loopend",
+            "one": "34",
+            "content": ""
+        },
+        "145": {
+            "type": "action",
+            "one": "140",
+            "content": "Repeat out loud after the actor:\n- imitate the sounds\n- imitate the intonation"
+        },
+        "148": {
+            "type": "callout",
+            "left": 370,
+            "top": -5,
+            "width": 200,
+            "height": 40,
+            "content": "by Irina Kolosova",
+            "px": -80,
+            "py": 10,
+            "zIndex": 1
+        },
+        "152": {
+            "type": "action",
+            "one": "7",
+            "content": "Select a video fragment with a phrase in the foreign language"
+        },
+        "156": {
+            "type": "action",
+            "one": "123",
+            "content": "Rewind to the start of the fragment"
+        },
+        "165": {
+            "type": "action",
+            "one": "145",
+            "content": "Rewind to the start of the fragment"
+        },
+        "169": {
+            "type": "action",
+            "one": "64",
+            "content": "Try to catch every sound"
+        },
+        "header": {
+            "type": "header",
+            "style": ""
+        }
+    },
+    "type": "drakon"
+}

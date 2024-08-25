@@ -1,0 +1,67 @@
+{
+    "items": {
+        "2": {
+            "type": "idea",
+            "content": "Australia",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "8": {
+            "type": "idea",
+            "content": "Antarctica",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "13": {
+            "type": "idea",
+            "content": "Eurasia",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "17": {
+            "type": "idea",
+            "content": "Africa",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 3
+        },
+        "21": {
+            "type": "idea",
+            "content": "North America",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 4
+        },
+        "25": {
+            "type": "idea",
+            "content": "South America",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 5
+        },
+        "41": {
+            "type": "idea",
+            "content": "Europe",
+            "parent": "13",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "48": {
+            "type": "idea",
+            "content": "Asia",
+            "parent": "13",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "root": {
+            "type": "header",
+            "style": "",
+            "treeType": "treeview"
+        }
+    },
+    "type": "graf",
+    "style": ""
+}

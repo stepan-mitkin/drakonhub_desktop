@@ -1,0 +1,80 @@
+{
+    "items": {
+        "2": {
+            "type": "ridea",
+            "content": "With manual memory management",
+            "parent": "root",
+            "treeType": "vertical",
+            "ordinal": 1
+        },
+        "4": {
+            "type": "ridea",
+            "content": "With garbage collection",
+            "parent": "root",
+            "treeType": "vertical",
+            "ordinal": 0
+        },
+        "24": {
+            "type": "idea",
+            "content": "C",
+            "parent": "2",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "26": {
+            "type": "idea",
+            "content": "C++",
+            "parent": "2",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "36": {
+            "type": "ridea",
+            "content": "Strongly typed",
+            "parent": "4",
+            "treeType": "vertical",
+            "ordinal": 0
+        },
+        "38": {
+            "type": "ridea",
+            "content": "Weakly typed",
+            "parent": "4",
+            "treeType": "vertical",
+            "ordinal": 1
+        },
+        "48": {
+            "type": "idea",
+            "content": "Java",
+            "parent": "36",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "50": {
+            "type": "idea",
+            "content": "C#",
+            "parent": "36",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "60": {
+            "type": "idea",
+            "content": "JavaScript",
+            "parent": "38",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "62": {
+            "type": "idea",
+            "content": "Python",
+            "parent": "38",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "root": {
+            "type": "header",
+            "style": "",
+            "treeType": "vertical"
+        }
+    },
+    "type": "graf"
+}

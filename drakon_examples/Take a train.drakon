@@ -1,0 +1,77 @@
+{
+    "type": "drakon",
+    "items": {
+        "2": {
+            "type": "end",
+            "style": "{\"iconBack\":\"#f5f5dc\",\"borderWidth\":1,\"color\":\"#000000\",\"lineWidth\":1,\"iconBorder\":\"#808080\",\"lines\":\"#808080\",\"shadowOffsetX\":6,\"shadowOffsetY\":8,\"shadowColor\":\"rgba(0, 0, 0, 0.5)\",\"shadowBlur\":2}"
+        },
+        "4": {
+            "type": "action",
+            "one": "19",
+            "content": "Drive to the railway station",
+            "style": "{\"iconBack\":\"#f5f5dc\",\"borderWidth\":1,\"color\":\"#000000\",\"lineWidth\":1,\"iconBorder\":\"#808080\",\"lines\":\"#808080\",\"shadowOffsetX\":6,\"shadowOffsetY\":8,\"shadowColor\":\"rgba(0, 0, 0, 0.5)\",\"shadowBlur\":2}"
+        },
+        "10": {
+            "type": "action",
+            "one": "13",
+            "content": "Go to the platform",
+            "style": "{\"iconBack\":\"#f5f5dc\",\"borderWidth\":1,\"color\":\"#000000\",\"lineWidth\":1,\"iconBorder\":\"#808080\",\"lines\":\"#808080\",\"shadowOffsetX\":6,\"shadowOffsetY\":8,\"shadowColor\":\"rgba(0, 0, 0, 0.5)\",\"shadowBlur\":2}"
+        },
+        "13": {
+            "type": "action",
+            "one": "16",
+            "content": "Wait for the train",
+            "style": "{\"iconBack\":\"#f5f5dc\",\"borderWidth\":1,\"color\":\"#000000\",\"lineWidth\":1,\"iconBorder\":\"#808080\",\"lines\":\"#808080\",\"shadowOffsetX\":6,\"shadowOffsetY\":8,\"shadowColor\":\"rgba(0, 0, 0, 0.5)\",\"shadowBlur\":2}"
+        },
+        "16": {
+            "type": "action",
+            "one": "2",
+            "content": "Board the train",
+            "style": "{\"iconBack\":\"#f5f5dc\",\"borderWidth\":1,\"color\":\"#000000\",\"lineWidth\":1,\"iconBorder\":\"#808080\",\"lines\":\"#808080\",\"shadowOffsetX\":6,\"shadowOffsetY\":8,\"shadowColor\":\"rgba(0, 0, 0, 0.5)\",\"shadowBlur\":2}"
+        },
+        "19": {
+            "type": "question",
+            "flag1": 1,
+            "one": "37",
+            "two": "44",
+            "content": "Is free parking available?",
+            "style": "{\"iconBack\":\"#f5f5dc\",\"borderWidth\":1,\"color\":\"#000000\",\"lineWidth\":1,\"iconBorder\":\"#808080\",\"lines\":\"#808080\",\"shadowOffsetX\":6,\"shadowOffsetY\":8,\"shadowColor\":\"rgba(0, 0, 0, 0.5)\",\"shadowBlur\":2}"
+        },
+        "37": {
+            "type": "action",
+            "one": "10",
+            "content": "Park on free parking",
+            "style": "{\"iconBack\":\"#81d8d0\",\"borderWidth\":1,\"color\":\"#000000\",\"lineWidth\":1,\"iconBorder\":\"#808080\",\"lines\":\"#808080\",\"shadowOffsetX\":6,\"shadowOffsetY\":8,\"shadowColor\":\"rgba(0, 0, 0, 0.5)\",\"shadowBlur\":2}"
+        },
+        "41": {
+            "type": "action",
+            "one": "10",
+            "content": "Park on paid parking",
+            "style": "{\"iconBack\":\"#ffff00\",\"borderWidth\":1,\"color\":\"#000000\",\"lineWidth\":1,\"iconBorder\":\"#808080\",\"lines\":\"#808080\",\"shadowOffsetX\":6,\"shadowOffsetY\":8,\"shadowColor\":\"rgba(0, 0, 0, 0.5)\",\"shadowBlur\":2}"
+        },
+        "44": {
+            "type": "question",
+            "flag1": 0,
+            "one": "41",
+            "two": "54",
+            "content": "Is paid parking occupied?",
+            "style": "{\"iconBack\":\"#f5f5dc\",\"borderWidth\":1,\"color\":\"#000000\",\"lineWidth\":1,\"iconBorder\":\"#808080\",\"lines\":\"#808080\",\"shadowOffsetX\":6,\"shadowOffsetY\":8,\"shadowColor\":\"rgba(0, 0, 0, 0.5)\",\"shadowBlur\":2}"
+        },
+        "54": {
+            "type": "action",
+            "one": "10",
+            "content": "Park the car a long way from the station",
+            "style": "{\"iconBack\":\"#ff0000\",\"borderWidth\":1,\"color\":\"#000000\",\"lineWidth\":1,\"iconBorder\":\"#808080\",\"lines\":\"#808080\",\"shadowOffsetX\":6,\"shadowOffsetY\":8,\"shadowColor\":\"rgba(0, 0, 0, 0.5)\",\"shadowBlur\":2}"
+        },
+        "62": {
+            "type": "branch",
+            "branchId": 0,
+            "one": "4"
+        },
+        "header": {
+            "type": "header",
+            "style": "{\"iconBack\":\"#f5f5dc\",\"borderWidth\":1,\"color\":\"#000000\",\"lineWidth\":1,\"iconBorder\":\"#808080\",\"lines\":\"#808080\",\"font\":\"bold 16px Arimo\",\"shadowOffsetX\":6,\"shadowOffsetY\":8,\"shadowColor\":\"rgba(0, 0, 0, 0.5)\",\"shadowBlur\":2}"
+        }
+    },
+    "style": "{\"background\":\"#ffffff\",\"lines\":\"#000000\",\"backText\":\"#000000\"}"
+}

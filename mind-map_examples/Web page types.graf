@@ -1,0 +1,151 @@
+{
+    "items": {
+        "94": {
+            "type": "ridea",
+            "content": "Homepage",
+            "style": "{\"textAlign\":\"center\"}",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "95": {
+            "type": "idea",
+            "content": "It's about the first impression",
+            "parent": "94",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "96": {
+            "type": "idea",
+            "content": "The user spends 10 seconds here",
+            "parent": "94",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "98": {
+            "type": "idea",
+            "content": "Answers these questions",
+            "parent": "94",
+            "treeType": "treeview",
+            "ordinal": 3
+        },
+        "99": {
+            "type": "idea",
+            "content": "What do you do?",
+            "parent": "98",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "100": {
+            "type": "idea",
+            "content": "How can you help them?",
+            "parent": "98",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "101": {
+            "type": "idea",
+            "content": "How did you help others?",
+            "parent": "98",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "173": {
+            "type": "ridea",
+            "content": "Content page",
+            "style": "{\"textAlign\":\"center\"}",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "183": {
+            "type": "idea",
+            "content": "Continues the story, gives more detail",
+            "parent": "173",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "189": {
+            "type": "idea",
+            "content": "Search engine-optimized for important keywords",
+            "parent": "173",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "193": {
+            "type": "ridea",
+            "content": "Landing page",
+            "style": "{\"textAlign\":\"center\"}",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "199": {
+            "type": "idea",
+            "content": "The major goal is to turn visitors into leads",
+            "parent": "193",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "206": {
+            "type": "idea",
+            "content": "The goal is to connect emotionally",
+            "parent": "94",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "211": {
+            "type": "idea",
+            "content": "Tell the visitor exactly what they are getting",
+            "parent": "193",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "215": {
+            "type": "idea",
+            "content": "The copy has to be super compelling",
+            "parent": "193",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "219": {
+            "type": "idea",
+            "content": "No navigation",
+            "parent": "193",
+            "treeType": "treeview",
+            "ordinal": 3
+        },
+        "223": {
+            "type": "idea",
+            "content": "The minor goal is to attract search engines",
+            "parent": "193",
+            "treeType": "treeview",
+            "ordinal": 4
+        },
+        "227": {
+            "type": "idea",
+            "content": "The goal is to educate",
+            "parent": "173",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "232": {
+            "type": "callout",
+            "left": 610,
+            "top": 0,
+            "width": 150,
+            "height": 40,
+            "content": "by Mike Lieberman",
+            "style": "{\"iconBack\":\"#66cdaa\",\"color\":\"#000000\",\"iconBorder\":\"#000000\",\"lines\":\"#000000\"}",
+            "px": -70,
+            "py": 20,
+            "zIndex": 1
+        },
+        "root": {
+            "type": "header",
+            "style": "",
+            "treeType": "vertical"
+        }
+    },
+    "type": "graf"
+}

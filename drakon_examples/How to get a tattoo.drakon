@@ -1,0 +1,88 @@
+{
+    "items": {
+        "2": {
+            "type": "end"
+        },
+        "4": {
+            "type": "select",
+            "one": "5",
+            "content": "Do you have money?"
+        },
+        "5": {
+            "type": "case",
+            "one": "31",
+            "content": "Yes",
+            "two": "8"
+        },
+        "8": {
+            "type": "case",
+            "one": "34",
+            "content": "Not for tattoos",
+            "two": "9"
+        },
+        "9": {
+            "type": "case",
+            "one": "45",
+            "content": "No"
+        },
+        "31": {
+            "type": "action",
+            "one": "2",
+            "content": "GET A TATTOO",
+            "style": "{\"iconBack\":\"#003366\",\"borderWidth\":0,\"color\":\"#ffffff\",\"lineWidth\":0,\"font\":\"bold 14px Arimo\"}"
+        },
+        "34": {
+            "type": "comment",
+            "one": "31",
+            "content": "Blasphemy!"
+        },
+        "45": {
+            "type": "question",
+            "flag1": 1,
+            "one": "59",
+            "two": "94",
+            "content": "Do you have a job?"
+        },
+        "59": {
+            "type": "question",
+            "flag1": 1,
+            "one": "31",
+            "two": "94",
+            "content": "Do they pay you?"
+        },
+        "94": {
+            "type": "question",
+            "flag1": 1,
+            "one": "104",
+            "two": "123",
+            "content": "Do you have possessions?"
+        },
+        "104": {
+            "type": "action",
+            "one": "31",
+            "content": "Sell it"
+        },
+        "123": {
+            "type": "question",
+            "flag1": 1,
+            "one": "104",
+            "two": "141",
+            "content": "Do you have a soul?"
+        },
+        "141": {
+            "type": "comment",
+            "one": "2",
+            "content": "What tattoo did you get?"
+        },
+        "156": {
+            "type": "branch",
+            "branchId": 0,
+            "one": "4"
+        },
+        "header": {
+            "type": "header",
+            "style": ""
+        }
+    },
+    "type": "drakon"
+}

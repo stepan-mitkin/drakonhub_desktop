@@ -1,0 +1,147 @@
+{
+    "items": {
+        "8": {
+            "type": "branch",
+            "branchId": 1,
+            "one": "91",
+            "content": "Init search"
+        },
+        "9": {
+            "type": "branch",
+            "branchId": 4,
+            "one": "194",
+            "content": "Build result"
+        },
+        "10": {
+            "type": "branch",
+            "branchId": 5,
+            "one": "16",
+            "content": "Exit"
+        },
+        "16": {
+            "type": "end"
+        },
+        "32": {
+            "type": "branch",
+            "branchId": 2,
+            "one": "71",
+            "content": "Get the current node"
+        },
+        "43": {
+            "type": "branch",
+            "branchId": 3,
+            "one": "124",
+            "content": "Process adjacent nodes"
+        },
+        "68": {
+            "type": "action",
+            "one": "32",
+            "content": "Initialize the open list with start state"
+        },
+        "71": {
+            "type": "question",
+            "flag1": 0,
+            "one": "197",
+            "two": "95",
+            "content": "Is open list empty?"
+        },
+        "88": {
+            "type": "comment",
+            "one": "68",
+            "content": "Closed list - this list of nodes that\n    we have already sorted."
+        },
+        "91": {
+            "type": "comment",
+            "one": "88",
+            "content": "Open list - a priority queue that\n    contains the OPEN list.\n    The open list has nodes awaiting\n    evaluation.\n    Open list is sorted by total cost."
+        },
+        "95": {
+            "type": "comment",
+            "one": "10",
+            "content": "Could not find solution"
+        },
+        "98": {
+            "type": "question",
+            "flag1": 0,
+            "one": "118",
+            "two": "115",
+            "content": "Is current node the target node?"
+        },
+        "115": {
+            "type": "comment",
+            "one": "9",
+            "content": "Found it!"
+        },
+        "118": {
+            "type": "action",
+            "one": "121",
+            "content": "Add current node to closed list"
+        },
+        "121": {
+            "type": "action",
+            "one": "43",
+            "content": "Find the nodes that are adjacent to the current node"
+        },
+        "124": {
+            "type": "loopbegin",
+            "one": "129",
+            "content": "For each adjacent node"
+        },
+        "125": {
+            "type": "loopend",
+            "one": "32",
+            "content": ""
+        },
+        "129": {
+            "type": "question",
+            "flag1": 0,
+            "one": "142",
+            "two": "139",
+            "content": "Is adjacent node in the closed list?"
+        },
+        "139": {
+            "type": "comment",
+            "one": "125",
+            "content": "We have already been here"
+        },
+        "142": {
+            "type": "question",
+            "flag1": 1,
+            "one": "165",
+            "two": "161",
+            "content": "Is adjacent node in the open list?"
+        },
+        "161": {
+            "type": "action",
+            "one": "125",
+            "content": "Add adjacent node to the open list.\nRecord that the parent of the adjacent node is the current one."
+        },
+        "165": {
+            "type": "question",
+            "flag1": 1,
+            "one": "125",
+            "two": "191",
+            "content": "Is the path from the start node to the adjacent node shorter than the previously found path?"
+        },
+        "191": {
+            "type": "action",
+            "one": "161",
+            "content": "Remove adjacent node from the open list"
+        },
+        "194": {
+            "type": "action",
+            "one": "10",
+            "content": "Follow the chain of nodes starting from the current node all the way back and build the list of steps"
+        },
+        "197": {
+            "type": "action",
+            "one": "98",
+            "content": "Pop a node from the open list.\nThis node is the current node."
+        },
+        "header": {
+            "type": "header",
+            "style": ""
+        }
+    },
+    "type": "drakon"
+}

@@ -1,0 +1,50 @@
+{
+    "items": {
+        "2": {
+            "type": "end"
+        },
+        "4": {
+            "type": "action",
+            "one": "29",
+            "content": "Warm up",
+            "style": ""
+        },
+        "29": {
+            "type": "loopbegin",
+            "one": "35",
+            "content": "Repeat 10 times",
+            "style": ""
+        },
+        "30": {
+            "type": "loopend",
+            "one": "2",
+            "content": "",
+            "style": ""
+        },
+        "35": {
+            "type": "action",
+            "one": "38",
+            "content": "Lift the weight",
+            "style": ""
+        },
+        "38": {
+            "type": "question",
+            "flag1": 0,
+            "one": "30",
+            "two": "2",
+            "content": "Tired?",
+            "style": ""
+        },
+        "56": {
+            "type": "branch",
+            "branchId": 0,
+            "one": "4"
+        },
+        "header": {
+            "type": "header",
+            "style": ""
+        }
+    },
+    "type": "drakon",
+    "style": ""
+}

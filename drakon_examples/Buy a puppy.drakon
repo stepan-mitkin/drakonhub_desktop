@@ -1,0 +1,49 @@
+{
+    "type": "drakon",
+    "items": {
+        "2": {
+            "type": "end"
+        },
+        "4": {
+            "type": "question",
+            "flag1": 1,
+            "one": "8",
+            "two": "2",
+            "content": "Do you have money?"
+        },
+        "8": {
+            "type": "question",
+            "flag1": 1,
+            "one": "9",
+            "two": "2",
+            "content": "Are puppies on sale today?"
+        },
+        "9": {
+            "type": "action",
+            "one": "11",
+            "content": "Find a puppy",
+            "style": "{\"borderWidth\":2,\"color\":\"#003366\",\"lineWidth\":2,\"iconBorder\":\"#003366\",\"lines\":\"#003366\"}"
+        },
+        "11": {
+            "type": "question",
+            "flag1": 1,
+            "one": "13",
+            "two": "2",
+            "content": "Do you like the puppy?"
+        },
+        "13": {
+            "type": "action",
+            "one": "2",
+            "content": "Buy this cute puppy!",
+            "style": "{\"iconBack\":\"#003366\",\"borderWidth\":0,\"color\":\"#ffffff\",\"lineWidth\":0,\"font\":\"bold 14px Arimo\"}"
+        },
+        "28": {
+            "type": "branch",
+            "branchId": 0,
+            "one": "4"
+        },
+        "header": {
+            "type": "header" 
+        }
+    }
+}

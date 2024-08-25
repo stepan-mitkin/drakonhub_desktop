@@ -1,0 +1,249 @@
+{
+    "items": {
+        "2": {
+            "type": "ridea",
+            "content": "Landing page",
+            "style": "{\"textAlign\":\"center\"}",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "4": {
+            "type": "ridea",
+            "content": "Bonus",
+            "style": "{\"textAlign\":\"center\"}",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "14": {
+            "type": "idea",
+            "content": "Use it if you can control how users arrive at your site",
+            "parent": "2",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "45": {
+            "type": "idea",
+            "content": "Tells the users",
+            "parent": "2",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "46": {
+            "type": "idea",
+            "content": "What you want them to do",
+            "parent": "45",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "47": {
+            "type": "idea",
+            "content": "Why they should do that",
+            "parent": "45",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "147": {
+            "type": "ridea",
+            "content": "The must-haves",
+            "style": "{\"textAlign\":\"center\"}",
+            "parent": "root",
+            "treeType": "vertical",
+            "ordinal": 1
+        },
+        "151": {
+            "type": "idea",
+            "content": "Landing pages must contain the following elements",
+            "parent": "147",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "152": {
+            "type": "idea",
+            "content": "A headline and (optional) sub-headline",
+            "parent": "151",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "153": {
+            "type": "idea",
+            "content": "A brief description of the what is being offered",
+            "parent": "151",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "154": {
+            "type": "idea",
+            "content": "At least one supporting image or short video",
+            "parent": "151",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "155": {
+            "type": "idea",
+            "content": "(Optional) supporting proof elements such as testimonials, customer logos, or security badges",
+            "parent": "151",
+            "treeType": "treeview",
+            "ordinal": 3
+        },
+        "156": {
+            "type": "idea",
+            "content": "A form to capture information, or a large Call To Action button",
+            "parent": "151",
+            "treeType": "treeview",
+            "ordinal": 4
+        },
+        "193": {
+            "type": "idea",
+            "content": "Keep the objective simple and clear",
+            "parent": "147",
+            "treeType": "treeview",
+            "ordinal": 3
+        },
+        "194": {
+            "type": "idea",
+            "content": "Make it clear what the page is about",
+            "parent": "193",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "195": {
+            "type": "idea",
+            "content": "Make it clear what you want the visitor to do",
+            "parent": "193",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "196": {
+            "type": "idea",
+            "content": "Limit the amount of copy, images, media, and links",
+            "parent": "193",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "197": {
+            "type": "idea",
+            "content": "Make call-to-action crystal clear",
+            "parent": "193",
+            "treeType": "treeview",
+            "ordinal": 3
+        },
+        "254": {
+            "type": "idea",
+            "content": "Reduce friction",
+            "parent": "147",
+            "treeType": "treeview",
+            "ordinal": 4
+        },
+        "255": {
+            "type": "idea",
+            "content": "Keep the page simple",
+            "parent": "254",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "256": {
+            "type": "idea",
+            "content": "Include proof elements such as customer testimonials, number of downloads/sales",
+            "parent": "254",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "257": {
+            "type": "idea",
+            "content": "Security badges",
+            "parent": "254",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "274": {
+            "type": "idea",
+            "content": "Make your landing pages shareable in social media",
+            "parent": "4",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "280": {
+            "type": "idea",
+            "content": "Never use the word “Submit”. Always use language for what they are getting in return. For example, use “Download Now,” “Get your Free Evaluation,” or “Join our Mailing List.”",
+            "parent": "4",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "284": {
+            "type": "idea",
+            "content": "How to use landing pages",
+            "parent": "147",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "295": {
+            "type": "idea",
+            "content": "Never use your page as a landing page",
+            "parent": "284",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "306": {
+            "type": "idea",
+            "content": "Create a lot of landing pages",
+            "parent": "284",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "310": {
+            "type": "idea",
+            "content": "Content and structure tips",
+            "parent": "147",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "322": {
+            "type": "idea",
+            "content": "Remove or limit extra navigation",
+            "parent": "310",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "330": {
+            "type": "idea",
+            "content": "Match the content to a visitor's previous source",
+            "parent": "310",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "334": {
+            "type": "idea",
+            "content": "Offer something of value",
+            "parent": "310",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "340": {
+            "type": "idea",
+            "content": "Do not ask to enter information that you don't need",
+            "parent": "310",
+            "treeType": "treeview",
+            "ordinal": 3
+        },
+        "344": {
+            "type": "callout",
+            "left": 1315,
+            "top": 10,
+            "width": 130,
+            "height": 40,
+            "content": "by Jessica Meher",
+            "style": "{\"iconBack\":\"#40e0d0\"}",
+            "px": -100,
+            "py": 20,
+            "zIndex": 1
+        },
+        "root": {
+            "type": "header",
+            "style": "",
+            "treeType": "vertical"
+        }
+    },
+    "type": "graf"
+}

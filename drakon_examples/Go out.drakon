@@ -1,0 +1,39 @@
+{
+    "type": "drakon",
+    "items": {
+        "2": {
+            "type": "end"
+        },
+        "4": {
+            "type": "question",
+            "flag1": 0,
+            "one": "8",
+            "two": "6",
+            "content": "Is it raining?"
+        },
+        "6": {
+            "type": "action",
+            "one": "8",
+            "content": "Take umbrella",
+            "style": "{\"iconBack\":\"#ffc0cb\",\"color\":\"#000000\",\"iconBorder\":\"#800000\",\"lines\":\"#800000\"}"
+        },
+        "7": {
+            "type": "action",
+            "one": "4",
+            "content": "Put on clothes"
+        },
+        "8": {
+            "type": "action",
+            "one": "2",
+            "content": "Leave the house"
+        },
+        "20": {
+            "type": "branch",
+            "branchId": 0,
+            "one": "7"
+        },
+        "header": {
+            "type": "header"
+        }
+    }
+}

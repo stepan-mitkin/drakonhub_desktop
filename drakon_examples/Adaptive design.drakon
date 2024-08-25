@@ -1,0 +1,116 @@
+{
+    "items": {
+        "2": {
+            "type": "end"
+        },
+        "4": {
+            "type": "select",
+            "one": "5",
+            "content": "What is the device type?"
+        },
+        "5": {
+            "type": "case",
+            "one": "55",
+            "content": "Large screen",
+            "two": "8"
+        },
+        "8": {
+            "type": "case",
+            "one": "58",
+            "content": "Laptop",
+            "two": "27"
+        },
+        "9": {
+            "type": "case",
+            "one": "64",
+            "content": "Phone"
+        },
+        "27": {
+            "type": "case",
+            "one": "61",
+            "content": "Tablet",
+            "two": "9"
+        },
+        "38": {
+            "type": "action",
+            "one": "2",
+            "content": "Put full main menu"
+        },
+        "55": {
+            "type": "action",
+            "one": "67",
+            "content": "Use large background image"
+        },
+        "58": {
+            "type": "action",
+            "one": "102",
+            "content": "<p>Use <strong>medium </strong>background image</p>"
+        },
+        "61": {
+            "type": "action",
+            "one": "105",
+            "content": "Use medium background image"
+        },
+        "64": {
+            "type": "action",
+            "one": "108",
+            "content": "Use small background image"
+        },
+        "67": {
+            "type": "action",
+            "one": "77",
+            "content": "Use grid layout"
+        },
+        "70": {
+            "type": "action",
+            "one": "38",
+            "content": "Use small UI elements"
+        },
+        "77": {
+            "type": "action",
+            "one": "38",
+            "content": "Use small UI elements"
+        },
+        "80": {
+            "type": "action",
+            "one": "99",
+            "content": "Use large UI elements"
+        },
+        "83": {
+            "type": "action",
+            "one": "38",
+            "content": "Use large UI elements"
+        },
+        "99": {
+            "type": "action",
+            "one": "2",
+            "content": "Put minimal main menu"
+        },
+        "102": {
+            "type": "action",
+            "one": "70",
+            "content": "Use grid layout"
+        },
+        "105": {
+            "type": "action",
+            "one": "83",
+            "content": "Use plain layout"
+        },
+        "108": {
+            "type": "action",
+            "one": "80",
+            "content": "Use plain layout"
+        },
+        "111": {
+            "type": "branch",
+            "branchId": 0,
+            "one": "4"
+        },
+        "header": {
+            "type": "header",
+            "style": ""
+        }
+    },
+    "type": "drakon",
+    "style": ""
+}

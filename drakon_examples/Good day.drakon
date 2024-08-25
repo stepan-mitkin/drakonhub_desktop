@@ -1,0 +1,31 @@
+{
+    "type": "drakon",
+    "items": {
+        "2": {
+            "type": "end"
+        },
+        "4": {
+            "type": "action",
+            "one": "7",
+            "content": "Eat breakfast"
+        },
+        "7": {
+            "type": "action",
+            "one": "10",
+            "content": "Eat lunch"
+        },
+        "10": {
+            "type": "action",
+            "one": "2",
+            "content": "Eat dinner"
+        },
+        "13": {
+            "type": "branch",
+            "branchId": 0,
+            "one": "4"
+        },
+        "header": {
+            "type": "header"
+        }
+    }
+}

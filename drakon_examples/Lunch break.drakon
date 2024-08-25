@@ -1,0 +1,66 @@
+{
+    "items": {
+        "8": {
+            "type": "branch",
+            "branchId": 1,
+            "one": "54",
+            "style": "{\"iconBack\":\"#d3ffce\"}",
+            "content": "Talk to colleagues"
+        },
+        "9": {
+            "type": "branch",
+            "branchId": 2,
+            "one": "48",
+            "style": "{\"iconBack\":\"#ffff66\"}",
+            "content": "Eat"
+        },
+        "10": {
+            "type": "branch",
+            "branchId": 3,
+            "one": "51",
+            "style": "{\"iconBack\":\"#c6e2ff\",\"color\":\"#000000\",\"iconBorder\":\"#000000\",\"lines\":\"#000000\"}",
+            "content": "Prepare for work"
+        },
+        "16": {
+            "type": "end"
+        },
+        "32": {
+            "type": "question",
+            "flag1": 1,
+            "one": "9",
+            "two": "10",
+            "content": "Still hungry?"
+        },
+        "48": {
+            "type": "action",
+            "one": "32",
+            "content": "Eat a hamburger"
+        },
+        "51": {
+            "type": "action",
+            "one": "16",
+            "content": "Take a nap"
+        },
+        "54": {
+            "type": "action",
+            "one": "57",
+            "content": "Discuss weather"
+        },
+        "57": {
+            "type": "action",
+            "one": "60",
+            "content": "Discuss sports"
+        },
+        "60": {
+            "type": "action",
+            "one": "9",
+            "content": "Discuss news"
+        },
+        "header": {
+            "type": "header",
+            "style": ""
+        }
+    },
+    "type": "drakon",
+    "style": ""
+}

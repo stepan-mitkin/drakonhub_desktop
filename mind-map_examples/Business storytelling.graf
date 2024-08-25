@@ -1,0 +1,57 @@
+{
+    "items": {
+        "2": {
+            "type": "idea",
+            "content": "<p><strong>Develop the plot from negative to positive</strong></p><p>- Wrap the information in a story that will take the attention of the audience</p><p>- There must be something negative</p><p>- Do not lie</p>",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "8": {
+            "type": "idea",
+            "content": "<p><strong>Conflict</strong></p><p>A story without a conflict is not a story</p>",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "12": {
+            "type": "idea",
+            "content": "<p><strong>Surprise</strong></p><p>Show the product or the service from an unexpected side</p>",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "16": {
+            "type": "idea",
+            "content": "<p><strong>Insight</strong></p><p>The audience gets to know the truth which they did not understand up to this moment</p>",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 3
+        },
+        "20": {
+            "type": "idea",
+            "content": "<p><strong>Happy ending</strong></p><p>It was difficult before, but now everything is fine</p>",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 4
+        },
+        "24": {
+            "type": "callout",
+            "left": 265,
+            "top": 5,
+            "width": 160,
+            "height": 50,
+            "content": "by Robert McKee",
+            "px": -30,
+            "py": 20,
+            "zIndex": 1
+        },
+        "root": {
+            "type": "header",
+            "style": "",
+            "treeType": "treeview"
+        }
+    },
+    "type": "graf",
+    "style": ""
+}

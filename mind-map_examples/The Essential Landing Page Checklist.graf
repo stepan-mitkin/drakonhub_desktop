@@ -1,0 +1,173 @@
+{
+    "items": {
+        "2": {
+            "type": "ridea",
+            "content": "Images",
+            "style": "{\"textAlign\":\"center\"}",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "4": {
+            "type": "ridea",
+            "content": "Landing Page Content",
+            "style": "{\"textAlign\":\"center\"}",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "14": {
+            "type": "ridea",
+            "content": "Form",
+            "style": "{\"textAlign\":\"center\"}",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "20": {
+            "type": "idea",
+            "content": "Headline uses actionable, value-driven words",
+            "parent": "4",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "26": {
+            "type": "idea",
+            "content": "Headline matches source copy",
+            "parent": "4",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "30": {
+            "type": "idea",
+            "content": "Sub-header concisely describes the benefit of the offer",
+            "parent": "4",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "34": {
+            "type": "idea",
+            "content": "Body copy is scannable, scrollable, and compelling",
+            "parent": "4",
+            "treeType": "treeview",
+            "ordinal": 3
+        },
+        "38": {
+            "type": "idea",
+            "content": "Page title, URL, and meta description are all optimized for search",
+            "parent": "4",
+            "treeType": "treeview",
+            "ordinal": 4
+        },
+        "42": {
+            "type": "idea",
+            "content": "Image is indicative of what you'll get after filling out the landing page form",
+            "parent": "2",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "48": {
+            "type": "idea",
+            "content": "Image has alt-text",
+            "parent": "2",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "52": {
+            "type": "idea",
+            "content": "Form is the proper length for landing page goal",
+            "parent": "14",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "58": {
+            "type": "idea",
+            "content": "Submit button copy is customized.\n\"Get Your Free Ebook Now.\" Much better than the generic \"Submit.\"",
+            "parent": "14",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "62": {
+            "type": "idea",
+            "content": "Form enabled progressive profiling for return visitors",
+            "parent": "14",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "66": {
+            "type": "ridea",
+            "content": "Landing Page Layout",
+            "style": "{\"textAlign\":\"center\"}",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 3
+        },
+        "74": {
+            "type": "idea",
+            "content": "Landing page content passes the blink test.\nIf within 3 seconds, a site visitor can't glean what exactly they can do on that page, they click the back button",
+            "parent": "66",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "80": {
+            "type": "idea",
+            "content": "Top navigation menu is removed",
+            "parent": "66",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "84": {
+            "type": "idea",
+            "content": "Layout is responsive",
+            "parent": "66",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "88": {
+            "type": "ridea",
+            "content": "Landing Page User Experience",
+            "style": "{\"textAlign\":\"center\"}",
+            "parent": "root",
+            "treeType": "treeview",
+            "ordinal": 4
+        },
+        "94": {
+            "type": "idea",
+            "content": "Smart content has logical default tokens.\nIf you don't have someone's contact record on file, say \"Hey there,\" not \"Hey FIRSTNAME.\"",
+            "parent": "88",
+            "treeType": "treeview",
+            "ordinal": 0
+        },
+        "100": {
+            "type": "idea",
+            "content": "Content behind the form is mobile-friendly",
+            "parent": "88",
+            "treeType": "treeview",
+            "ordinal": 1
+        },
+        "104": {
+            "type": "idea",
+            "content": "Thank-you page and/or kickback emails are set up and functional",
+            "parent": "88",
+            "treeType": "treeview",
+            "ordinal": 2
+        },
+        "108": {
+            "type": "callout",
+            "left": 965,
+            "top": 10,
+            "width": 150,
+            "height": 40,
+            "content": "by Ginny Mineo",
+            "px": -70,
+            "py": 20,
+            "zIndex": 1
+        },
+        "root": {
+            "type": "header",
+            "style": "",
+            "treeType": "vertical"
+        }
+    },
+    "type": "graf"
+}

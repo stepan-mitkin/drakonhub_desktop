@@ -1,0 +1,79 @@
+{
+    "items": {
+        "1": {
+            "ordinal": 0,
+            "type": "ridea",
+            "parent": "root",
+            "treeType": "horizontal",
+            "content": "<p>Give money — direct material help</p>"
+        },
+        "2": {
+            "ordinal": 1,
+            "type": "ridea",
+            "parent": "root",
+            "treeType": "horizontal",
+            "content": "<p>Give technology</p>"
+        },
+        "3": {
+            "ordinal": 2,
+            "type": "ridea",
+            "parent": "root",
+            "treeType": "horizontal",
+            "content": "<p>Give a visual language</p>"
+        },
+        "4": {
+            "ordinal": 0,
+            "type": "idea",
+            "treeType": "treeview",
+            "parent": "1",
+            "content": "<p>The money will be wasted</p>"
+        },
+        "5": {
+            "ordinal": 1,
+            "type": "idea",
+            "treeType": "treeview",
+            "parent": "1",
+            "content": "<p>People we will run out of money soon</p>"
+        },
+        "6": {
+            "ordinal": 1,
+            "type": "idea",
+            "parent": "2",
+            "treeType": "treeview",
+            "content": "<p>The human kind will not be able to reproduce the technology</p>"
+        },
+        "7": {
+            "ordinal": 2,
+            "type": "idea",
+            "parent": "2",
+            "treeType": "treeview",
+            "content": "<p>The human kind will not be able to develop the technology further</p>"
+        },
+        "9": {
+            "ordinal": 0,
+            "type": "idea",
+            "treeType": "treeview",
+            "parent": "3",
+            "content": "<p>The humankind will build complex technologies with own hands</p>"
+        },
+        "10": {
+            "ordinal": 1,
+            "type": "idea",
+            "treeType": "treeview",
+            "parent": "3",
+            "content": "<p>People will grow as intelligent beings</p>"
+        },
+        "12": {
+            "ordinal": 0,
+            "type": "idea",
+            "treeType": "treeview",
+            "parent": "2",
+            "content": "<p>People will not be able to repair machines based on this technology</p>"
+        },
+        "root": {
+            "type": "header",
+            "treeType": "horizontal"
+        }
+    },
+    "type": "graf"
+}
