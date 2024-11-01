@@ -1,0 +1,54 @@
+*, *:before, *:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+
+@font-face {
+    font-family: 'Arimo';
+    src: url('./static/fonts/Arimo-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Arimo';
+    src: url('./static/fonts/Arimo-Italic.ttf') format('truetype');
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Arimo';
+    src: url('./static/fonts/Arimo-Bold.ttf') format('truetype');
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: 'Arimo';
+    src: url('./static/fonts/Arimo-BoldItalic.ttf') format('truetype');
+    font-style: italic;
+    font-weight: bold;
+}        
+#loading {
+    display: inline-block;
+    position: fixed;
+    overflow: hidden;
+    left: 0px;
+    top: 0px;
+    width: 100vw;
+    height: 100vh;
+    background: white;                
+}
+
+#loading img {
+    display: inline-block;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 256px;
+}
+
+#main {
+    height: calc(100vh);
+    position: relative;
+}

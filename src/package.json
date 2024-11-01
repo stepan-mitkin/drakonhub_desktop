@@ -1,0 +1,24 @@
+{
+  "name": "drakonhub",
+  "productName": "DrakonHub",
+  "version": "2024.10.31",
+  "description": "A drakon-chart and mind-map editor",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "deb": "electron-forge make --targets @electron-forge/maker-deb",
+    "rpm": "electron-forge make --targets @electron-forge/maker-rpm"
+  },
+  "author": "Stepan Mitkin",
+  "license": "ISC",
+  "devDependencies": {
+    "@electron-forge/cli": "^6.1.1",
+    "@electron-forge/maker-deb": "^6.1.1",
+    "@electron-forge/maker-rpm": "^6.1.1",
+    "@electron-forge/maker-squirrel": "^6.1.1",
+    "@electron-forge/maker-zip": "^6.1.1",
+    "electron": "^32.1.2"
+  }
+}
