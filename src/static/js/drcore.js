@@ -52,6 +52,10 @@ function drcore() {
     }
     function sendRequestOff() {
     }
+    function downloadJson() {
+        dh2common.saveAsJson(unit.screens.editor.drakon);
+        return;
+    }
     function createEditSenderOff(diagram, indicator) {
         var sender;
         sender = EditSenderOff();
@@ -975,7 +979,6 @@ function drcore() {
                             unit.rootWidget.setCurrent('editor');
                             unit.diagram = diagram;
                             unit.screens.editor.setFolder(unit.diagram, unit.settings);
-                            setFileMenu();
                             __state = '1';
                         }
                     }
@@ -1018,7 +1021,6 @@ function drcore() {
         start = unit.screens.start;
         html.clear(start.container);
         start.redraw(start.container);
-        setStartMenu();
         return;
     }
     function inputDiagramTypeName_create() {
@@ -1785,7 +1787,7 @@ function drcore() {
         return _var2;
     }
     function getAppVersion() {
-        return '2024.10.31';
+        return '2024.11.04';
     }
     function getUrlSource() {
         return '?source=dpro-desktop';
@@ -1970,6 +1972,10 @@ function drcore() {
     }
     function saveAsPictureX2() {
         saveAsPictureCore(2);
+        return;
+    }
+    function reloadDiagram() {
+        reloadCurrentFile();
         return;
     }
     function addRecentItem(parent, item) {
@@ -2355,6 +2361,7 @@ function drcore() {
         }
     }
     function DesktopEditorScreen_setFolder(self, folder, userSettings) {
+        folder.id = folder.name + '.' + folder.type;
         self.drakon.setDiagram(folder, userSettings);
         return;
     }
@@ -2725,6 +2732,7 @@ function drcore() {
         };
         return self;
     }
+    unit.downloadJson = downloadJson;
     unit.runMenuItem = runMenuItem;
     unit.clipboardUpdated = clipboardUpdated;
     unit.start_create = start_create;
@@ -2733,6 +2741,7 @@ function drcore() {
     unit.registerEvent = registerEvent;
     unit.setTimeout = setTimeout;
     unit.parsePath = parsePath;
+    unit.reloadDiagram = reloadDiagram;
     unit.unfreezeScreen = unfreezeScreen;
     unit.EditSenderOff = EditSenderOff;
     unit.StartScreen = StartScreen;

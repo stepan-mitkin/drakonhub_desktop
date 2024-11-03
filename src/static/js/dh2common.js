@@ -3958,6 +3958,7 @@ function dh2common() {
     unit.removeTagsFromRedirect = removeTagsFromRedirect;
     unit.importDiagram_create = importDiagram_create;
     unit.importDiagram = importDiagram;
+    unit.stripExtension = stripExtension;
     unit.saveAsPng = saveAsPng;
     unit.saveAsSvg = saveAsSvg;
     unit.generateRandomString = generateRandomString;

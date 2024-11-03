@@ -7549,6 +7549,7 @@ function drakon_canvas() {
                 oldZoom = self.zoomFactor;
                 self.zoomFactor = self.zoom / 10000;
                 if (self.edit) {
+                    updateExpandedBox(self, self.visuals);
                     oldScrollX = self.visuals.scrollX;
                     oldScrollY = self.visuals.scrollY;
                     hover = getHoverPos(self);
@@ -7671,7 +7672,7 @@ function drakon_canvas() {
         }
     }
     function DrakonCanvas_getVersion(self) {
-        return '1.4.5';
+        return '1.4.6';
     }
     function DrakonCanvas_exportCanvas(self, zoom100, watermark) {
         var width, height, visuals, config, ctx, canvas, zoom, box;
@@ -10501,7 +10502,7 @@ function drakon_canvas() {
     function DrakonCanvas_goHome(self) {
         tracing.trace('DrakonCanvas.goHome');
         delete self.origins[self.diagramId];
-        self.box = calculateDiagramBoxForEdit(self.visuals);
+        calculateDiagramBoxForEdit(self, self.visuals);
         initScrollPos(self);
         paint(self);
         return;
@@ -15010,12 +15011,13 @@ function drakon_canvas() {
         };
     }
     function getDefaultScrollLeft(widget) {
-        var wwidth, left, visuals, zoom, _var2;
+        var wwidth, left, visuals, zoom, box, _var2;
         var __state = '2';
         while (true) {
             switch (__state) {
             case '2':
                 visuals = widget.visuals;
+                box = visuals.smallBox;
                 zoom = widget.zoomFactor;
                 if (widget.model.type === 'graf') {
                     __state = '5';
@@ -15023,7 +15025,7 @@ function drakon_canvas() {
                     if (widget.model.type === 'free') {
                         __state = '5';
                     } else {
-                        left = visuals.box.left;
+                        left = box.left;
                         __state = '3';
                     }
                 }
@@ -15032,12 +15034,12 @@ function drakon_canvas() {
                 return left;
             case '5':
                 wwidth = widget.width / zoom;
-                if (wwidth > visuals.box.width) {
-                    _var2 = Math.floor((wwidth - visuals.box.width) / 2);
-                    left = visuals.box.left - _var2;
+                if (wwidth > box.width) {
+                    _var2 = Math.floor((wwidth - box.width) / 2);
+                    left = box.left - _var2;
                     __state = '3';
                 } else {
-                    left = visuals.box.left;
+                    left = box.left;
                     __state = '3';
                 }
                 break;
@@ -15669,12 +15671,11 @@ function drakon_canvas() {
         }
     }
     function drawScrollbars(widget) {
-        var wheight, wwidth, visuals, box, zoom, margin, width, context;
+        var visuals, zoom, margin, width, context, wheight, wwidth, box;
         var __state = '14';
         while (true) {
             switch (__state) {
             case '2':
-                wheight = widget.height / zoom;
                 if (wheight >= box.height) {
                     __state = '9';
                 } else {
@@ -15697,7 +15698,6 @@ function drakon_canvas() {
             case '8':
                 return;
             case '9':
-                wwidth = widget.width / zoom;
                 if (wwidth >= box.width) {
                     __state = '8';
                 } else {
@@ -15719,7 +15719,6 @@ function drakon_canvas() {
                 break;
             case '14':
                 visuals = widget.visuals;
-                box = visuals.box;
                 zoom = widget.zoomFactor;
                 margin = 5;
                 width = 10;
@@ -15727,13 +15726,19 @@ function drakon_canvas() {
                 visuals.horizontalScrollBar = undefined;
                 if (widget.height > 30) {
                     if (widget.width > 30) {
-                        __state = '2';
+                        __state = '45';
                     } else {
                         __state = '8';
                     }
                 } else {
                     __state = '8';
                 }
+                break;
+            case '45':
+                wheight = widget.height / zoom;
+                wwidth = widget.width / zoom;
+                box = visuals.box;
+                __state = '2';
                 break;
             default:
                 return;
@@ -15829,6 +15834,47 @@ function drakon_canvas() {
         context.scrollTop = top + ratio * barFreeSpace;
         context.barToBox = (context.boxHeight - context.widgetSizeD) / barFreeSpace;
         return;
+    }
+    function addFreedomToBox(box, widgetWidth, widgetHeight) {
+        var result, hor, ver;
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '2':
+                result = {};
+                hor = Math.floor(widgetWidth / 2);
+                ver = Math.floor(widgetHeight / 2);
+                if (box.width > hor) {
+                    result.left = box.left - hor;
+                    result.right = box.right + hor;
+                    result.width = box.width + hor * 2;
+                    __state = '9';
+                } else {
+                    result.left = box.left;
+                    result.right = box.right;
+                    result.width = box.width;
+                    __state = '9';
+                }
+                break;
+            case '6':
+                return result;
+            case '9':
+                if (box.height > ver) {
+                    result.top = box.top - ver;
+                    result.bottom = box.bottom + ver;
+                    result.height = box.height + ver * 2;
+                    __state = '6';
+                } else {
+                    result.top = box.top;
+                    result.bottom = box.bottom;
+                    result.height = box.height;
+                    __state = '6';
+                }
+                break;
+            default:
+                return;
+            }
+        }
     }
     function copyTheme(userTheme, config) {
         var theme;
@@ -20352,6 +20398,14 @@ function drakon_canvas() {
             }
         }
     }
+    function updateExpandedBox(widget, visuals) {
+        var wheight, wwidth, zoom;
+        zoom = widget.zoomFactor;
+        wheight = widget.height / zoom;
+        wwidth = widget.width / zoom;
+        visuals.box = addFreedomToBox(visuals.smallBox, wwidth, wheight);
+        return;
+    }
     function bakeSubtreeCoords(node, parentX, parentY) {
         var subtreeX, subtreeY, _var2, _var3, child;
         var __state = '2';
@@ -20940,7 +20994,7 @@ function drakon_canvas() {
             case '4':
                 buildBoxes(widget, visuals);
                 forType(visuals, 'address', putCycleMark);
-                visuals.box = calculateDiagramBoxForEdit(visuals);
+                calculateDiagramBoxForEdit(widget, visuals);
                 return visuals;
             case '5':
                 _var7 = visuals.branches;
@@ -22265,10 +22319,10 @@ function drakon_canvas() {
         });
         return;
     }
-    function calculateDiagramBoxForEdit(visuals) {
-        var box;
-        box = calculateDiagramBox(visuals);
-        return box;
+    function calculateDiagramBoxForEdit(widget, visuals) {
+        visuals.smallBox = calculateDiagramBox(visuals);
+        updateExpandedBox(widget, visuals);
+        return;
     }
     function debugLog(text) {
         var element, _var2, _var3, line;
@@ -23183,25 +23237,26 @@ function drakon_canvas() {
         return _var2;
     }
     function getDefaultScrollTop(widget) {
-        var visuals, zoom, top, wheight, _var2;
+        var visuals, zoom, top, wheight, box, _var2;
         var __state = '2';
         while (true) {
             switch (__state) {
             case '2':
                 visuals = widget.visuals;
+                box = visuals.smallBox;
                 zoom = widget.zoomFactor;
                 if (widget.model.type === 'free') {
                     wheight = widget.height / zoom;
-                    if (wheight > visuals.box.height) {
-                        _var2 = Math.floor((wheight - visuals.box.height) / 3);
-                        top = visuals.box.top - _var2;
+                    if (wheight > box.height) {
+                        _var2 = Math.floor((wheight - box.height) / 3);
+                        top = box.top - _var2;
                         __state = '3';
                     } else {
-                        top = visuals.box.top;
+                        top = box.top;
                         __state = '3';
                     }
                 } else {
-                    top = visuals.box.top;
+                    top = box.top;
                     __state = '3';
                 }
                 break;
@@ -24424,7 +24479,7 @@ function drakon_canvas() {
         }
     }
     function Ears_create(widget, element) {
-        var startX, startY, startBoxLeft, startBoxTop, box, dx, dy, left, top, config, role, evt, ear;
+        var startX, startY, startBoxLeft, startBoxTop, box, dx, dy, left, top, config, role, zoom, evt, ear;
         var me = {
             state: '16',
             type: 'Ears'
@@ -24449,6 +24504,7 @@ function drakon_canvas() {
                         me.state = '10';
                         return;
                     case '16':
+                        zoom = widget.zoomFactor;
                         config = widget.visuals.config;
                         me.element = element;
                         setupEarBoxes(me, element, config.socketTouchRadius);
@@ -24457,8 +24513,8 @@ function drakon_canvas() {
                     case '32':
                         dx = snapUp(config, evt.clientX - startX);
                         dy = snapUp(config, evt.clientY - startY);
-                        left = startBoxLeft + dx;
-                        top = startBoxTop + dy;
+                        left = startBoxLeft + dx / zoom;
+                        top = startBoxTop + dy / zoom;
                         if (left === box.left) {
                             if (top === box.top) {
                                 me.state = '5';
