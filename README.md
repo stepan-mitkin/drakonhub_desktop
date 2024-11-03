@@ -4,8 +4,8 @@ The desktop version of the DrakonHub diagram editor
 
 ## Download DrakonHub
 
-[Download DrakonHub from GitHub releases](https://github.com/stepan-mitkin/drakonhub_desktop/releases)
-[Run DrakonHub in the browser](https://stepan-mitkin.github.io/drakonhub_desktop/)
+- [Download DrakonHub from GitHub releases](https://github.com/stepan-mitkin/drakonhub_desktop/releases)
+- [Run DrakonHub in the browser](https://stepan-mitkin.github.io/drakonhub_desktop/)
 
 ![Drakon example: Should I make art?](images/should_i_make_art.png)
 
