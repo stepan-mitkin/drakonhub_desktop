@@ -708,6 +708,7 @@ const createWindow = async (filePath) => {
             preload: path.join(__dirname, 'preload.js')
         }
     })
+    win.setMenu(null)
 
     var id = win.webContents.id.toString()
     var winInfo = {
