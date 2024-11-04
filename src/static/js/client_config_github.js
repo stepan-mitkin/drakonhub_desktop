@@ -1,10 +1,10 @@
 function drconfig() {
     var unit = {};
     function main() {
-        unit.imagePath = './static/images/';
-        unit.fontPath = './static/fonts/';
-        unit.stringsPath = './static/strings/';
-        unit.examplesPath = './static/examples/';
+        unit.imagePath = 'src/static/images/';
+        unit.fontPath = 'src/static/fonts/';
+        unit.stringsPath = 'src/static/strings/';
+        unit.examplesPath = 'src/static/examples/';
         unit.appName = 'DrakonHub';
         unit.canChangeLanguage = true;
         unit.defaultLanguage = 'en-us';
