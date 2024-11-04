@@ -476,6 +476,7 @@ function standalone() {
                     type: type
                 };
                 saveDiagram(fullPath, diagram);
+                unit.currentFilename = fullPath;
                 _var2 = createDiagramResult(diagram);
                 me.state = undefined;
                 __resolve(_var2);
