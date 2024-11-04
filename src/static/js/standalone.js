@@ -498,7 +498,7 @@ function standalone() {
         return __obj.run();
     }
     function openFile_create() {
-        var prompt, accept, upload, parsedFilename, parsed, diagram, jsonString, filename, error, content, _var2, _var3;
+        var prompt, accept, upload, parsedFilename, parsed, diagram, jsonString, filename, error, content, _var2, _var3, _var4;
         var __handlerData = undefined, __inHandler = false;
         var me = {
             state: '2',
@@ -566,9 +566,15 @@ function standalone() {
                     case '192':
                         content = JSON.stringify(diagram);
                         localStorage.setItem(filename, content);
-                        addToRecent(filename);
-                        me.state = undefined;
-                        __resolve({ content: content });
+                        me.state = '210';
+                        openFileAt(filename).then(function (__returnee) {
+                            _var4 = __returnee;
+                            _main_openFile(__resolve, __reject);
+                        }, function (error) {
+                            __handlerData = error;
+                            me.state = '119';
+                            _main_openFile(__resolve, __reject);
+                        });
                         return;
                     case '198':
                         diagram.type = parsedFilename.extension;
@@ -587,6 +593,10 @@ function standalone() {
                             return;
                         }
                         break;
+                    case '210':
+                        me.state = undefined;
+                        __resolve(_var4);
+                        return;
                     default:
                         return;
                     }
@@ -1098,7 +1108,6 @@ function standalone() {
     }
     function saveDiagram(path, diagram) {
         var _var2;
-        unit.currentFilename = path;
         _var2 = JSON.stringify(diagram);
         localStorage.setItem(path, _var2);
         addToRecent(path);
