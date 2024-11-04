@@ -2216,8 +2216,8 @@ function drcore() {
                     'display': 'inline-block',
                     'padding': '5px',
                     'position': 'fixed',
-                    'left': '0px',
-                    'bottom': '0px',
+                    'right': '0px',
+                    'top': '0px',
                     'text': 'v ' + _var25
                 });
                 html.add(container, ver);
@@ -2235,7 +2235,7 @@ function drcore() {
             case '2':
                 html.addClass('.slogan', 'padding-top: 10px', 'color: #505050', 'font-weight: bold');
                 html.addClass('.pro', 'color: green');
-                html.addClass('.start-content', 'width: 850px', 'height: calc(100% - 40px)', 'margin: auto', 'overflow: auto');
+                html.addClass('.start-content', 'width: 850px', 'height: calc(100% - 40px)', 'margin: auto', 'overflow: auto', 'max-width: 100%');
                 html.addClass('.start-content-column', 'display: inline-block', 'width: 400px', 'max-width: 100%', 'vertical-align: top');
                 html.addClass('.start-section', 'padding: 20px', 'display: inline-block', 'width: 400px', 'max-width: 100%');
                 html.addClass('.start-header', 'font-weight: bold', 'margin-bottom: 10px');
