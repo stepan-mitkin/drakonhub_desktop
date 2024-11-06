@@ -1024,7 +1024,7 @@ function drcore() {
         return;
     }
     function inputDiagramTypeName_create() {
-        var chosenType, name, evt, _var2;
+        var chosenType, name, evt, _var2, _var3;
         var me = {
             state: '2',
             type: 'inputDiagramTypeName'
@@ -1048,7 +1048,10 @@ function drcore() {
                             evt = chosenType.evt;
                             _var2 = tr('Create document');
                             me.state = '13';
-                            widgets.inputBox(evt.clientX, evt.clientY, _var2, '', dh2common.checkProjectName).then(function (__returnee) {
+                            widgets.inputBox(evt.clientX, evt.clientY, _var2, '', function (name) {
+                                _var3 = dh2common.checkProjectName(name, 250);
+                                return _var3;
+                            }).then(function (__returnee) {
                                 name = __returnee;
                                 _main_inputDiagramTypeName(__resolve, __reject);
                             }, function (error) {
@@ -1787,7 +1790,7 @@ function drcore() {
         return _var2;
     }
     function getAppVersion() {
-        return '2024.11.04';
+        return '2024.11.06';
     }
     function getUrlSource() {
         return '?source=dpro-desktop';

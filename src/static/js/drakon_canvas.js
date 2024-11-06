@@ -570,7 +570,12 @@ function drakon_canvas() {
         var socket, visuals;
         visuals = widget.visuals;
         socket = visuals.sockets[visuals.currentSocket - 1];
-        tracing.trace('runCurrentSocket', socket.op + ' ' + socket.target);
+        tracing.trace('runCurrentSocket', [
+            socket.id,
+            socket.op,
+            socket.type,
+            socket.target
+        ]);
         runInsertAction(widget, socket);
         return;
     }
@@ -2946,7 +2951,6 @@ function drakon_canvas() {
         while (true) {
             switch (__state) {
             case '2':
-                tracing.trace('DrakonCanvas.render');
                 container = div({
                     display: 'inline-block',
                     position: 'relative',
@@ -4668,7 +4672,10 @@ function drakon_canvas() {
         while (true) {
             switch (__state) {
             case '2':
-                tracing.trace('DrakonCanvas.setStyle', ids);
+                tracing.trace('DrakonCanvas.setStyle', [
+                    ids,
+                    style
+                ]);
                 if (style) {
                     if ('headStyle' in style) {
                         self.userMemory.headStyle = style.headStyle;
@@ -7579,7 +7586,10 @@ function drakon_canvas() {
     }
     function DrakonCanvas_setSecondary(self, itemId, secondary) {
         var change, _var2;
-        tracing.trace('DrakonCanvas.setSecondary', itemId);
+        tracing.trace('DrakonCanvas.setSecondary', [
+            itemId,
+            secondary
+        ]);
         checkNotReadonly(self);
         change = {
             id: itemId,
@@ -7672,7 +7682,7 @@ function drakon_canvas() {
         }
     }
     function DrakonCanvas_getVersion(self) {
-        return '1.4.6';
+        return '1.4.7';
     }
     function DrakonCanvas_exportCanvas(self, zoom100, watermark) {
         var width, height, visuals, config, ctx, canvas, zoom, box;
@@ -7707,7 +7717,10 @@ function drakon_canvas() {
         while (true) {
             switch (__state) {
             case '2':
-                tracing.trace('DrakonCanvas.setContent', itemId);
+                tracing.trace('DrakonCanvas.setContent', [
+                    itemId,
+                    content
+                ]);
                 checkNotReadonly(self);
                 _var2 = itemId;
                 if (_var2 === 'header') {
@@ -7879,7 +7892,6 @@ function drakon_canvas() {
                 while (true) {
                     switch (me.state) {
                     case '49':
-                        tracing.trace('setDiagram', diagramId);
                         self.edit = edit_tools.createUndoEdit(diagram, sender);
                         me.state = '53';
                         loadImages(self).then(function () {
@@ -10509,7 +10521,10 @@ function drakon_canvas() {
     }
     function DrakonCanvas_setLink(self, itemId, link) {
         var change;
-        tracing.trace('DrakonCanvas.setLink', itemId);
+        tracing.trace('DrakonCanvas.setLink', [
+            itemId,
+            link
+        ]);
         checkNotReadonly(self);
         change = {
             id: itemId,
@@ -10563,6 +10578,7 @@ function drakon_canvas() {
                         delayed = function () {
                             callback(prim, ro);
                         };
+                        tracing.trace('DrakonCanvas.startEditContent, will edit', prim);
                         setTimeout(delayed, 1);
                         __state = '1';
                     } else {
@@ -10638,7 +10654,6 @@ function drakon_canvas() {
         while (true) {
             switch (__state) {
             case '2':
-                tracing.trace('mouseClick', pos);
                 doubleClickTime = 500;
                 visuals = widget.visuals;
                 now = utils.getNowMs();
@@ -10648,28 +10663,11 @@ function drakon_canvas() {
                 if (prim) {
                     widget.lastPrimId = prim.id;
                     primId = prim.id;
-                    __state = '19';
+                    __state = '86';
                 } else {
                     widget.lastPrimId = undefined;
                     primId = undefined;
-                    __state = '19';
-                }
-                break;
-            case '19':
-                if (lastClick) {
-                    diff = now - lastClick;
-                    if (diff <= doubleClickTime) {
-                        if (primId === lastPrimId) {
-                            widget.lastClick = undefined;
-                            __state = '42';
-                        } else {
-                            __state = '24';
-                        }
-                    } else {
-                        __state = '24';
-                    }
-                } else {
-                    __state = '24';
+                    __state = '86';
                 }
                 break;
             case '24':
@@ -10679,7 +10677,6 @@ function drakon_canvas() {
             case '26':
                 return;
             case '27':
-                tracing.trace('single click', prim);
                 if (prim) {
                     if (prim.elType === 'handle') {
                         __state = '26';
@@ -10713,6 +10710,27 @@ function drakon_canvas() {
             case '65':
                 onItemClick(widget, prim, pos, evt);
                 __state = '32';
+                break;
+            case '86':
+                tracing.trace('mouseClick', [
+                    pos,
+                    prim
+                ]);
+                if (lastClick) {
+                    diff = now - lastClick;
+                    if (diff <= doubleClickTime) {
+                        if (primId === lastPrimId) {
+                            widget.lastClick = undefined;
+                            __state = '42';
+                        } else {
+                            __state = '24';
+                        }
+                    } else {
+                        __state = '24';
+                    }
+                } else {
+                    __state = '24';
+                }
                 break;
             default:
                 return;
@@ -13212,8 +13230,11 @@ function drakon_canvas() {
         while (true) {
             switch (__state) {
             case '2':
-                tracing.trace('handleRightClick', pos);
                 prim = findVisualItem(widget, pos);
+                tracing.trace('handleRightClick', [
+                    pos,
+                    prim
+                ]);
                 if (prim) {
                     __state = '114';
                 } else {
@@ -15613,7 +15634,6 @@ function drakon_canvas() {
         while (true) {
             switch (__state) {
             case '2':
-                tracing.trace('onSelectionChanged', prims);
                 if (widget.config.onSelectionChanged) {
                     widget.config.onSelectionChanged(prims);
                     __state = '9';
@@ -30583,7 +30603,6 @@ function drakon_canvas() {
     }
     function DrakonCanvas_redraw(self) {
         var fonts;
-        tracing.trace('DrakonCanvas.redraw');
         buildDiagramModel(self, self.edit.diagram);
         fonts = buildVisualsForEdit(self);
         paint(self);
@@ -30611,7 +30630,9 @@ function drakon_canvas() {
         }
     }
     function doEdit(widget, edits) {
-        var changesToSave, before, after, fonts;
+        var changesToSave, before, after, fonts, _var2;
+        _var2 = stripEdits(edits);
+        tracing.trace('DrakonCanvas.doEdit', _var2);
         deleteOrphanImages(widget, edits);
         before = utils.deepClone(widget.selection);
         after = buildSelectionFromEdits(widget, edits);
@@ -30911,6 +30932,35 @@ function drakon_canvas() {
             tail = text.substring(first, text.length);
             _var2 = parseInt(tail);
             return _var2;
+        }
+    }
+    function stripEdit(edit) {
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '2':
+                if (edit.fields) {
+                    if (edit.fields.type === 'image') {
+                        return {
+                            fields: {
+                                type: 'image',
+                                content: '...'
+                            },
+                            id: edit.id,
+                            op: edit.op
+                        };
+                    } else {
+                        __state = '8';
+                    }
+                } else {
+                    __state = '8';
+                }
+                break;
+            case '8':
+                return edit;
+            default:
+                return;
+            }
         }
     }
     function moveBranchIdsLeft(visuals, branchId) {
@@ -31227,7 +31277,9 @@ function drakon_canvas() {
         return edits;
     }
     function doEditNoRender(widget, edits) {
-        var changesToSave, before, after;
+        var changesToSave, before, after, _var2;
+        _var2 = stripEdits(edits);
+        tracing.trace('DrakonCanvas.doEditNoRender', _var2);
         before = utils.deepClone(widget.selection);
         after = utils.deepClone(widget.selection);
         changesToSave = widget.edit.updateDocument(edits, before, after);
@@ -31313,7 +31365,9 @@ function drakon_canvas() {
         }
     }
     function updateAndKeepSelection(widget, edits) {
-        var fonts, changesToSave, before, after;
+        var fonts, changesToSave, before, after, _var2;
+        _var2 = stripEdits(edits);
+        tracing.trace('DrakonCanvas.updateAndKeepSelection', _var2);
         deleteOrphanImages(widget, edits);
         before = utils.deepClone(widget.selection);
         after = utils.deepClone(widget.selection);
@@ -31427,6 +31481,11 @@ function drakon_canvas() {
                 return;
             }
         }
+    }
+    function stripEdits(edits) {
+        var _var2;
+        _var2 = edits.map(stripEdit);
+        return _var2;
     }
     function popFromSkewer(widget, node, edits) {
         var dstId, edgeUp;

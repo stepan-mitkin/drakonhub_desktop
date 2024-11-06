@@ -478,7 +478,12 @@ function drakonhubwidget_10() {
                         __resolve({ ok: true });
                         return;
                     case '2':
-                        tracing.trace('setDiagram', diagram.id + ' ' + diagram.tag + ' ' + diagram.type);
+                        tracing.trace('setDiagram', [
+                            diagram.id,
+                            diagram.tag,
+                            diagram.type,
+                            diagram.name
+                        ], diagram);
                         stopEditSender(self);
                         self.diagramId = diagram.id;
                         self.diagram = diagram;

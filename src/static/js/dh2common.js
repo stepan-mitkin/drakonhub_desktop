@@ -646,12 +646,13 @@ function dh2common() {
         _var2 = html.createElement('div', properties, args);
         return _var2;
     }
-    function checkProjectName(name) {
+    function checkProjectName(name, maxLength) {
         var length, first, last, ch, code, i, _var2, _var3, _var4, _var5, _var6;
         var __state = '2';
         while (true) {
             switch (__state) {
             case '2':
+                maxLength = maxLength || 50;
                 if (name) {
                     name = name.trim();
                     if (name) {
@@ -674,7 +675,7 @@ function dh2common() {
                                             _var4 = translate('Name is too short');
                                             return _var4;
                                         } else {
-                                            if (name.length > 50) {
+                                            if (name.length > maxLength) {
                                                 _var5 = translate('Name is too long');
                                                 return _var5;
                                             } else {
@@ -3619,7 +3620,7 @@ function dh2common() {
     function getTraces() {
         return unit.traces;
     }
-    function traceCore(name, value) {
+    function traceCore(name, value, largeObj) {
         var bucket, maxTrace;
         var __state = '2';
         while (true) {
@@ -3630,17 +3631,25 @@ function dh2common() {
                 console.log('trace', name, value);
                 maxTrace = 40;
                 if (name) {
-                    bucket = {
-                        name: name,
-                        value: value
-                    };
-                    unit.traces.push(bucket);
-                    if (unit.traces.length > 40) {
-                        unit.traces.shift();
-                        __state = '1';
+                    if (largeObj) {
+                        unit.largeObj = largeObj;
+                        __state = '3';
                     } else {
-                        __state = '1';
+                        __state = '3';
                     }
+                } else {
+                    __state = '1';
+                }
+                break;
+            case '3':
+                bucket = {
+                    name: name,
+                    value: value
+                };
+                unit.traces.push(bucket);
+                if (unit.traces.length > 40) {
+                    unit.traces.shift();
+                    __state = '1';
                 } else {
                     __state = '1';
                 }
@@ -3650,51 +3659,22 @@ function dh2common() {
             }
         }
     }
-    function trace(name, value) {
+    function getLargeObj() {
+        return unit.largeObj;
+    }
+    function trace(name, value, largeObj) {
         try {
-            traceCore(name, value);
+            traceCore(name, value, largeObj);
         } catch (ex) {
             console.error('Error in tracing', ex);
         }
         return;
     }
     function registerEvent(element, eventName, action, options) {
-        var callback, id, start;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                if (eventName === 'mousemove') {
-                    __state = '10';
-                } else {
-                    if (eventName === 'touchmove') {
-                        __state = '10';
-                    } else {
-                        if (eventName === 'pointermove') {
-                            __state = '10';
-                        } else {
-                            id = utils.random(1000, 10000);
-                            start = 'event-' + id;
-                            callback = function (evt) {
-                                trace(start, eventName);
-                                action(evt);
-                            };
-                            __state = '6';
-                        }
-                    }
-                }
-                break;
-            case '6':
-                element.addEventListener(eventName, callback, options);
-                return;
-            case '10':
-                callback = action;
-                __state = '6';
-                break;
-            default:
-                return;
-            }
-        }
+        var callback;
+        callback = action;
+        element.addEventListener(eventName, callback, options);
+        return;
     }
     function initLoadedFonts() {
         var fonts;
@@ -4004,6 +3984,7 @@ function dh2common() {
     unit.redrawWidgetDom = redrawWidgetDom;
     unit.setTimeout = setTimeout;
     unit.getTraces = getTraces;
+    unit.getLargeObj = getLargeObj;
     unit.trace = trace;
     unit.registerEvent = registerEvent;
     unit.prepareFonts_create = prepareFonts_create;

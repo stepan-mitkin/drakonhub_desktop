@@ -1112,6 +1112,7 @@ function standalone() {
         _var2 = JSON.stringify(diagram);
         localStorage.setItem(path, _var2);
         addToRecent(path);
+        unit.currentFilename = path;
         return;
     }
     function getDiagram(filename) {
