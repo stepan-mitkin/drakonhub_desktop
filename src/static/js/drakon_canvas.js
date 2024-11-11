@@ -447,24 +447,8 @@ function drakon_canvas() {
                 nextId = 0;
                 __state = '5';
                 break;
-            case '37':
-                stopMachine(widget, 'mouseEvents');
-                if (widget.config.canSelect) {
-                    widget.mouseEvents = SelectBehavior_create(widget);
-                    __state = '56';
-                } else {
-                    widget.mouseEvents = NoSelectBehavior_create(widget);
-                    __state = '56';
-                }
-                break;
             case '39':
                 widget.model = model;
-                __state = '37';
-                break;
-            case '56':
-                widget.touchEvents = TouchBehavior_create(widget);
-                widget.touchEvents.run();
-                widget.mouseEvents.run();
                 __state = '4';
                 break;
             default:
@@ -7882,7 +7866,7 @@ function drakon_canvas() {
         }
     }
     function DrakonCanvas_setDiagram_create(self, diagramId, diagram, sender) {
-        var _var2;
+        var fonts;
         var me = {
             state: '49',
             type: 'DrakonCanvas_setDiagram'
@@ -7892,6 +7876,7 @@ function drakon_canvas() {
                 while (true) {
                     switch (me.state) {
                     case '49':
+                        stopMachine(self, 'mouseEvents');
                         self.edit = edit_tools.createUndoEdit(diagram, sender);
                         me.state = '53';
                         loadImages(self).then(function () {
@@ -7904,9 +7889,10 @@ function drakon_canvas() {
                     case '53':
                         self.diagramId = diagramId;
                         resetSelection(self);
-                        _var2 = self.redraw();
+                        fonts = self.redraw();
+                        createEventBehavior(self);
                         me.state = undefined;
-                        __resolve(_var2);
+                        __resolve(fonts);
                         return;
                     default:
                         return;
@@ -15633,18 +15619,25 @@ function drakon_canvas() {
         var __state = '2';
         while (true) {
             switch (__state) {
+            case '1':
+                return;
             case '2':
-                if (widget.config.onSelectionChanged) {
-                    widget.config.onSelectionChanged(prims);
-                    __state = '9';
+                if (widget.visuals) {
+                    if (widget.config.onSelectionChanged) {
+                        widget.config.onSelectionChanged(prims);
+                        __state = '9';
+                    } else {
+                        __state = '9';
+                    }
                 } else {
-                    __state = '9';
+                    __state = '1';
                 }
                 break;
             case '9':
                 createResetEars(widget);
                 createMindSockets(widget);
-                return;
+                __state = '1';
+                break;
             default:
                 return;
             }
@@ -23329,6 +23322,30 @@ function drakon_canvas() {
                     __state = '4';
                 }
                 break;
+            default:
+                return;
+            }
+        }
+    }
+    function createEventBehavior(widget) {
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '2':
+                stopMachine(widget, 'mouseEvents');
+                if (widget.config.canSelect) {
+                    widget.mouseEvents = SelectBehavior_create(widget);
+                    __state = '9';
+                } else {
+                    widget.mouseEvents = NoSelectBehavior_create(widget);
+                    __state = '9';
+                }
+                break;
+            case '9':
+                widget.touchEvents = TouchBehavior_create(widget);
+                widget.touchEvents.run();
+                widget.mouseEvents.run();
+                return;
             default:
                 return;
             }

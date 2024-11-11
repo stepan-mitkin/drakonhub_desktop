@@ -1790,7 +1790,7 @@ function drcore() {
         return _var2;
     }
     function getAppVersion() {
-        return '2024.11.06';
+        return '2024.11.11';
     }
     function getUrlSource() {
         return '?source=dpro-desktop';
@@ -2392,8 +2392,10 @@ function drcore() {
         }
     }
     function showContextMenuOff(widget, x, y, items, prim) {
+        var options;
         items.forEach(dh2common.removeTagsFromRedirect);
-        widgets.showContextMenu(x, y, items);
+        options = { movable: true };
+        widgets.showContextMenu(x, y, items, options);
         return;
     }
     function showTryExportOptions(widget, evt) {
