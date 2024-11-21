@@ -192,6 +192,20 @@ function simplewidgets_0_1() {
             }
         }
     }
+    function createWideMiddleWindow() {
+        var root, client, _var2;
+        removeQuestions();
+        unit.questionVisible = true;
+        root = html.get('question-root');
+        _var2 = div('question-back');
+        html.add(root, _var2);
+        client = div('question-body shadow', {
+            padding: '10px',
+            width: '1200px'
+        });
+        html.add(root, client);
+        return client;
+    }
     function removeQuestions() {
         var root;
         root = html.get('question-root');
@@ -1120,9 +1134,13 @@ function simplewidgets_0_1() {
         return;
     }
     function makeComboItem(item, onChange) {
+        var id;
+        id = item.id;
         return {
             text: item.text,
-            action: onChange,
+            action: function () {
+                onChange(id);
+            },
             arg: item.id
         };
     }
@@ -2673,6 +2691,7 @@ function simplewidgets_0_1() {
     }
     unit.createIconButton = createIconButton;
     unit.addTooltip = addTooltip;
+    unit.createWideMiddleWindow = createWideMiddleWindow;
     unit.removeQuestions = removeQuestions;
     unit.criticalQuestion_create = criticalQuestion_create;
     unit.criticalQuestion = criticalQuestion;

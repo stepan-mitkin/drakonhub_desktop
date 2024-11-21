@@ -499,52 +499,18 @@ function dh2common() {
         return;
     }
     function loadStringsForLanguage_create(language) {
-        var response, strings, url;
+        var strings;
         var me = {
             state: '2',
             type: 'loadStringsForLanguage'
         };
         function _main_loadStringsForLanguage(__resolve, __reject) {
             try {
-                while (true) {
-                    switch (me.state) {
-                    case '2':
-                        if (language === 'en-us') {
-                            me.state = '10';
-                        } else {
-                            url = gconfig.stringsPath + language + '.json';
-                            me.state = '4';
-                            sendRequestRaw('GET', url).then(function (__returnee) {
-                                response = __returnee;
-                                _main_loadStringsForLanguage(__resolve, __reject);
-                            }, function (error) {
-                                me.state = undefined;
-                                __reject(error);
-                            });
-                            return;
-                        }
-                        break;
-                    case '4':
-                        if (response.status === 200) {
-                            strings = JSON.parse(response.responseText);
-                            me.state = '11';
-                        } else {
-                            me.state = '10';
-                        }
-                        break;
-                    case '10':
-                        strings = undefined;
-                        me.state = '11';
-                        break;
-                    case '11':
-                        setStrings(strings);
-                        me.state = undefined;
-                        __resolve({ ok: true });
-                        return;
-                    default:
-                        return;
-                    }
-                }
+                strings = getLocalizedStrings(language);
+                setStrings(strings);
+                me.state = undefined;
+                __resolve({ ok: true });
+                return;
             } catch (ex) {
                 me.state = undefined;
                 __reject(ex);

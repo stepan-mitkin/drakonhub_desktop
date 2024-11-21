@@ -796,23 +796,14 @@ function drcore() {
                     switch (me.state) {
                     case '2':
                         if (settings.language) {
-                            me.state = '9';
+                            me.state = '11';
                         } else {
                             settings.language = gconfig.defaultLanguage;
-                            me.state = '9';
+                            me.state = '11';
                         }
                         break;
-                    case '9':
-                        me.state = '10';
-                        launcher.loadTranslations(settings.language).then(function (__returnee) {
-                            strings = __returnee;
-                            _main_enrichSettings(__resolve, __reject);
-                        }, function (error) {
-                            me.state = undefined;
-                            __reject(error);
-                        });
-                        return;
-                    case '10':
+                    case '11':
+                        strings = getLocalizedStrings(settings.language);
                         dh2common.setStrings(strings);
                         me.state = undefined;
                         __resolve({ ok: true });
@@ -1790,7 +1781,7 @@ function drcore() {
         return _var2;
     }
     function getAppVersion() {
-        return '2024.11.11';
+        return '2024.11.21';
     }
     function getUrlSource() {
         return '?source=dpro-desktop';

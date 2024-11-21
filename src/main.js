@@ -368,7 +368,7 @@ async function closeWindow(winInfo) {
 
 async function setMenu(winInfo, menu) {
     // Do not show the menu
-    winInfo.window.setMenu(null)
+    //winInfo.window.setMenu(null)
     // var template = menu.map(
     //     function(item) {
     //         return transformMenu(item, winInfo)

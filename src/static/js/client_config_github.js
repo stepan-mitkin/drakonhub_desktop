@@ -16,6 +16,7 @@ function drconfig() {
         unit.motherSite = "drakonhub.com"
         unit.wideLogo = "drakosha98b-wide.png"
         unit.showLearn = false        
+        unit.baseUrl = ""
         return;
     }
     unit.main = main;

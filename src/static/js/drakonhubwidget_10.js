@@ -4843,6 +4843,196 @@ function drakonhubwidget_10() {
         canwidget.goHome();
         return;
     }
+    function setPseudoLanguage(language) {
+        localStorage.setItem('pseudo-language', language);
+        return;
+    }
+    function getPseudoLanguage() {
+        var _var2;
+        _var2 = localStorage.getItem('pseudo-language');
+        return _var2 || 'en';
+    }
+    function generateCore(widget, language) {
+        var content, result, message, json, obj, name;
+        json = widget.drakon.exportJson();
+        obj = JSON.parse(json);
+        name = obj.name;
+        try {
+            content = drakonToPseudocode(json, name, name + '.drakon', language);
+            result = {
+                ok: true,
+                content: content
+            };
+        } catch (ex) {
+            message = ex.message + '\n' + (ex.filename || '') + '\n' + (ex.nodeId || '');
+            result = {
+                ok: false,
+                content: message
+            };
+        }
+        return result;
+    }
+    function copyTextToClipboard(text, tr) {
+        var _var2;
+        navigator.clipboard.writeText(text);
+        _var2 = tr('Copied');
+        widgets.showGoodSnack(_var2);
+        return;
+    }
+    function showPseudocode(widget, generated) {
+        var dialog, tr, cancel, buttons, headerSize, pre, copy, language, regenerate, combo, options, generate, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9;
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '2':
+                language = getPseudoLanguage();
+                tr = widget.widgetSettings.translate;
+                dialog = widgets.createWideMiddleWindow();
+                __state = '12';
+                break;
+            case '4':
+                return;
+            case '5':
+                headerSize = gconfig.fontSize + 2 + 'px';
+                _var5 = tr('Pseudocode');
+                _var4 = div({
+                    text: _var5,
+                    'font-weight': 'bold',
+                    'font-size': headerSize
+                });
+                _var3 = div({
+                    'text-align': 'center',
+                    'line-height': 1.3,
+                    'padding-bottom': '10px',
+                    'position': 'relative'
+                }, _var4);
+                html.add(dialog, _var3);
+                pre = html.createElement('pre');
+                html.setText(pre, generated.content);
+                pre.style.padding = '20px';
+                pre.style.background = '#dbdbdb';
+                html.add(dialog, pre);
+                __state = '4';
+                break;
+            case '12':
+                _var2 = tr('Close');
+                cancel = widgets.createSimpleButton(_var2, widgets.removeQuestions);
+                cancel.style.marginRight = '0px';
+                if (generated.ok) {
+                    _var6 = tr('Copy');
+                    copy = widgets.createDefaultButton(_var6, function () {
+                        copyTextToClipboard(generated.content, tr);
+                    });
+                    buttons = div({
+                        'padding-top': '10px',
+                        position: 'relative',
+                        'text-align': 'right'
+                    }, copy, cancel);
+                    __state = '16';
+                } else {
+                    buttons = div({
+                        'padding-top': '10px',
+                        position: 'relative',
+                        'text-align': 'right'
+                    }, cancel);
+                    __state = '16';
+                }
+                break;
+            case '16':
+                html.add(dialog, buttons);
+                __state = '27';
+                break;
+            case '27':
+                regenerate = div({
+                    display: 'inline-block',
+                    position: 'absolute',
+                    left: '10px',
+                    top: '10px'
+                });
+                html.add(buttons, regenerate);
+                _var8 = tr('Language');
+                _var7 = div({
+                    text: _var8,
+                    display: 'inline-block'
+                });
+                html.add(regenerate, _var7);
+                options = [
+                    {
+                        id: 'en',
+                        text: 'English'
+                    },
+                    {
+                        id: 'no',
+                        text: 'Norsk'
+                    },
+                    {
+                        id: 'ru',
+                        text: 'Русский'
+                    }
+                ];
+                combo = html.createElement('select');
+                combo.style.padding = '5px';
+                combo.style.marginLeft = '5px';
+                html.addOption(combo, 'en', 'English');
+                html.addOption(combo, 'no', 'Norsk');
+                html.addOption(combo, 'ru', 'Русский');
+                combo.value = language;
+                html.add(regenerate, combo);
+                __state = '37';
+                break;
+            case '37':
+                _var9 = tr('Generate');
+                generate = widgets.createSimpleButton(_var9, function () {
+                    regeneratePseudocode(widget, combo.value);
+                });
+                generate.style.marginLeft = '5px';
+                generate.style.verticalAlign = 'middle';
+                html.add(regenerate, generate);
+                __state = '5';
+                break;
+            default:
+                return;
+            }
+        }
+    }
+    function regeneratePseudocode(widget, language) {
+        var generated;
+        generated = generateCore(widget, language);
+        setPseudoLanguage(language);
+        showPseudocode(widget, generated);
+        return;
+    }
+    function generateCode_create(widget) {
+        var generated, language;
+        var me = {
+            state: '11',
+            type: 'generateCode'
+        };
+        function _main_generateCode(__resolve, __reject) {
+            try {
+                language = getPseudoLanguage();
+                generated = generateCore(widget, language);
+                showPseudocode(widget, generated);
+                me.state = undefined;
+                __resolve({ ok: true });
+                return;
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_generateCode(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function generateCode(widget) {
+        var __obj = generateCode_create(widget);
+        return __obj.run();
+    }
     function isRounded(widget) {
         var theme;
         theme = widget.userSettings.theme2;
@@ -5370,8 +5560,13 @@ function drakonhubwidget_10() {
             case '14':
                 addToolbarRow(widget, widget.commonButtons, 'left-angle2.png', hideToolbar, 'Hide toolbar', 'home.png', goHome, 'To diagram home');
                 addToolbarRow(widget, widget.commonButtons, 'theme.png', chooseTheme, 'Color theme', 'zoom.png', chooseZoom, 'Zoom');
-                addToolbarRow(widget, widget.commonButtons, 'description.png', showDescription, 'Description', undefined, undefined, undefined);
-                __state = '11';
+                if (widget.diagram.type === 'drakon') {
+                    addToolbarRow(widget, widget.commonButtons, 'description.png', showDescription, 'Description', 'code.png', generateCode, 'Pseudocode');
+                    __state = '11';
+                } else {
+                    addToolbarRow(widget, widget.commonButtons, 'description.png', showDescription, 'Description', undefined, undefined, undefined);
+                    __state = '11';
+                }
                 break;
             case '19':
                 typeCombo = html.createElement('select');

@@ -852,69 +852,6 @@ function standalone() {
         var __obj = setTitle_create(title);
         return __obj.run();
     }
-    function loadTranslations_create(language) {
-        var response, strings, url;
-        var me = {
-            state: '2',
-            type: 'loadTranslations'
-        };
-        function _main_loadTranslations(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '2':
-                        if (language === 'en-us') {
-                            me.state = '9';
-                        } else {
-                            url = gconfig.stringsPath + language + '.json';
-                            me.state = '5';
-                            dh2common.sendRequestRaw('GET', url).then(function (__returnee) {
-                                response = __returnee;
-                                _main_loadTranslations(__resolve, __reject);
-                            }, function (error) {
-                                me.state = undefined;
-                                __reject(error);
-                            });
-                            return;
-                        }
-                        break;
-                    case '3':
-                        me.state = undefined;
-                        __resolve(strings);
-                        return;
-                    case '5':
-                        if (response.status === 200) {
-                            strings = JSON.parse(response.responseText);
-                            me.state = '3';
-                        } else {
-                            me.state = '9';
-                        }
-                        break;
-                    case '9':
-                        strings = undefined;
-                        me.state = '3';
-                        break;
-                    default:
-                        return;
-                    }
-                }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
-        }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                _main_loadTranslations(__resolve, __reject);
-            });
-        };
-        return me;
-    }
-    function loadTranslations(language) {
-        var __obj = loadTranslations_create(language);
-        return __obj.run();
-    }
     function openLink_create(link) {
         var me = {
             state: '2',
@@ -1335,8 +1272,6 @@ function standalone() {
     unit.restartApp = restartApp;
     unit.setTitle_create = setTitle_create;
     unit.setTitle = setTitle;
-    unit.loadTranslations_create = loadTranslations_create;
-    unit.loadTranslations = loadTranslations;
     unit.openLink_create = openLink_create;
     unit.openLink = openLink;
     unit.newWindow_create = newWindow_create;
