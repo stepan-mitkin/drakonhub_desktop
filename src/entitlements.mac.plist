@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Enable hardened runtime (required for notarization) -->
+    <key>com.apple.security.app-sandbox</key>
+    <false/>
+
+    <!-- Allow the app to access files selected by the user -->
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+
+    <!-- Allow the app to access all user files (if needed) -->
+    <key>com.apple.security.files.downloads.read-write</key>
+    <true/>
+    <key>com.apple.security.files.documents.read-write</key>
+    <true/>
+    <key>com.apple.security.files.home-directory.read-write</key>
+    <true/>
+
+    <!-- Allow dynamic code loading (needed for Electron apps) -->
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/>
+    <key>com.apple.security.cs.disable-library-validation</key>
+    <true/>
+</dict>
+</plist>
