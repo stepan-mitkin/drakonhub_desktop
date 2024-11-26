@@ -1742,14 +1742,9 @@ function drcore() {
         return;
     }
     function getDrakonProUrl() {
-        var _var2, _var3;
-        _var3 = isDPro();
-        if (_var3) {
-            _var2 = getUrlSource();
-            return 'https://' + gconfig.motherSite + '/' + _var2;
-        } else {
-            return 'https://github.com/stepan-mitkin/drakonhub_desktop';
-        }
+        var _var2;
+        _var2 = getUrlSource();
+        return 'https://' + gconfig.motherSite + '/' + _var2;
     }
     function span(text, className) {
         var span;
@@ -2181,6 +2176,7 @@ function drcore() {
                         text: 'Язык/Language'
                     });
                     html.addOption(languageOption, 'ru', 'Русский');
+                    html.addOption(languageOption, 'no', 'Norsk');
                     html.addOption(languageOption, 'en-us', 'English');
                     __state = '57';
                 } else {
@@ -2190,6 +2186,7 @@ function drcore() {
                         text: 'Language'
                     });
                     html.addOption(languageOption, 'en-us', 'English');
+                    html.addOption(languageOption, 'no', 'Norsk');
                     html.addOption(languageOption, 'ru', 'Русский');
                     __state = '57';
                 }

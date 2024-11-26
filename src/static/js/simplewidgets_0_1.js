@@ -1722,6 +1722,7 @@ function simplewidgets_0_1() {
                 header = size + 4 + 'px ' + gconfig.fontFamily;
                 html.addClass('textarea', 'resize: none');
                 html.addClass('body', 'font: ' + font);
+                html.addClass('pre', 'font-family: "Courier New", Courier, monospace;');
                 html.addClass('.title', 'font: ' + header, 'margin-top: 10px');
                 html.addClass('.shadow', 'box-shadow: 0px 0px 7px 2px rgba(0,0,0,0.27)');
                 html.addClass('.full-screen', 'display: inline-block', 'position: fixed', 'left: 0px', 'top: 0px', 'width: 100vw', 'height: 100vh');
