@@ -400,7 +400,10 @@ function getLocalizedStrings(language) {
             "Download": "Скачать",
             "You do not have an active license. Would you like to purchase a license?": "У вас нет активной подписки. Хотите купить подписку?",
             "Generate": "Генерировать",
-            "Pseudocode": "Псевдокод"
+            "Pseudocode": "Псевдокод",
+            "Vertical align": "Вертикальное выравнивание",
+            "Aux info": "Доп. информация",
+            "Edit aux info": "Изменить доп. информацию"
         }
     }
     if (language === "no") {
@@ -804,7 +807,10 @@ function getLocalizedStrings(language) {
             "Download": "Last ned",
             "You do not have an active license. Would you like to purchase a license?": "Du har ikke en aktiv lisens. Vil du kjøpe en lisens?",
             "Generate": "Generer",
-            "Pseudocode": "Pseudokode"
+            "Pseudocode": "Pseudokode",
+            "Vertical align": "Vertikal justering",
+            "Aux info": "Ekstra info",
+            "Edit aux info": "Rediger ekstra info"
         }
     }
     return undefined

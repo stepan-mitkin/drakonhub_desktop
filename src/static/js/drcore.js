@@ -1776,7 +1776,7 @@ function drcore() {
         return _var2;
     }
     function getAppVersion() {
-        return '2024.11.21';
+        return '2025.01.18';
     }
     function getUrlSource() {
         return '?source=dpro-desktop';

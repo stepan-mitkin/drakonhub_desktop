@@ -40,107 +40,10 @@ function htmlToString(html) {
 module.exports = {htmlToString}
 },{}],2:[function(require,module,exports){
 const {drakonToStruct} = require("./drakonToStruct");
-const { printPseudo } = require('./printPseudo');
-var {addRange} = require("./tools")
+const {printPseudo} = require('./printPseudo');
+const {addRange} = require("./tools")
 
-
-var translationsRu = {
-    "error": "ОШИБКА",
-    "not": "не",
-    break: 'выход из цикла',
-    "and": "и",
-    "or": "или",
-    "if": "Если",
-    "else": "Иначе",
-    "empty": "ПУСТОЙ",
-    "loop forever": "Бесконечный цикл",
-    "pass": "Пропустить",
-    "Only the rightmost Case icon can be empty": "Только самая правая икона Вариант может быть пустой",
-    "Error parsing JSON": "Ошибка парсинга JSON",
-    "A Loop begin icon must have content": "Икона начала цикла ДЛЯ должна содержать данные",
-    "A Question icon must have content": "Икона Вопрос должна содержать данные",
-    "A Select icon must have content": "Икона Выбор должна содержать данные",
-    "Loop end expected here": "Здесь ожидается конец цикла",
-    "An exit from the loop must lead to the point right after the loop end": "Выход из цикла должен вести в точку сразу за его концом",
-    "A silhouette branch is not referenced": "Нет ссылок на ветку силуэта",
-    "Call subroutine": "Вызвать подпрограмму",
-    "Procedure": "Процедура",
-    "End of procedure": "Конец процедуры",
-    "Subroutine": "Подпрограмма",
-    "End of subroutine": "Конец подпрограммы",
-    "Description": "Описание",
-    "Algorithm": "Алгоритм",
-    Remarks: "Замечания"
-}
-
-var translationsEn = {
-    error: 'Error',
-    not: 'not',
-    break: 'break',
-    and: 'and',
-    or: 'or',
-    if: 'If',
-    else: 'Else',
-    empty: 'Empty',
-    'loop forever': 'Loop forever',
-    pass: 'Pass',
-    'Only the rightmost Case icon can be empty': 'Only the rightmost Case icon can be empty',
-    'Error parsing JSON': 'Error parsing JSON',
-    'A Loop begin icon must have content': 'A Loop begin icon must have content',
-    'A Question icon must have content': 'A Question icon must have content',
-    'A Select icon must have content': 'A Select icon must have content',
-    'Loop end expected here': 'Loop end expected here',
-    'An exit from the loop must lead to the point right after the loop end': 'An exit from the loop must lead to the point right after the loop end',
-    'A silhouette branch is not referenced': 'A silhouette branch is not referenced',
-    'Call subroutine': 'Call subroutine',
-    Procedure: 'Procedure',
-    'End of procedure': 'End of procedure',
-    Subroutine: 'Subroutine',
-    'End of subroutine': 'End of subroutine',
-    Description: 'Description',
-    Algorithm: 'Algorithm',
-    Remarks: "Remarks"
-}
-
-var translationsNo = {
-    error: 'Feil',
-    not: 'ikke',
-    break: 'avslutt løkken',
-    and: 'og',
-    or: 'eller',
-    if: 'Hvis',
-    else: 'Ellers',
-    empty: 'Tom',
-    'loop forever': 'Gjør evig',
-    pass: 'Hopp over',
-    'Only the rightmost Case icon can be empty': 'Bare den ytterste høyre Case-ikonet kan være tomt',
-    'Error parsing JSON': 'Feil ved parsing av JSON',
-    'A Loop begin icon must have content': 'Et Loop-startikon må ha innhold',
-    'A Question icon must have content': 'Et Spørsmål-ikon må ha innhold',
-    'A Select icon must have content': 'Et Velg-ikon må ha innhold',
-    'Loop end expected here': 'Slutt på løkke forventet her',
-    'An exit from the loop must lead to the point right after the loop end': 'En utgang fra løkken må føre til punktet rett etter løkkens slutt',
-    'A silhouette branch is not referenced': 'En silhuettgren er ikke referert',
-    'Call subroutine': 'Kall delprosedyre',
-    Procedure: 'Prosedyre',
-    'End of procedure': 'Slutt på prosedyre',
-    Subroutine: 'Delprosedyre',
-    'End of subroutine': 'Slutt på delprosedyre',
-    Description: 'Beskrivelse',
-    Algorithm: 'Algoritme',
-    Remarks: "Bemerkninger"
-};
-
-
-var translations = translationsEn
-
-function translate(text) {
-    return translations[text] || text;
-}
-
-function drakonToPseudocode(drakonJson, name, filename, htmlToString, language) {
-
-    setUpLanguage(language)
+function drakonToPseudocode(drakonJson, name, filename, htmlToString, translate) {
     var diagram = drakonToStruct(drakonJson, name, filename, translate)
     var lines = []
     if (diagram.params) {
@@ -179,23 +82,10 @@ function drakonToPseudocode(drakonJson, name, filename, htmlToString, language) 
     return {text:text,json:str}
 }
 
-function setUpLanguage(language) {
-    if (language === "ru") {
-        translations = translationsRu
-    } else if (language === "no") {
-        translations = translationsNo
-    } else if (language === "en") {
-        translations = translationsEn
-    } else {
-        translations = {}
-    }
-}
-
-
 module.exports = { drakonToPseudocode };
 },{"./drakonToStruct":3,"./printPseudo":5,"./tools":8}],3:[function(require,module,exports){
 const { structFlow, redirectNode } = require("./structFlow");
-const { createError } = require("./tools");
+const { createError, remove } = require("./tools");
 
 var translate
 
@@ -232,9 +122,7 @@ function drakonToStruct(drakonJson, name, filename, translateFunction) {
     branches.forEach(branch => checkBranchIsReferenced(branch, firstNodeId, filename))
     rewireShortcircuit(nodes, filename)
     branches.forEach(branch => cutOffBranch(nodes, branch))
-    
     var branchTrees = structFlow(nodes, branches, filename, translate)
-
     return {
         name: name,
         params: drakonGraph.params || "",
@@ -347,8 +235,11 @@ function addFakeEnd(nodes, prev, node, end, addresses) {
         nodes[address.id] = address
         end.prev.push(address.id)
         addresses.push(address)
+        node.prev.push(address.id)
     }
     redirectNode(nodes, prev, node.id, address.id)
+    address.prev.push(prev.id)
+    node.prev = remove(node.prev, prev.id)
 }
 
 function buildTwoWayConnections(nodes, firstNodeId) {
@@ -612,13 +503,24 @@ function markLoopBody(nodes, start, filename) {
 module.exports = { drakonToStruct, drakonToGraph };
 },{"./structFlow":6,"./tools":8}],4:[function(require,module,exports){
 const { drakonToPseudocode } = require('./drakonToPromptStruct');
-var {htmlToString} = require("./browserTools")
+const { htmlToString } = require("./browserTools")
+const { setUpLanguage, translate } = require("./translate")
+const { drakonToStruct } = require("./drakonToStruct");
 
 
-window.drakonToPseudocode = function(drakonJson, name, filename, language) {
-    return drakonToPseudocode(drakonJson, name, filename, htmlToString, language).text
+window.drakongen = {
+    toPseudocode: function (drakonJson, name, filename, language) {
+        setUpLanguage(language)
+        return drakonToPseudocode(drakonJson, name, filename, htmlToString, translate).text
+    },
+
+    toTree: function (drakonJson, name, filename, language) {
+        setUpLanguage(language)
+        var result = drakonToStruct(drakonJson, name, filename, translate)
+        return JSON.stringify(result, null, 4)
+    }
 }
-},{"./browserTools":1,"./drakonToPromptStruct":2}],5:[function(require,module,exports){
+},{"./browserTools":1,"./drakonToPromptStruct":2,"./drakonToStruct":3,"./translate":9}],5:[function(require,module,exports){
 var {addRange} = require("./tools")
 
 function printPseudo(algorithm, translate, output, htmlToString) {
@@ -749,21 +651,14 @@ function printPseudo(algorithm, translate, output, htmlToString) {
             yesBody.push(indent2 + translate("pass"))
         }
         var content = step.content
-        if (empty(yesBody)) {
-            content = {operator:"not",operand:step.content}
-        }
         var lines = printStructuredContentNoIdent(content)
         lines[0] = translate("if") + " " + lines[0]
         printWithIndent(lines, indent, output)
-        if (empty(yesBody)) {
-            addRange(output, noBody)           
-        } else {
-            addRange(output, yesBody)            
-            if (!empty(noBody)) {
-                output.push(indent + translate("else"))
-                addRange(output, noBody)
-            }
-        }    
+        addRange(output, yesBody)            
+        if (!empty(noBody)) {
+            output.push(indent + translate("else"))
+            addRange(output, noBody)
+        }
     }      
 
     function printLoop(step, depth, output) {
@@ -789,6 +684,7 @@ module.exports = {printPseudo}
 },{"./tools":8}],6:[function(require,module,exports){
 var {buildTree} = require("./technicalTree")
 const { createError, sortByProperty } = require("./tools");
+const { optimizeTree } = require("./treeTools")
 
 function redirectNode(nodes, node, from, to) {
     if (node.one === from) {
@@ -1159,7 +1055,8 @@ function structFlow(nodes, branches, filename, translate) {
                 name: branch.content,
                 branchId: branch.branchId,
                 start: branch.next,
-                body: body2
+                refs: branch.prev.length,
+                body: optimizeTree(body2)
             })
         }
 
@@ -1169,7 +1066,7 @@ function structFlow(nodes, branches, filename, translate) {
     return structMain()
 }
 module.exports = { structFlow, redirectNode };
-},{"./technicalTree":7,"./tools":8}],7:[function(require,module,exports){
+},{"./technicalTree":7,"./tools":8,"./treeTools":10}],7:[function(require,module,exports){
 function buildTree(nodes, nodeId, body, stopId) {
     while (nodeId) {
         if (nodeId === stopId) {return;}
@@ -1264,6 +1161,10 @@ function createError(message, filename, nodeId) {
     return error
 }
 
+function remove(array, element) {
+    return array.filter(item => item != element)
+}
+
 function sortByProperty(array, property, order = "asc") {
     if (!Array.isArray(array)) {
         throw new Error("First argument must be an array");
@@ -1291,5 +1192,173 @@ function addRange(to, from) {
         to.push(item)
     }
 }
-module.exports = { createError, sortByProperty, addRange }
+module.exports = { createError, sortByProperty, addRange, remove }
+},{}],9:[function(require,module,exports){
+var translationsRu = {
+    "error": "ОШИБКА",
+    "not": "не",
+    break: 'выход из цикла',
+    "and": "и",
+    "or": "или",
+    "if": "Если",
+    "else": "Иначе",
+    "empty": "ПУСТОЙ",
+    "loop forever": "Бесконечный цикл",
+    "pass": "Пропустить",
+    "Only the rightmost Case icon can be empty": "Только самая правая икона Вариант может быть пустой",
+    "Error parsing JSON": "Ошибка парсинга JSON",
+    "A Loop begin icon must have content": "Икона начала цикла ДЛЯ должна содержать данные",
+    "A Question icon must have content": "Икона Вопрос должна содержать данные",
+    "A Select icon must have content": "Икона Выбор должна содержать данные",
+    "Loop end expected here": "Здесь ожидается конец цикла",
+    "An exit from the loop must lead to the point right after the loop end": "Выход из цикла должен вести в точку сразу за его концом",
+    "A silhouette branch is not referenced": "Нет ссылок на ветку силуэта",
+    "Call subroutine": "Вызвать подпрограмму",
+    "Procedure": "Процедура",
+    "End of procedure": "Конец процедуры",
+    "Subroutine": "Подпрограмма",
+    "End of subroutine": "Конец подпрограммы",
+    "Description": "Описание",
+    "Algorithm": "Алгоритм",
+    Remarks: "Замечания"
+}
+
+var translationsEn = {
+    error: 'Error',
+    not: 'not',
+    break: 'break',
+    and: 'and',
+    or: 'or',
+    if: 'If',
+    else: 'Else',
+    empty: 'Empty',
+    'loop forever': 'Loop forever',
+    pass: 'Pass',
+    'Only the rightmost Case icon can be empty': 'Only the rightmost Case icon can be empty',
+    'Error parsing JSON': 'Error parsing JSON',
+    'A Loop begin icon must have content': 'A Loop begin icon must have content',
+    'A Question icon must have content': 'A Question icon must have content',
+    'A Select icon must have content': 'A Select icon must have content',
+    'Loop end expected here': 'Loop end expected here',
+    'An exit from the loop must lead to the point right after the loop end': 'An exit from the loop must lead to the point right after the loop end',
+    'A silhouette branch is not referenced': 'A silhouette branch is not referenced',
+    'Call subroutine': 'Call subroutine',
+    Procedure: 'Procedure',
+    'End of procedure': 'End of procedure',
+    Subroutine: 'Subroutine',
+    'End of subroutine': 'End of subroutine',
+    Description: 'Description',
+    Algorithm: 'Algorithm',
+    Remarks: "Remarks"
+}
+
+var translationsNo = {
+    error: 'Feil',
+    not: 'ikke',
+    break: 'avslutt løkken',
+    and: 'og',
+    or: 'eller',
+    if: 'Hvis',
+    else: 'Ellers',
+    empty: 'Tom',
+    'loop forever': 'Gjør evig',
+    pass: 'Hopp over',
+    'Only the rightmost Case icon can be empty': 'Bare den ytterste høyre Case-ikonet kan være tomt',
+    'Error parsing JSON': 'Feil ved parsing av JSON',
+    'A Loop begin icon must have content': 'Et Loop-startikon må ha innhold',
+    'A Question icon must have content': 'Et Spørsmål-ikon må ha innhold',
+    'A Select icon must have content': 'Et Velg-ikon må ha innhold',
+    'Loop end expected here': 'Slutt på løkke forventet her',
+    'An exit from the loop must lead to the point right after the loop end': 'En utgang fra løkken må føre til punktet rett etter løkkens slutt',
+    'A silhouette branch is not referenced': 'En silhuettgren er ikke referert',
+    'Call subroutine': 'Kall delprosedyre',
+    Procedure: 'Prosedyre',
+    'End of procedure': 'Slutt på prosedyre',
+    Subroutine: 'Delprosedyre',
+    'End of subroutine': 'Slutt på delprosedyre',
+    Description: 'Beskrivelse',
+    Algorithm: 'Algoritme',
+    Remarks: "Bemerkninger"
+};
+
+
+var translations = translationsEn
+
+function translate(text) {
+    return translations[text] || text;
+}
+
+function setUpLanguage(language) {
+    if (language === "ru") {
+        translations = translationsRu
+    } else if (language === "no") {
+        translations = translationsNo
+    } else if (language === "en") {
+        translations = translationsEn
+    } else {
+        translations = {}
+    }
+}
+
+
+module.exports = { setUpLanguage, translate };
+},{}],10:[function(require,module,exports){
+
+function optimizeTree(steps) {
+    var result = []
+
+    for (var step of steps) {
+        if (step.type === "end" || step.type === "branch" || step.type === "comment" || step.type === "loopend") { continue }
+        if (step.type === "action" && !step.content) { continue }
+        var copy
+        if (step.type === "question") {
+            copy = optimizeQuestion(step)
+        } else if (step.type === "loop") {
+            copy = optimizeLoop(step)
+        } else {
+            copy = step
+        }
+        result.push(copy)
+    }
+
+    return result
+}
+
+function optimizeLoop(step) {
+    return {
+        type: step.type,
+        content: step.content,
+        body: optimizeTree(step.body)
+    }
+}
+
+function optimizeQuestion(step) {
+    var yes = optimizeTree(step.yes)
+    var no = optimizeTree(step.no)
+    if (yes.length === 0 && no.length === 0) {
+        return {
+            type: step.type,
+            content: step.content,
+            yes: [],
+            no: []
+        }    
+    }
+    if (yes.length === 0) {
+        return {
+            type: step.type,
+            content: {operator:"not",operand:step.content},
+            yes: no,
+            no: []
+        }
+    }
+    return {
+        type: step.type,
+        content: step.content,
+        yes: yes,
+        no: no
+    }    
+}
+
+
+module.exports = {optimizeTree}
 },{}]},{},[4]);

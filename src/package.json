@@ -1,7 +1,7 @@
 {
   "name": "drakonhub",
   "productName": "DrakonHub",
-  "version": "2024.11.21",
+  "version": "2025.01.18",
   "description": "A drakon flowchart and mind-map editor",
   "main": "main.js",
   "scripts": {

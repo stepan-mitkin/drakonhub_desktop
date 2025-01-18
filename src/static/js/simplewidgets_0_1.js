@@ -2127,7 +2127,7 @@ function simplewidgets_0_1() {
                         me.state = '21';
                         break;
                     case '32':
-                        registerEvent(input, 'keydown', function () {
+                        registerEvent(input, 'keydown', function (evt) {
                             onLargeInputKeyDown(me, evt);
                         });
                         _var4 = div({

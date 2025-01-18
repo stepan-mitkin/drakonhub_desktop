@@ -1422,7 +1422,7 @@ function drakon_canvas() {
             switch (__state) {
             case '2':
                 ctx.fillStyle = flowBlock.options.color;
-                ctx.textBaseline = 'bottom';
+                top = prepareTextRender(visuals, ctx, flowBlock.fontSize, top);
                 _var2 = flowBlock.lines;
                 _var3 = 0;
                 __state = '5';
@@ -1726,6 +1726,17 @@ function drakon_canvas() {
             default:
                 return;
             }
+        }
+    }
+    function prepareTextRender(visuals, ctx, fontSize, top) {
+        var _var2;
+        if (visuals.svg) {
+            ctx.textBaseline = 'alphabetic';
+            _var2 = Math.floor(fontSize * 0.3);
+            return top - _var2;
+        } else {
+            ctx.textBaseline = 'bottom';
+            return top;
         }
     }
     function splitByWhitespacePreserve(text) {
@@ -3720,6 +3731,7 @@ function drakon_canvas() {
                 setNotNull(node, prim, 'treeType');
                 setNotNull(node, prim, 'collapsed');
                 setNotNull(node, prim, 'image');
+                setNotNull(node, prim, 'aux2');
                 if (node.innerBox) {
                     Object.assign(prim, node.innerBox);
                     __state = '8';
@@ -4766,6 +4778,21 @@ function drakon_canvas() {
             }
         }
     }
+    function DrakonCanvas_setAux2(self, itemId, aux2) {
+        var change, _var2;
+        tracing.trace('DrakonCanvas.setAux2', [
+            itemId,
+            aux2
+        ]);
+        checkNotReadonly(self);
+        change = {
+            id: itemId,
+            fields: { aux2: aux2 },
+            op: 'update'
+        };
+        _var2 = updateAndKeepSelection(self, [change]);
+        return _var2;
+    }
     function DrakonCanvas_patchDiagramStyle(self, style) {
         var styleStr, change, newStyle, oldStyle, _var2;
         var __state = '2';
@@ -5182,7 +5209,7 @@ function drakon_canvas() {
         }
     }
     function buildTextContent(visuals, node, options, forceWidth) {
-        var paddingLeft, paddingRight, paddingTop, paddingBottom, font, textAlign, maxWidth, minWidth, text, color, lineHeight, config, padding, textDiv, toptions, centerContent, _var2, _var3, _var4, _var5, _var6;
+        var paddingLeft, paddingRight, paddingTop, paddingBottom, font, textAlign, maxWidth, minWidth, text, color, lineHeight, config, padding, textDiv, toptions, centerContent, verticalAlign, _var2, _var3, _var4, _var5, _var6;
         var __state = '22';
         while (true) {
             switch (__state) {
@@ -5190,6 +5217,7 @@ function drakon_canvas() {
                 text = node.content || '';
                 if (visuals.config.canvasIcons) {
                     toptions = {
+                        verticalAlign: verticalAlign,
                         paddingLeft: paddingLeft,
                         paddingTop: paddingTop,
                         paddingRight: paddingRight,
@@ -5258,6 +5286,7 @@ function drakon_canvas() {
                 maxWidth = getFromOptionsOrConfig(config, options, node, 'maxWidth');
                 minWidth = getFromOptionsOrConfig(config, options, node, 'minWidth');
                 lineHeight = getFromOptionsOrConfig(config, options, node, 'lineHeight');
+                verticalAlign = getFromOptionsOrConfig(config, options, node, 'verticalAlign');
                 __state = '5';
                 break;
             case '58':
@@ -6578,10 +6607,10 @@ function drakon_canvas() {
                 rightX = node.x + node.w + 3;
                 rightY = node.y - 2 - thickness;
                 ctx.textAlign = 'right';
-                ctx.textBaseline = 'top';
+                leftY = prepareTextRender(visuals, ctx, visuals.config.canvasLabelsSize, leftY + visuals.config.canvasLabelsSize * 1.1);
                 ctx.fillText(leftText, leftX, leftY);
                 ctx.textAlign = 'left';
-                ctx.textBaseline = 'bottom';
+                rightY = prepareTextRender(visuals, ctx, visuals.config.canvasLabelsSize, rightY);
                 ctx.fillText(rightText, rightX, rightY);
                 __state = '11';
                 break;
@@ -7666,7 +7695,7 @@ function drakon_canvas() {
         }
     }
     function DrakonCanvas_getVersion(self) {
-        return '1.4.7';
+        return '1.5.0';
     }
     function DrakonCanvas_exportCanvas(self, zoom100, watermark) {
         var width, height, visuals, config, ctx, canvas, zoom, box;
@@ -7754,7 +7783,9 @@ function drakon_canvas() {
         var zoom;
         tracing.trace('DrakonCanvas.exportToContext', zoom100);
         zoom = zoom100 / 10000;
+        self.visuals.svg = true;
         exportCore(self, box, zoom, ctx);
+        self.visuals.svg = false;
         return;
     }
     function DrakonCanvas_showItem(self, itemId) {
@@ -11055,6 +11086,37 @@ function drakon_canvas() {
         };
         startEditContent(widget, prim);
         return;
+    }
+    function startEditAux2(widget, prim) {
+        var callback, delayed, ro, _var2;
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '1':
+                return;
+            case '2':
+                _var2 = isFree(widget, prim);
+                if (_var2) {
+                    callback = widget.config.startEditAux2;
+                    if (callback) {
+                        ro = isReadonly(widget);
+                        delayed = function () {
+                            callback(prim, ro);
+                        };
+                        setTimeout(delayed, 1);
+                        __state = '1';
+                    } else {
+                        console.error('startEditAux2 is missing in config');
+                        __state = '1';
+                    }
+                } else {
+                    __state = '1';
+                }
+                break;
+            default:
+                return;
+            }
+        }
     }
     function getCursorForItem(widget, prim, pos, evt) {
         var callback, _var2, _var3;
@@ -15201,7 +15263,7 @@ function drakon_canvas() {
         }
     }
     function buildMenuByType(widget, prim, node) {
-        var menu, func, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12, _var13, _var14, _var15, _var16, _var17, _var18, _var19, _var20, _var21, _var22, _var23, _var24, _var25, _var26, _var27, _var28, _var29, _var30, _var31, _var32, _var33, _var34, _var35, _var36, _var37, _var38;
+        var menu, func, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12, _var13, _var14, _var15, _var16, _var17, _var18, _var19, _var20, _var21, _var22, _var23, _var24, _var25, _var26, _var27, _var28, _var29, _var30, _var31, _var32, _var33, _var34, _var35, _var36, _var37, _var38, _var39, _var40;
         var __state = '27';
         while (true) {
             switch (__state) {
@@ -15239,7 +15301,7 @@ function drakon_canvas() {
                             __state = '_item41';
                         }
                     } else {
-                        __state = '_item20';
+                        __state = '_item43';
                     }
                 }
                 break;
@@ -15346,7 +15408,7 @@ function drakon_canvas() {
                 pushMenuItem('edit_link', menu, _var19, undefined, function () {
                     startEditLink(widget, prim);
                 });
-                __state = '_item20';
+                __state = '_item43';
                 break;
             case '60':
                 _var28 = tr(widget, 'Edit content');
@@ -15449,6 +15511,18 @@ function drakon_canvas() {
                     }
                 } else {
                     __state = '49';
+                }
+                break;
+            case '_item43':
+                _var39 = isFree(widget, prim);
+                if (_var39) {
+                    _var40 = tr(widget, 'Edit aux info');
+                    pushMenuItem('edit_aux', menu, _var40, undefined, function () {
+                        startEditAux2(widget, prim);
+                    });
+                    __state = '_item20';
+                } else {
+                    __state = '_item20';
                 }
                 break;
             default:
@@ -19806,7 +19880,7 @@ function drakon_canvas() {
         }
     }
     function buildFreeMenu(widget, prim) {
-        var menu, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12, _var13, _var14, _var15, _var16;
+        var menu, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12, _var13, _var14, _var15, _var16, _var17, _var18;
         var __state = '2';
         while (true) {
             switch (__state) {
@@ -19845,7 +19919,7 @@ function drakon_canvas() {
                 return menu;
             case '7':
                 menu.push({ type: 'separator' });
-                __state = '_item10';
+                __state = '_item17';
                 break;
             case '_item12':
                 _var12 = canEditContent(widget, prim);
@@ -19869,7 +19943,7 @@ function drakon_canvas() {
                         __state = '_item14';
                     }
                 } else {
-                    __state = '_item10';
+                    __state = '_item17';
                 }
                 break;
             case '_item14':
@@ -19882,6 +19956,18 @@ function drakon_canvas() {
                     __state = '7';
                 } else {
                     __state = '7';
+                }
+                break;
+            case '_item17':
+                _var17 = isFree(widget, prim);
+                if (_var17) {
+                    _var18 = tr(widget, 'Edit aux info');
+                    pushMenuItem('edit_aux', menu, _var18, undefined, function () {
+                        startEditAux2(widget, prim);
+                    });
+                    __state = '_item10';
+                } else {
+                    __state = '_item10';
                 }
                 break;
             case '_item10':
@@ -20610,7 +20696,6 @@ function drakon_canvas() {
                     style.iconBack = style.iconBack || '';
                     style.color = style.color || '';
                     style.iconBorder = style.iconBorder || '';
-                    style.padding = style.padding || '';
                     style.internalLine = style.internalLine || '';
                     style.lineHeight = style.lineHeight || '';
                     style.textAlign = style.textAlign || '';
@@ -20712,6 +20797,8 @@ function drakon_canvas() {
             'shadowOffsetY',
             'color',
             'font',
+            'padding',
+            'verticalAlign',
             'textAlign'
         ];
     }
@@ -20789,6 +20876,7 @@ function drakon_canvas() {
             'maxWidth',
             'lineHeight',
             'textAlign',
+            'verticalAlign',
             'centerContent'
         ];
     }
@@ -22295,7 +22383,7 @@ function drakon_canvas() {
         return node.type === 'arrow-loop';
     }
     function buildFinalConfig(widget) {
-        var config, model, wconfig;
+        var config, model, wconfig, fontObj;
         var __state = '2';
         while (true) {
             switch (__state) {
@@ -22305,17 +22393,19 @@ function drakon_canvas() {
                 if ('centerContent' in wconfig) {
                     __state = '4';
                 } else {
-                    if (model.type === 'graf') {
-                        wconfig.centerContent = false;
+                    if (model.type === 'drakon') {
+                        wconfig.centerContent = true;
                         __state = '4';
                     } else {
-                        wconfig.centerContent = true;
+                        wconfig.centerContent = false;
                         __state = '4';
                     }
                 }
                 break;
             case '4':
                 config = mergeStyleIntoConfig(model.doc.style, wconfig);
+                fontObj = parseCssFont(config.canvasLabels, {}, true);
+                config.canvasLabelsSize = fontObj.size;
                 return config;
             default:
                 return;
@@ -23150,6 +23240,8 @@ function drakon_canvas() {
         while (true) {
             switch (__state) {
             case '2':
+                unit.pasteDX = 0;
+                unit.pasteDY = 0;
                 images = {};
                 copy = elements.map(function (element) {
                     _var7 = copyItem(widget, element.id, images);
@@ -25877,11 +25969,44 @@ function drakon_canvas() {
         }
     }
     function centerContentFree(visuals, element) {
-        var top, centerY;
-        centerY = element.top + element.height / 2;
-        top = Math.ceil(centerY - element.contentHeight / 2);
-        renderContentCore(visuals, element, element.left + 1, top);
-        return;
+        var centerY, top, options;
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '2':
+                centerY = element.top + element.height / 2;
+                if (element.flowBlock) {
+                    if (element.flowBlock.options) {
+                        options = element.flowBlock.options;
+                        if (options.verticalAlign === 'top') {
+                            top = element.top;
+                            __state = '8';
+                        } else {
+                            if (options.verticalAlign === 'bottom') {
+                                top = element.top + element.height - element.contentHeight;
+                                __state = '8';
+                            } else {
+                                __state = '13';
+                            }
+                        }
+                    } else {
+                        __state = '13';
+                    }
+                } else {
+                    __state = '13';
+                }
+                break;
+            case '8':
+                renderContentCore(visuals, element, element.left + 1, top);
+                return;
+            case '13':
+                top = Math.ceil(centerY - element.contentHeight / 2);
+                __state = '8';
+                break;
+            default:
+                return;
+            }
+        }
     }
     function initFreeFunctions(widget) {
         var groupLeft, groupRight, arrow, rounded, poly, tri, tab;
@@ -26909,6 +27034,7 @@ function drakon_canvas() {
             'iconBack',
             'color',
             'font',
+            'verticalAlign',
             'textAlign'
         ];
     }
@@ -30814,9 +30940,10 @@ function drakon_canvas() {
                             dy = pos.y - epos.y;
                             me.state = '_item2';
                         } else {
-                            pos = getDiagramCenter(widget);
-                            dx = pos.x - epos.x - 100;
-                            dy = pos.y - epos.y - 100;
+                            dx = unit.pasteDX + 20;
+                            dy = unit.pasteDY + 20;
+                            unit.pasteDX = dx;
+                            unit.pasteDY = dy;
                             me.state = '_item2';
                         }
                         break;
@@ -33320,6 +33447,9 @@ function drakon_canvas() {
         };
         self.showPasteSockets = function (type) {
             return DrakonCanvas_showPasteSockets(self, type);
+        };
+        self.setAux2 = function (itemId, aux2) {
+            return DrakonCanvas_setAux2(self, itemId, aux2);
         };
         self.patchDiagramStyle = function (style) {
             return DrakonCanvas_patchDiagramStyle(self, style);

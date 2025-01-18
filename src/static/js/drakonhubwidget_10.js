@@ -1745,6 +1745,37 @@ function drakonhubwidget_10() {
         data.recent.unshift(color);
         return;
     }
+    function addVerticalAlign(context) {
+        var section, top, center, bottom, _var2;
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '2':
+                _var2 = context.tr('Vertical align');
+                section = addFormatSection(_var2, context.client);
+                __state = '10';
+                break;
+            case '8':
+                return;
+            case '10':
+                top = addBoolIcon(section, context.path + 'valign-top.png', context.oldStyle.verticalAlign === 'top', function (value) {
+                    setVerticalAlign(context, value, 'top');
+                });
+                center = addBoolIcon(section, context.path + 'valign-middle.png', context.oldStyle.verticalAlign === 'middle', function (value) {
+                    setVerticalAlign(context, value, 'middle');
+                });
+                bottom = addBoolIcon(section, context.path + 'valign-bottom.png', context.oldStyle.verticalAlign === 'bottom', function (value) {
+                    setVerticalAlign(context, value, 'bottom');
+                });
+                makeGroupStart(top);
+                makeGroupEnd(bottom);
+                __state = '8';
+                break;
+            default:
+                return;
+            }
+        }
+    }
     function clearIconFormat(context) {
         context.canwidget.setStyle(context.ids, '');
         widgets.removePopups();
@@ -2050,6 +2081,11 @@ function drakonhubwidget_10() {
                     result.push('32');
                     result.push('36');
                     result.push('48');
+                    result.push('64');
+                    result.push('72');
+                    result.push('96');
+                    result.push('120');
+                    result.push('144');
                     _var3 = result.map(function (size) {
                         return size + ' px';
                     });
@@ -2248,9 +2284,9 @@ function drakonhubwidget_10() {
             case '11':
                 if ('font' in self.accepted) {
                     addTextSection(self);
-                    __state = '12';
+                    __state = '19';
                 } else {
-                    __state = '12';
+                    __state = '19';
                 }
                 break;
             case '12':
@@ -2275,6 +2311,14 @@ function drakonhubwidget_10() {
                     __state = '_item2';
                 } else {
                     __state = '_item2';
+                }
+                break;
+            case '19':
+                if ('verticalAlign' in self.accepted) {
+                    addVerticalAlign(self);
+                    __state = '12';
+                } else {
+                    __state = '12';
                 }
                 break;
             case '_item2':
@@ -2608,6 +2652,28 @@ function drakonhubwidget_10() {
                 size.style.marginLeft = '5px';
                 __state = '8';
                 break;
+            default:
+                return;
+            }
+        }
+    }
+    function setVerticalAlign(context, value, align) {
+        var newValue;
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '2':
+                if (value) {
+                    newValue = align;
+                    __state = '10';
+                } else {
+                    newValue = '';
+                    __state = '10';
+                }
+                break;
+            case '10':
+                changeStyleProperty(context, 'verticalAlign', newValue);
+                return;
             default:
                 return;
             }
@@ -3756,6 +3822,76 @@ function drakonhubwidget_10() {
         localStorage.setItem('drakonhubwidget-zoom', value);
         return;
     }
+    function startEditSecondary_create(widget, prim, ro) {
+        var fonts, tr, path, newContent, canwidget;
+        var me = {
+            state: '2',
+            type: 'startEditSecondary'
+        };
+        function _main_startEditSecondary(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '2':
+                        tr = widget.widgetSettings.translate;
+                        path = widget.widgetSettings.imagePath;
+                        if (ro) {
+                            editHtml(prim.left, prim.top, 'Upper text', prim.secondary, true, path, tr);
+                            me.state = '27';
+                        } else {
+                            me.state = '39';
+                            editHtml(prim.left, prim.top, 'Edit upper text', prim.secondary, false, path, tr).then(function (__returnee) {
+                                newContent = __returnee;
+                                _main_startEditSecondary(__resolve, __reject);
+                            }, function (error) {
+                                me.state = undefined;
+                                __reject(error);
+                            });
+                            return;
+                        }
+                        break;
+                    case '27':
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
+                    case '28':
+                        canwidget = getCanvasWidget(widget);
+                        fonts = canwidget.setSecondary(prim.id, newContent);
+                        loadFonts(widget, fonts);
+                        me.state = '27';
+                        break;
+                    case '39':
+                        if (newContent === undefined) {
+                            me.state = '27';
+                        } else {
+                            if (newContent === prim.secondary) {
+                                me.state = '27';
+                            } else {
+                                me.state = '28';
+                            }
+                        }
+                        break;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_startEditSecondary(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function startEditSecondary(widget, prim, ro) {
+        var __obj = startEditSecondary_create(widget, prim, ro);
+        return __obj.run();
+    }
     function startChangeImage_create(widget, prim) {
         var existing, imageData;
         var me = {
@@ -3924,49 +4060,57 @@ function drakonhubwidget_10() {
             }
         }
     }
-    function startEditSecondary_create(widget, prim, ro) {
-        var fonts, tr, path, newContent, canwidget;
+    function startEditAux2_create(widget, prim, ro) {
+        var tr, path, newContent, canwidget, oldContent, _var2, _var3;
         var me = {
             state: '2',
-            type: 'startEditSecondary'
+            type: 'startEditAux2'
         };
-        function _main_startEditSecondary(__resolve, __reject) {
+        function _main_startEditAux2(__resolve, __reject) {
             try {
                 while (true) {
                     switch (me.state) {
                     case '2':
                         tr = widget.widgetSettings.translate;
                         path = widget.widgetSettings.imagePath;
+                        oldContent = prim.aux2 || '';
                         if (ro) {
-                            editHtml(prim.left, prim.top, 'Upper text', prim.secondary, true, path, tr);
+                            _var3 = tr('Aux info');
                             me.state = '27';
-                        } else {
-                            me.state = '39';
-                            editHtml(prim.left, prim.top, 'Edit upper text', prim.secondary, false, path, tr).then(function (__returnee) {
+                            widgets.largeBoxRo(prim.left, prim.top, _var3, oldContent).then(function (__returnee) {
                                 newContent = __returnee;
-                                _main_startEditSecondary(__resolve, __reject);
+                                _main_startEditAux2(__resolve, __reject);
+                            }, function (error) {
+                                me.state = undefined;
+                                __reject(error);
+                            });
+                            return;
+                        } else {
+                            _var2 = tr('Edit aux info');
+                            me.state = '39';
+                            widgets.largeBox(prim.left, prim.top, _var2, oldContent).then(function (__returnee) {
+                                newContent = __returnee;
+                                _main_startEditAux2(__resolve, __reject);
                             }, function (error) {
                                 me.state = undefined;
                                 __reject(error);
                             });
                             return;
                         }
-                        break;
                     case '27':
                         me.state = undefined;
                         __resolve({ ok: true });
                         return;
                     case '28':
                         canwidget = getCanvasWidget(widget);
-                        fonts = canwidget.setSecondary(prim.id, newContent);
-                        loadFonts(widget, fonts);
+                        canwidget.setAux2(prim.id, newContent);
                         me.state = '27';
                         break;
                     case '39':
                         if (newContent === undefined) {
                             me.state = '27';
                         } else {
-                            if (newContent === prim.secondary) {
+                            if (newContent === oldContent) {
                                 me.state = '27';
                             } else {
                                 me.state = '28';
@@ -3985,13 +4129,13 @@ function drakonhubwidget_10() {
         me.run = function () {
             me.run = undefined;
             return new Promise(function (__resolve, __reject) {
-                _main_startEditSecondary(__resolve, __reject);
+                _main_startEditAux2(__resolve, __reject);
             });
         };
         return me;
     }
-    function startEditSecondary(widget, prim, ro) {
-        var __obj = startEditSecondary_create(widget, prim, ro);
+    function startEditAux2(widget, prim, ro) {
+        var __obj = startEditAux2_create(widget, prim, ro);
         return __obj.run();
     }
     function getNameChecker(widget) {
@@ -4858,7 +5002,7 @@ function drakonhubwidget_10() {
         obj = JSON.parse(json);
         name = obj.name;
         try {
-            content = drakonToPseudocode(json, name, name + '.drakon', language);
+            content = drakongen.toPseudocode(json, name, name + '.drakon', language);
             result = {
                 ok: true,
                 content: content
@@ -5236,6 +5380,9 @@ function drakonhubwidget_10() {
                 };
                 config.startEditDiagramStyle = function (oldStyle, x, y) {
                     startEditDiagramStyle(widget, oldStyle, x, y);
+                };
+                config.startEditAux2 = function (prim, ro) {
+                    startEditAux2(widget, prim, ro);
                 };
                 config.startChangeImage = function (prim) {
                     startChangeImage(widget, prim);
