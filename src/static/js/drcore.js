@@ -1311,6 +1311,7 @@ function drcore() {
         return __obj.run();
     }
     function clearRecentList_create() {
+        var ok, _var2, _var3, _var4;
         var me = {
             state: '2',
             type: 'clearRecentList'
@@ -1319,10 +1320,17 @@ function drcore() {
             try {
                 while (true) {
                     switch (me.state) {
+                    case '1':
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
                     case '2':
-                        freezeScreen();
-                        me.state = '7';
-                        launcher.clearRecent().then(function () {
+                        _var2 = tr('This action cannot be undone. Are you sure you want to delete all these diagrams?');
+                        _var3 = tr('Delete');
+                        _var4 = tr('Cancel');
+                        me.state = '12';
+                        widgets.criticalQuestion(_var2, _var3, _var4).then(function (__returnee) {
+                            ok = __returnee;
                             _main_clearRecentList(__resolve, __reject);
                         }, function (error) {
                             me.state = undefined;
@@ -1341,9 +1349,23 @@ function drcore() {
                     case '9':
                         unfreezeScreen();
                         toStartCore();
-                        me.state = undefined;
-                        __resolve({ ok: true });
-                        return;
+                        me.state = '1';
+                        break;
+                    case '12':
+                        if (ok) {
+                            freezeScreen();
+                            me.state = '7';
+                            launcher.clearRecent().then(function () {
+                                _main_clearRecentList(__resolve, __reject);
+                            }, function (error) {
+                                me.state = undefined;
+                                __reject(error);
+                            });
+                            return;
+                        } else {
+                            me.state = '1';
+                        }
+                        break;
                     default:
                         return;
                     }
@@ -1578,44 +1600,19 @@ function drcore() {
         }
     }
     function runMouseAction(prim, pos, link, insertion, nothing) {
-        var _var2, _var3, _var4, _var5, _var6, _var7;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                if (prim.link) {
-                    _var3 = hitLinkArea(pos, prim);
-                    if (_var3) {
-                        _var2 = link(prim);
-                        return _var2;
-                    } else {
-                        _var5 = nothing();
-                        return _var5;
-                    }
-                } else {
-                    if (prim.type === 'insertion') {
-                        if (prim.content) {
-                            _var4 = hitInsertionLink(pos, prim);
-                            if (_var4) {
-                                _var7 = insertion(prim);
-                                return _var7;
-                            } else {
-                                __state = '_item6';
-                            }
-                        } else {
-                            __state = '_item6';
-                        }
-                    } else {
-                        __state = '_item6';
-                    }
-                }
-                break;
-            case '_item6':
-                _var6 = nothing();
-                return _var6;
-            default:
-                return;
+        var _var2, _var3, _var4, _var5;
+        if (prim.link) {
+            _var3 = hitLinkArea(pos, prim);
+            if (_var3) {
+                _var2 = link(prim);
+                return _var2;
+            } else {
+                _var4 = nothing();
+                return _var4;
             }
+        } else {
+            _var5 = nothing();
+            return _var5;
         }
     }
     function openInsertion_create(prim, id) {
@@ -1776,7 +1773,7 @@ function drcore() {
         return _var2;
     }
     function getAppVersion() {
-        return '2025.01.18';
+        return '2026.02.13';
     }
     function getUrlSource() {
         return '?source=dpro-desktop';
@@ -1790,6 +1787,14 @@ function drcore() {
     function createDefButton100(text, action) {
         var button;
         button = widgets.createDefaultButton(text, action);
+        button.style.display = 'block';
+        button.style.margin = '0px';
+        button.style.marginBottom = '10px';
+        return button;
+    }
+    function createCriticalButton100(text, action) {
+        var button;
+        button = widgets.createBadButton(text, action);
         button.style.display = 'block';
         button.style.margin = '0px';
         button.style.marginBottom = '10px';
@@ -2119,10 +2124,10 @@ function drcore() {
                     _var3++;
                     __state = '24';
                 } else {
-                    _var18 = tr('Recent');
+                    _var18 = tr('Diagrams');
                     _var17 = div({ text: _var18 }, 'start-header');
-                    _var20 = tr('Clear recent');
-                    _var19 = createButton100(_var20, clearRecentList);
+                    _var20 = tr('Delete diagrams');
+                    _var19 = createCriticalButton100(_var20, clearRecentList);
                     recent = div('start-section', _var17, _var19, recentList);
                     html.add(contentRight, recent);
                     __state = '41';
@@ -2424,7 +2429,7 @@ function drcore() {
         return;
     }
     function showDesktopMainMenu_create(widget) {
-        var client, createNew, items, divTopButtons, recentItems, ritems, fitems, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12, _var13, _var14, _var15;
+        var client, createNew, items, divTopButtons, recentItems, ritems, fitems, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12, _var13, _var14, _var15, _var16;
         var me = {
             state: '2',
             type: 'showDesktopMainMenu'
@@ -2513,6 +2518,11 @@ function drcore() {
                         fitems.push([
                             _var13 + '...',
                             saveAsFile
+                        ]);
+                        _var16 = tr('Close file');
+                        fitems.push([
+                            _var16,
+                            closeFile
                         ]);
                         _var15 = tr('File');
                         _var14 = dh2common.createMenuSection(_var15, fitems);

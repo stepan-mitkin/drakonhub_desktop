@@ -11,7 +11,16 @@ function standalone() {
                 while (true) {
                     switch (me.state) {
                     case '2':
-                        initRecent();
+                        initChannel();
+                        me.state = '18';
+                        initRecent().then(function () {
+                            _main_main(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    case '18':
                         window.addEventListener('storage', onStorage);
                         me.state = '19';
                         core.start().then(function () {
@@ -49,56 +58,32 @@ function standalone() {
         return __obj.run();
     }
     function onStorage(event) {
-        var content, type, obj, diagram;
+        var content, type, obj;
         var __state = '2';
         while (true) {
             switch (__state) {
             case '2':
                 console.log('onStorage', event.key);
-                if (event.key === unit.currentFilename) {
-                    __state = '25';
+                if (event.key === 'clipboard') {
+                    __state = '24';
                 } else {
-                    if (event.key === 'clipboard') {
-                        __state = '24';
-                    } else {
-                        __state = '23';
-                    }
+                    __state = '23';
                 }
                 break;
             case '23':
                 return;
             case '24':
-                if (event.key === unit.currentFilename) {
-                    type = localStorage.getItem('clipboard-type');
-                    core.reloadDiagram();
-                    __state = '23';
-                } else {
-                    if (event.key === 'clipboard') {
-                        type = localStorage.getItem('clipboard-type');
-                        content = localStorage.getItem('clipboard');
-                        if (content) {
-                            if (type) {
-                                obj = JSON.parse(content);
-                                core.clipboardUpdated(type, obj);
-                                __state = '23';
-                            } else {
-                                __state = '23';
-                            }
-                        } else {
-                            __state = '23';
-                        }
+                type = localStorage.getItem('clipboard-type');
+                content = localStorage.getItem('clipboard');
+                if (content) {
+                    if (type) {
+                        obj = JSON.parse(content);
+                        core.clipboardUpdated(type, obj);
+                        __state = '23';
                     } else {
                         __state = '23';
                     }
-                }
-                break;
-            case '25':
-                diagram = localStorage.getItem(event.key);
-                if (diagram) {
-                    core.reloadDiagram();
-                    __state = '23';
                 } else {
-                    window.location.reload();
                     __state = '23';
                 }
                 break;
@@ -119,7 +104,7 @@ function standalone() {
                     switch (me.state) {
                     case '2':
                         unit.currentFilename = filename;
-                        me.state = '_item2';
+                        me.state = '13';
                         openFileByPath(filename).then(function (__returnee) {
                             diagram = __returnee;
                             _main_openFileAt(__resolve, __reject);
@@ -128,7 +113,8 @@ function standalone() {
                             __reject(error);
                         });
                         return;
-                    case '_item2':
+                    case '13':
+                        sendMessageToChannel('save', filename);
                         _var2 = createDiagramResult(diagram);
                         me.state = undefined;
                         __resolve(_var2);
@@ -206,7 +192,15 @@ function standalone() {
                         }
                         break;
                     case '3':
-                        saveDiagram(newPath, diagram);
+                        me.state = '4';
+                        saveDiagram(newPath, diagram).then(function () {
+                            _main_saveMyFile(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    case '4':
                         me.state = undefined;
                         __resolve(true);
                         return;
@@ -214,8 +208,14 @@ function standalone() {
                         if (newPath === unit.currentFilename) {
                             me.state = '3';
                         } else {
-                            removeFromRecent(unit.currentFilename);
                             me.state = '3';
+                            removeFromRecent(unit.currentFilename).then(function () {
+                                _main_saveMyFile(__resolve, __reject);
+                            }, function (error) {
+                                me.state = undefined;
+                                __reject(error);
+                            });
+                            return;
                         }
                         break;
                     default:
@@ -240,7 +240,7 @@ function standalone() {
         return __obj.run();
     }
     function confirmRename_create(newName) {
-        var _var2, _var3, _var4;
+        var drakon, graf, free;
         var me = {
             state: '2',
             type: 'confirmRename'
@@ -250,23 +250,52 @@ function standalone() {
                 while (true) {
                     switch (me.state) {
                     case '2':
-                        _var2 = localStorage.getItem(newName + '.drakon');
-                        if (_var2) {
+                        me.state = '5';
+                        loadKeyValue(newName + '.drakon').then(function (__returnee) {
+                            drakon = __returnee;
+                            _main_confirmRename(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    case '5':
+                        if (drakon) {
                             me.state = '8';
                         } else {
-                            _var3 = localStorage.getItem(newName + '.graf');
-                            if (_var3) {
-                                me.state = '8';
-                            } else {
-                                _var4 = localStorage.getItem(newName + '.free');
-                                if (_var4) {
-                                    me.state = '8';
-                                } else {
-                                    me.state = undefined;
-                                    __resolve(false);
-                                    return;
-                                }
-                            }
+                            me.state = '6';
+                            loadKeyValue(newName + '.graf').then(function (__returnee) {
+                                graf = __returnee;
+                                _main_confirmRename(__resolve, __reject);
+                            }, function (error) {
+                                me.state = undefined;
+                                __reject(error);
+                            });
+                            return;
+                        }
+                        break;
+                    case '6':
+                        if (graf) {
+                            me.state = '8';
+                        } else {
+                            me.state = '7';
+                            loadKeyValue(newName + '.free').then(function (__returnee) {
+                                free = __returnee;
+                                _main_confirmRename(__resolve, __reject);
+                            }, function (error) {
+                                me.state = undefined;
+                                __reject(error);
+                            });
+                            return;
+                        }
+                        break;
+                    case '7':
+                        if (free) {
+                            me.state = '8';
+                        } else {
+                            me.state = undefined;
+                            __resolve(false);
+                            return;
                         }
                         break;
                     case '8':
@@ -341,7 +370,7 @@ function standalone() {
         return __obj.run();
     }
     function findDiagram_create(name) {
-        var filenames, _var2, _var3, filename, _var4;
+        var filenames, diagram, _var2, _var3, filename;
         var me = {
             state: '2',
             type: 'findDiagram'
@@ -363,19 +392,28 @@ function standalone() {
                     case '9':
                         if (_var3 < _var2.length) {
                             filename = _var2[_var3];
-                            _var4 = localStorage.getItem(filename);
-                            if (_var4) {
+                            me.state = '10';
+                            loadKeyValue(filename).then(function (__returnee) {
+                                diagram = __returnee;
+                                _main_findDiagram(__resolve, __reject);
+                            }, function (error) {
                                 me.state = undefined;
-                                __resolve(filename);
-                                return;
-                            } else {
-                                _var3++;
-                                me.state = '9';
-                            }
+                                __reject(error);
+                            });
+                            return;
                         } else {
                             me.state = undefined;
                             __resolve(undefined);
                             return;
+                        }
+                    case '10':
+                        if (diagram) {
+                            me.state = undefined;
+                            __resolve(filename);
+                            return;
+                        } else {
+                            _var3++;
+                            me.state = '9';
                         }
                         break;
                     default:
@@ -468,19 +506,34 @@ function standalone() {
         };
         function _main_createDiagram(__resolve, __reject) {
             try {
-                fullPath = name + '.' + type;
-                parsed = core.parsePath(fullPath);
-                diagram = {
-                    name: name,
-                    items: {},
-                    type: type
-                };
-                saveDiagram(fullPath, diagram);
-                unit.currentFilename = fullPath;
-                _var2 = createDiagramResult(diagram);
-                me.state = undefined;
-                __resolve(_var2);
-                return;
+                while (true) {
+                    switch (me.state) {
+                    case '2':
+                        fullPath = name + '.' + type;
+                        parsed = core.parsePath(fullPath);
+                        diagram = {
+                            name: name,
+                            items: {},
+                            type: type
+                        };
+                        me.state = '14';
+                        saveDiagram(fullPath, diagram).then(function () {
+                            _main_createDiagram(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    case '14':
+                        unit.currentFilename = fullPath;
+                        _var2 = createDiagramResult(diagram);
+                        me.state = undefined;
+                        __resolve(_var2);
+                        return;
+                    default:
+                        return;
+                    }
+                }
             } catch (ex) {
                 me.state = undefined;
                 __reject(ex);
@@ -566,10 +619,8 @@ function standalone() {
                         break;
                     case '192':
                         content = JSON.stringify(diagram);
-                        localStorage.setItem(filename, content);
-                        me.state = '210';
-                        openFileAt(filename).then(function (__returnee) {
-                            _var4 = __returnee;
+                        me.state = '_item7';
+                        saveKeyValue(filename, content).then(function () {
                             _main_openFile(__resolve, __reject);
                         }, function (error) {
                             __handlerData = error;
@@ -597,6 +648,17 @@ function standalone() {
                     case '210':
                         me.state = undefined;
                         __resolve(_var4);
+                        return;
+                    case '_item7':
+                        me.state = '210';
+                        openFileAt(filename).then(function (__returnee) {
+                            _var4 = __returnee;
+                            _main_openFile(__resolve, __reject);
+                        }, function (error) {
+                            __handlerData = error;
+                            me.state = '119';
+                            _main_openFile(__resolve, __reject);
+                        });
                         return;
                     default:
                         return;
@@ -753,20 +815,37 @@ function standalone() {
                         _var3 = 0;
                         me.state = '6';
                         break;
+                    case '5':
+                        _var3++;
+                        me.state = '6';
+                        break;
                     case '6':
                         if (_var3 < _var2.length) {
                             item = _var2[_var3];
-                            localStorage.removeItem(item.path);
-                            _var3++;
-                            me.state = '6';
+                            me.state = '5';
+                            removeKeyValue(item.path).then(function () {
+                                _main_clearRecent(__resolve, __reject);
+                            }, function (error) {
+                                me.state = undefined;
+                                __reject(error);
+                            });
+                            return;
                         } else {
                             unit.recent = [];
-                            saveRecent();
-                            me.state = undefined;
-                            __resolve({ ok: true });
+                            me.state = '10';
+                            saveRecent().then(function () {
+                                _main_clearRecent(__resolve, __reject);
+                            }, function (error) {
+                                me.state = undefined;
+                                __reject(error);
+                            });
                             return;
                         }
-                        break;
+                    case '10':
+                        sendMessageToChannel('delete_all');
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
                     default:
                         return;
                     }
@@ -796,12 +875,27 @@ function standalone() {
         };
         function _main_getRecent(__resolve, __reject) {
             try {
-                initRecent();
-                copy = unit.recent.slice();
-                copy.reverse();
-                me.state = undefined;
-                __resolve(copy);
-                return;
+                while (true) {
+                    switch (me.state) {
+                    case '2':
+                        me.state = '5';
+                        initRecent().then(function () {
+                            _main_getRecent(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    case '5':
+                        copy = unit.recent.slice();
+                        copy.reverse();
+                        me.state = undefined;
+                        __resolve(copy);
+                        return;
+                    default:
+                        return;
+                    }
+                }
             } catch (ex) {
                 me.state = undefined;
                 __reject(ex);
@@ -938,28 +1032,372 @@ function standalone() {
         var __obj = closeWindow_create();
         return __obj.run();
     }
-    function initRecent() {
+    function initRecent_create() {
         var recentStr, recent;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                recentStr = localStorage.getItem('drlauncher-recent');
-                if (recentStr) {
-                    recent = JSON.parse(recentStr);
-                    __state = '7';
-                } else {
-                    recent = [];
-                    __state = '7';
+        var me = {
+            state: '2',
+            type: 'initRecent'
+        };
+        function _main_initRecent(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '2':
+                        me.state = '4';
+                        loadKeyValue('drlauncher-recent').then(function (__returnee) {
+                            recentStr = __returnee;
+                            _main_initRecent(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    case '4':
+                        if (recentStr) {
+                            recent = JSON.parse(recentStr);
+                            me.state = '7';
+                        } else {
+                            recent = [];
+                            me.state = '7';
+                        }
+                        break;
+                    case '7':
+                        unit.recent = recent;
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
+                    default:
+                        return;
+                    }
                 }
-                break;
-            case '7':
-                unit.recent = recent;
-                return;
-            default:
-                return;
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
             }
         }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_initRecent(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function initRecent() {
+        var __obj = initRecent_create();
+        return __obj.run();
+    }
+    function loadKeyValue_create(key) {
+        var _var2;
+        var me = {
+            state: '2',
+            type: 'loadKeyValue'
+        };
+        function _main_loadKeyValue(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '2':
+                        me.state = '4';
+                        loadStringFromDb(key).then(function (__returnee) {
+                            _var2 = __returnee;
+                            _main_loadKeyValue(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    case '4':
+                        me.state = undefined;
+                        __resolve(_var2);
+                        return;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_loadKeyValue(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function loadKeyValue(key) {
+        var __obj = loadKeyValue_create(key);
+        return __obj.run();
+    }
+    function openDb() {
+        var request, db2;
+        return new Promise(function (resolve, reject) {
+            request = indexedDB.open('drakonhub_kv', 1);
+            request.onupgradeneeded = function (event) {
+                db2 = event.target.result;
+                db2.createObjectStore('kv');
+            };
+            request.onsuccess = function () {
+                resolve(request.result);
+            };
+            request.onerror = function () {
+                reject(request.error);
+            };
+        });
+    }
+    function removeStringFromDb_create(key) {
+        var tx, store, request, db;
+        var me = {
+            state: '2',
+            type: 'removeStringFromDb'
+        };
+        function _main_removeStringFromDb(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '2':
+                        me.state = '3';
+                        openDb().then(function (__returnee) {
+                            db = __returnee;
+                            _main_removeStringFromDb(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    case '3':
+                        me.state = undefined;
+                        __resolve(new Promise(function (resolve, reject) {
+                            tx = db.transaction('kv', 'readwrite');
+                            store = tx.objectStore('kv');
+                            request = store.delete(key);
+                            request.onsuccess = function () {
+                                resolve();
+                            };
+                            request.onerror = function () {
+                                reject(request.error);
+                            };
+                        }));
+                        return;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_removeStringFromDb(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function removeStringFromDb(key) {
+        var __obj = removeStringFromDb_create(key);
+        return __obj.run();
+    }
+    function removeKeyValue_create(key) {
+        var me = {
+            state: '2',
+            type: 'removeKeyValue'
+        };
+        function _main_removeKeyValue(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '1':
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
+                    case '2':
+                        me.state = '1';
+                        removeStringFromDb(key).then(function () {
+                            _main_removeKeyValue(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_removeKeyValue(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function removeKeyValue(key) {
+        var __obj = removeKeyValue_create(key);
+        return __obj.run();
+    }
+    function saveStringToDb_create(key, value) {
+        var tx, store, request, db;
+        var me = {
+            state: '2',
+            type: 'saveStringToDb'
+        };
+        function _main_saveStringToDb(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '2':
+                        me.state = '3';
+                        openDb().then(function (__returnee) {
+                            db = __returnee;
+                            _main_saveStringToDb(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    case '3':
+                        me.state = undefined;
+                        __resolve(new Promise(function (resolve, reject) {
+                            tx = db.transaction('kv', 'readwrite');
+                            store = tx.objectStore('kv');
+                            request = store.put(value, key);
+                            request.onsuccess = function () {
+                                resolve();
+                            };
+                            request.onerror = function () {
+                                reject(request.error);
+                            };
+                        }));
+                        return;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_saveStringToDb(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function saveStringToDb(key, value) {
+        var __obj = saveStringToDb_create(key, value);
+        return __obj.run();
+    }
+    function saveKeyValue_create(key, value) {
+        var me = {
+            state: '2',
+            type: 'saveKeyValue'
+        };
+        function _main_saveKeyValue(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '1':
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
+                    case '2':
+                        me.state = '1';
+                        saveStringToDb(key, value).then(function () {
+                            _main_saveKeyValue(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_saveKeyValue(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function saveKeyValue(key, value) {
+        var __obj = saveKeyValue_create(key, value);
+        return __obj.run();
+    }
+    function loadStringFromDb_create(key) {
+        var tx, store, request, db;
+        var me = {
+            state: '2',
+            type: 'loadStringFromDb'
+        };
+        function _main_loadStringFromDb(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '2':
+                        me.state = '3';
+                        openDb().then(function (__returnee) {
+                            db = __returnee;
+                            _main_loadStringFromDb(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    case '3':
+                        me.state = undefined;
+                        __resolve(new Promise(function (resolve, reject) {
+                            tx = db.transaction('kv', 'readonly');
+                            store = tx.objectStore('kv');
+                            request = store.get(key);
+                            request.onsuccess = function () {
+                                resolve(request.result || '');
+                            };
+                            request.onerror = function () {
+                                reject(request.error);
+                            };
+                        }));
+                        return;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_loadStringFromDb(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function loadStringFromDb(key) {
+        var __obj = loadStringFromDb_create(key);
+        return __obj.run();
     }
     function deriveNameFromPath(filepath) {
         var parsed, parts, _var2, _var3;
@@ -1006,11 +1444,58 @@ function standalone() {
             }
         }
     }
+    function removeFromRecent_create(path) {
+        var me = {
+            state: '2',
+            type: 'removeFromRecent'
+        };
+        function _main_removeFromRecent(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '1':
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
+                    case '2':
+                        utils.removeBy(unit.recent, 'path', path);
+                        me.state = '3';
+                        removeKeyValue(path).then(function () {
+                            _main_removeFromRecent(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    case '3':
+                        me.state = '1';
+                        saveRecent().then(function () {
+                            _main_removeFromRecent(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_removeFromRecent(__resolve, __reject);
+            });
+        };
+        return me;
+    }
     function removeFromRecent(path) {
-        utils.removeBy(unit.recent, 'path', path);
-        localStorage.removeItem(path);
-        saveRecent();
-        return;
+        var __obj = removeFromRecent_create(path);
+        return __obj.run();
     }
     function tr(message) {
         var _var2;
@@ -1032,34 +1517,132 @@ function standalone() {
         return;
     }
     function addOpenItem(parent, path, target) {
-        var container, _var2;
+        var container;
         container = widgets.div('grid-item', {
             padding: '10px',
             text: path
         });
         container.addEventListener('click', function () {
-            _var2 = getDiagram(path);
-            target.open(_var2);
+            openItemInTarget(target, path);
         });
         parent.appendChild(container);
         return;
     }
-    function saveDiagram(path, diagram) {
+    function saveDiagram_create(path, diagram) {
         var _var2;
-        _var2 = JSON.stringify(diagram);
-        localStorage.setItem(path, _var2);
-        addToRecent(path);
-        unit.currentFilename = path;
+        var me = {
+            state: '2',
+            type: 'saveDiagram'
+        };
+        function _main_saveDiagram(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '2':
+                        _var2 = JSON.stringify(diagram);
+                        me.state = '10';
+                        saveKeyValue(path, _var2).then(function () {
+                            _main_saveDiagram(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    case '10':
+                        me.state = '11';
+                        addToRecent(path).then(function () {
+                            _main_saveDiagram(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    case '11':
+                        unit.currentFilename = path;
+                        sendMessageToChannel('save', path);
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_saveDiagram(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function saveDiagram(path, diagram) {
+        var __obj = saveDiagram_create(path, diagram);
+        return __obj.run();
+    }
+    function sendMessageToChannel(type, key) {
+        var message;
+        message = {
+            type: type,
+            key: key,
+            tabId: unit.tabId
+        };
+        console.log('sendMessageToChannel', message);
+        unit.channel.postMessage(message);
         return;
     }
-    function getDiagram(filename) {
+    function getDiagram_create(filename) {
         var diagram, diagramStr, derived;
-        diagramStr = localStorage.getItem(filename);
-        diagram = JSON.parse(diagramStr);
-        derived = deriveNameFromPath(filename);
-        diagram.name = derived;
-        diagram.access = 'write';
-        return diagram;
+        var me = {
+            state: '2',
+            type: 'getDiagram'
+        };
+        function _main_getDiagram(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '2':
+                        me.state = '4';
+                        loadKeyValue(filename).then(function (__returnee) {
+                            diagramStr = __returnee;
+                            _main_getDiagram(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    case '4':
+                        diagram = JSON.parse(diagramStr);
+                        derived = deriveNameFromPath(filename);
+                        diagram.name = derived;
+                        diagram.access = 'write';
+                        me.state = undefined;
+                        __resolve(diagram);
+                        return;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_getDiagram(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function getDiagram(filename) {
+        var __obj = getDiagram_create(filename);
+        return __obj.run();
     }
     function initTranslations_create() {
         var settings;
@@ -1106,6 +1689,52 @@ function standalone() {
         var __obj = initTranslations_create();
         return __obj.run();
     }
+    function openItemInTarget_create(path, target) {
+        var diagram;
+        var me = {
+            state: '2',
+            type: 'openItemInTarget'
+        };
+        function _main_openItemInTarget(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '2':
+                        me.state = '4';
+                        getDiagram(path).then(function (__returnee) {
+                            diagram = __returnee;
+                            _main_openItemInTarget(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    case '4':
+                        target.open(diagram);
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_openItemInTarget(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function openItemInTarget(path, target) {
+        var __obj = openItemInTarget_create(path, target);
+        return __obj.run();
+    }
     function openFileByPath_create(filename) {
         var _var2;
         var me = {
@@ -1114,11 +1743,35 @@ function standalone() {
         };
         function _main_openFileByPath(__resolve, __reject) {
             try {
-                addToRecent(filename);
-                _var2 = getDiagram(filename);
-                me.state = undefined;
-                __resolve(_var2);
-                return;
+                while (true) {
+                    switch (me.state) {
+                    case '2':
+                        me.state = '_item2';
+                        addToRecent(filename).then(function () {
+                            _main_openFileByPath(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    case '7':
+                        me.state = undefined;
+                        __resolve(_var2);
+                        return;
+                    case '_item2':
+                        me.state = '7';
+                        getDiagram(filename).then(function (__returnee) {
+                            _var2 = __returnee;
+                            _main_openFileByPath(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    default:
+                        return;
+                    }
+                }
             } catch (ex) {
                 me.state = undefined;
                 __reject(ex);
@@ -1136,11 +1789,61 @@ function standalone() {
         var __obj = openFileByPath_create(filename);
         return __obj.run();
     }
-    function saveRecent() {
-        var _var2;
-        _var2 = JSON.stringify(unit.recent);
-        localStorage.setItem('drlauncher-recent', _var2);
+    function initChannel() {
+        var _var2, _var3, _var4;
+        unit.channel = new BroadcastChannel('drakonhub');
+        _var3 = Date.now();
+        _var2 = String(_var3);
+        _var4 = Math.random();
+        unit.tabId = _var2 + '-' + _var4;
+        unit.channel.onmessage = onMessage;
+        sendMessageToChannel('init');
         return;
+    }
+    function saveRecent_create() {
+        var _var2;
+        var me = {
+            state: '2',
+            type: 'saveRecent'
+        };
+        function _main_saveRecent(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '1':
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
+                    case '2':
+                        _var2 = JSON.stringify(unit.recent);
+                        me.state = '1';
+                        saveKeyValue('drlauncher-recent', _var2).then(function () {
+                            _main_saveRecent(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_saveRecent(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function saveRecent() {
+        var __obj = saveRecent_create();
+        return __obj.run();
     }
     function createTopMenuItem(parent, item) {
         var container;
@@ -1162,32 +1865,68 @@ function standalone() {
         _var2 = html.createElement('div', properties, args);
         return _var2;
     }
-    function addToRecent(path) {
+    function addToRecent_create(path) {
         var item, maxRecent, oldest;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                maxRecent = 20;
-                utils.removeBy(unit.recent, 'path', path);
-                item = { path: path };
-                unit.recent.push(item);
-                __state = '10';
-                break;
-            case '10':
-                if (unit.recent.length > maxRecent) {
-                    oldest = unit.recent.shift();
-                    localStorage.removeItem(oldest.path);
-                    __state = '10';
-                } else {
-                    saveRecent();
-                    return;
+        var me = {
+            state: '2',
+            type: 'addToRecent'
+        };
+        function _main_addToRecent(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '1':
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
+                    case '2':
+                        maxRecent = 2000;
+                        utils.removeBy(unit.recent, 'path', path);
+                        item = { path: path };
+                        unit.recent.push(item);
+                        me.state = '10';
+                        break;
+                    case '10':
+                        if (unit.recent.length > maxRecent) {
+                            oldest = unit.recent.shift();
+                            me.state = '10';
+                            removeKeyValue(oldest.path).then(function () {
+                                _main_addToRecent(__resolve, __reject);
+                            }, function (error) {
+                                me.state = undefined;
+                                __reject(error);
+                            });
+                            return;
+                        } else {
+                            me.state = '1';
+                            saveRecent().then(function () {
+                                _main_addToRecent(__resolve, __reject);
+                            }, function (error) {
+                                me.state = undefined;
+                                __reject(error);
+                            });
+                            return;
+                        }
+                    default:
+                        return;
+                    }
                 }
-                break;
-            default:
-                return;
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
             }
         }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_addToRecent(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function addToRecent(path) {
+        var __obj = addToRecent_create(path);
+        return __obj.run();
     }
     function setLanguage_create(language) {
         var settings;
@@ -1236,6 +1975,93 @@ function standalone() {
         var __obj = setLanguage_create(language);
         return __obj.run();
     }
+    function onMessage_create(event) {
+        var data, diagram;
+        var me = {
+            state: '2',
+            type: 'onMessage'
+        };
+        function _main_onMessage(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '2':
+                        data = event.data;
+                        console.log('onMessage', data);
+                        if (data.tabId === unit.tabId) {
+                            me.state = '23';
+                        } else {
+                            if (data.type === 'save') {
+                                me.state = '25';
+                            } else {
+                                if (data.type === 'delete_all') {
+                                    me.state = '24';
+                                } else {
+                                    me.state = '23';
+                                }
+                            }
+                        }
+                        break;
+                    case '23':
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
+                    case '24':
+                        window.location.reload();
+                        me.state = '23';
+                        break;
+                    case '25':
+                        if (unit.currentFilename) {
+                            if (unit.currentFilename === data.key) {
+                                core.reloadDiagram();
+                                me.state = '23';
+                            } else {
+                                me.state = '51';
+                                loadKeyValue(unit.currentFilename).then(function (__returnee) {
+                                    diagram = __returnee;
+                                    _main_onMessage(__resolve, __reject);
+                                }, function (error) {
+                                    me.state = undefined;
+                                    __reject(error);
+                                });
+                                return;
+                            }
+                        } else {
+                            me.state = '53';
+                        }
+                        break;
+                    case '51':
+                        if (diagram) {
+                            me.state = '23';
+                        } else {
+                            me.state = '53';
+                        }
+                        break;
+                    case '53':
+                        window.location.reload();
+                        me.state = '23';
+                        break;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_onMessage(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function onMessage(event) {
+        var __obj = onMessage_create(event);
+        return __obj.run();
+    }
     unit.main_create = main_create;
     unit.main = main;
     unit.openFileAt_create = openFileAt_create;
@@ -1278,6 +2104,10 @@ function standalone() {
     unit.newWindow = newWindow;
     unit.closeWindow_create = closeWindow_create;
     unit.closeWindow = closeWindow;
+    unit.loadKeyValue_create = loadKeyValue_create;
+    unit.loadKeyValue = loadKeyValue;
+    unit.saveKeyValue_create = saveKeyValue_create;
+    unit.saveKeyValue = saveKeyValue;
     unit.setLanguage_create = setLanguage_create;
     unit.setLanguage = setLanguage;
     Object.defineProperty(unit, 'core', {

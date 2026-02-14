@@ -1427,7 +1427,7 @@ function dh2common() {
                     __state = '51';
                 } else {
                     space = true;
-                    text += ' ';
+                    text += '\n';
                     __state = '51';
                 }
                 break;

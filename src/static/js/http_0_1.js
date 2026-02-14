@@ -89,6 +89,7 @@ function http_0_1() {
                 while (true) {
                     switch (me.state) {
                     case '2':
+                        console.log(method, url, body);
                         request = new XMLHttpRequest();
                         request.onreadystatechange = function () {
                             onDataWhenReady(me, request);

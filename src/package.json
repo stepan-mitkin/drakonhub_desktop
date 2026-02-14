@@ -2,10 +2,9 @@
   "name": "drakonhub",
   "productName": "DrakonHub",
   "version": "2025.01.18",
-  "description": "A drakon flowchart and mind-map editor",
+  "description": "A drakon-chart and mind-map editor",
   "main": "main.js",
   "scripts": {
-    "build:mac": "electron-builder --mac",
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
@@ -13,28 +12,13 @@
     "rpm": "electron-forge make --targets @electron-forge/maker-rpm"
   },
   "author": "Stepan Mitkin",
-  "license": "Public domain",
+  "license": "Publis domain",
   "devDependencies": {
     "@electron-forge/cli": "^6.1.1",
     "@electron-forge/maker-deb": "^6.1.1",
     "@electron-forge/maker-rpm": "^6.1.1",
     "@electron-forge/maker-squirrel": "^6.1.1",
     "@electron-forge/maker-zip": "^6.1.1",
-    "electron": "^32.1.2",
-    "electron-builder": "^25.1.8"
-  },
-  "build": {
-    "appId": "com.drakonhub.desktop",
-    "mac": {
-      "target": [
-        "dmg",
-        "zip"
-      ],
-      "category": "public.app-category.utilities",
-      "icon": "icon.icns",
-      "hardenedRuntime": true,
-      "entitlements": "entitlements.mac.plist",
-      "entitlementsInherit": "entitlements.mac.plist"
-    }
+    "electron": "^32.1.2"
   }
 }

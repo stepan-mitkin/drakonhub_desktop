@@ -589,6 +589,13 @@ function drakonhubwidget_10() {
         self.diagram = undefined;
         return;
     }
+    function DrakonHubWidget_generateMany(self, docs) {
+        var prompt, language;
+        language = getPseudoLanguage();
+        prompt = regenerateMany(docs, language);
+        showPseudocode(self, prompt, docs);
+        return;
+    }
     function DrakonHubWidget_cutSelection(self) {
         self.drakon.cutSelection();
         return;
@@ -4991,30 +4998,101 @@ function drakonhubwidget_10() {
         localStorage.setItem('pseudo-language', language);
         return;
     }
+    function regenerateMany(docs, language) {
+        var generated, pseudo, prompt, _var2, _var3, doc;
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '2':
+                generated = [];
+                _var2 = docs;
+                _var3 = 0;
+                __state = '6';
+                break;
+            case '6':
+                if (_var3 < _var2.length) {
+                    doc = _var2[_var3];
+                    pseudo = generateByType(doc, language);
+                    generated.push(pseudo.content);
+                    _var3++;
+                    __state = '6';
+                } else {
+                    prompt = generated.join('\n\n\n');
+                    return {
+                        ok: true,
+                        content: prompt
+                    };
+                }
+                break;
+            default:
+                return;
+            }
+        }
+    }
     function getPseudoLanguage() {
         var _var2;
         _var2 = localStorage.getItem('pseudo-language');
         return _var2 || 'en';
     }
     function generateCore(widget, language) {
-        var content, result, message, json, obj, name;
+        var json, obj, _var2;
         json = widget.drakon.exportJson();
         obj = JSON.parse(json);
-        name = obj.name;
-        try {
-            content = drakongen.toPseudocode(json, name, name + '.drakon', language);
-            result = {
-                ok: true,
-                content: content
-            };
-        } catch (ex) {
-            message = ex.message + '\n' + (ex.filename || '') + '\n' + (ex.nodeId || '');
-            result = {
-                ok: false,
-                content: message
-            };
+        _var2 = generateByType(obj, language);
+        return _var2;
+    }
+    function generateByType(diagram, language) {
+        var json, name, type, content, _var2, _var3, _var4, _var5;
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '2':
+                json = JSON.stringify(diagram, null, 4);
+                name = diagram.name;
+                type = diagram.type;
+                _var2 = type;
+                if (_var2 === 'drakon') {
+                    try {
+                        content = drakongen.toPseudocode(json, name, name + '.drakon', language);
+                    } catch (ex) {
+                        _var3 = buildGenError(ex);
+                        return _var3;
+                    }
+                    __state = '22';
+                } else {
+                    if (_var2 === 'graf') {
+                        try {
+                            content = drakongen.toMindTree(json, name, name + '.graf', language);
+                        } catch (ex) {
+                            _var4 = buildGenError(ex);
+                            return _var4;
+                        }
+                        __state = '22';
+                    } else {
+                        if (_var2 === 'free') {
+                            try {
+                                content = drakongen.freeToText(json, name, name + '.free', language);
+                            } catch (ex) {
+                                _var5 = buildGenError(ex);
+                                return _var5;
+                            }
+                            __state = '22';
+                        } else {
+                            content = '';
+                            __state = '22';
+                        }
+                    }
+                }
+                break;
+            case '22':
+                return {
+                    ok: true,
+                    content: content
+                };
+            default:
+                return;
+            }
         }
-        return result;
     }
     function copyTextToClipboard(text, tr) {
         var _var2;
@@ -5023,7 +5101,17 @@ function drakonhubwidget_10() {
         widgets.showGoodSnack(_var2);
         return;
     }
-    function showPseudocode(widget, generated) {
+    function buildGenError(ex) {
+        var message, filename, nodeId;
+        filename = ex.filename || '';
+        nodeId = ex.nodeId || '';
+        message = ex.message + '\n' + filename + '\n' + nodeId;
+        return {
+            ok: false,
+            content: message
+        };
+    }
+    function showPseudocode(widget, generated, docs) {
         var dialog, tr, cancel, buttons, headerSize, pre, copy, language, regenerate, combo, options, generate, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9;
         var __state = '2';
         while (true) {
@@ -5127,7 +5215,7 @@ function drakonhubwidget_10() {
             case '37':
                 _var9 = tr('Generate');
                 generate = widgets.createSimpleButton(_var9, function () {
-                    regeneratePseudocode(widget, combo.value);
+                    regeneratePseudocode(widget, combo.value, docs);
                 });
                 generate.style.marginLeft = '5px';
                 generate.style.verticalAlign = 'middle';
@@ -5139,12 +5227,28 @@ function drakonhubwidget_10() {
             }
         }
     }
-    function regeneratePseudocode(widget, language) {
+    function regeneratePseudocode(widget, language, docs) {
         var generated;
-        generated = generateCore(widget, language);
-        setPseudoLanguage(language);
-        showPseudocode(widget, generated);
-        return;
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '2':
+                if (docs) {
+                    generated = regenerateMany(docs, language);
+                    __state = '6';
+                } else {
+                    generated = generateCore(widget, language);
+                    __state = '6';
+                }
+                break;
+            case '6':
+                setPseudoLanguage(language);
+                showPseudocode(widget, generated, docs);
+                return;
+            default:
+                return;
+            }
+        }
     }
     function generateCode_create(widget) {
         var generated, language;
@@ -5707,13 +5811,8 @@ function drakonhubwidget_10() {
             case '14':
                 addToolbarRow(widget, widget.commonButtons, 'left-angle2.png', hideToolbar, 'Hide toolbar', 'home.png', goHome, 'To diagram home');
                 addToolbarRow(widget, widget.commonButtons, 'theme.png', chooseTheme, 'Color theme', 'zoom.png', chooseZoom, 'Zoom');
-                if (widget.diagram.type === 'drakon') {
-                    addToolbarRow(widget, widget.commonButtons, 'description.png', showDescription, 'Description', 'code.png', generateCode, 'Pseudocode');
-                    __state = '11';
-                } else {
-                    addToolbarRow(widget, widget.commonButtons, 'description.png', showDescription, 'Description', undefined, undefined, undefined);
-                    __state = '11';
-                }
+                addToolbarRow(widget, widget.commonButtons, 'description.png', showDescription, 'Description', 'code.png', generateCode, 'Pseudocode');
+                __state = '11';
                 break;
             case '19':
                 typeCombo = html.createElement('select');
@@ -6478,6 +6577,9 @@ function drakonhubwidget_10() {
         };
         self.onHide = function () {
             return DrakonHubWidget_onHide(self);
+        };
+        self.generateMany = function (docs) {
+            return DrakonHubWidget_generateMany(self, docs);
         };
         self.cutSelection = function () {
             return DrakonHubWidget_cutSelection(self);

@@ -3,7 +3,7 @@
 function htmlToString(html) {
     if (!html) return '';
     if (!html.startsWith('<') || !html.endsWith('>')) {
-        return html.split("\n").map(line => {return line.trim()})
+        return html.split("\n")
     }
 
     const parser = new DOMParser();
@@ -16,21 +16,17 @@ function htmlToString(html) {
         if (node.tagName === 'P') {
             output.push(node.textContent.trim());
         } else if (node.tagName === 'UL') {
-            output.push('');
             node.childNodes.forEach((item) => {
                 if (item.tagName === 'LI') {
                     output.push(`- ${item.textContent.trim()}`);
                 }
             });
-            output.push('');
         } else if (node.tagName === 'OL') {
-            output.push('');
             node.childNodes.forEach((item, index) => {
                 if (item.tagName === 'LI') {
                     output.push(`${index + 1}. ${item.textContent.trim()}`);
                 }
             });
-            output.push('');
         }
     });
 
@@ -40,18 +36,18 @@ function htmlToString(html) {
 module.exports = {htmlToString}
 },{}],2:[function(require,module,exports){
 const {drakonToStruct} = require("./drakonToStruct");
-const {printPseudo} = require('./printPseudo');
-const {addRange} = require("./tools")
+const {printPseudo, printWithIndent, makeIndent} = require('./printPseudo');
+const {addRange, sortByProperty} = require("./tools")
 
-function drakonToPseudocode(drakonJson, name, filename, htmlToString, translate) {
+function drakonToPseudocode(drakonJson, name, filename, htmlToString, translate) {    
     var diagram = drakonToStruct(drakonJson, name, filename, translate)
     var lines = []
-    if (diagram.params) {
-        addRange(lines, htmlToString(diagram.params))
-        lines.push("")
-    }
 
-    lines.push(translate("Procedure") + " \"" + diagram.name + "\"")
+    lines.push("## " + translate("Procedure") + " \"" + diagram.name + "\"")
+    if (diagram.params) {
+        lines.push(translate("Parameters") + ":")
+        addRange(lines, htmlToString(diagram.params))
+    }    
     lines.push("")
     lines.push(translate("Algorithm") + ":")    
     
@@ -70,6 +66,7 @@ function drakonToPseudocode(drakonJson, name, filename, htmlToString, translate)
             lines.push(translate("End of subroutine"))
         })
     }  
+    lines.push("")
     lines.push(translate("End of procedure"))
     if (diagram.description) {
         lines.push("")       
@@ -82,15 +79,8 @@ function drakonToPseudocode(drakonJson, name, filename, htmlToString, translate)
     return {text:text,json:str}
 }
 
-module.exports = { drakonToPseudocode };
-},{"./drakonToStruct":3,"./printPseudo":5,"./tools":8}],3:[function(require,module,exports){
-const { structFlow, redirectNode } = require("./structFlow");
-const { createError, remove } = require("./tools");
 
-var translate
-
-function drakonToStruct(drakonJson, name, filename, translateFunction) {
-    translate = translateFunction
+function mindToTree(drakonJson, name, filename, htmlToString) {
     let drakonGraph;
     try {
         drakonJson = drakonJson || ""
@@ -103,406 +93,556 @@ function drakonToStruct(drakonJson, name, filename, translateFunction) {
     }
 
     const nodes = drakonGraph.items || {};
+    var root = createMindNode("## " + name)
+    nodes["root"] = root
+    connectMindNodesToParent(nodes)
+    sortMindChildren(nodes)
+    var lines = []
+    printMindNode(root, 0, lines, htmlToString, true)
+    lines.push("")
+    var text = lines.join("\n")
+    return {text:text}
+}
 
-    var branches = []
-    var firstNodeId = findStartNode(nodes, filename, branches)
-
-    if (!firstNodeId) {
-        return {
-            name: name,
-            params: drakonGraph.params || "",
-            description: drakonGraph.description || "",
-            branches: []
+function connectMindNodesToParent(nodes) {
+    for (var id in nodes) {
+        var node = nodes[id]
+        if (node.parent) {
+            var parent = nodes[node.parent]
+            if (!parent.children) {
+                parent.children = []
+            }
+            parent.children.push(node)
         }
     }
+}
 
-    buildTwoWayConnections(nodes, firstNodeId)
-
-    rewireSelectsMarkLoops(nodes, filename)
-    branches.forEach(branch => checkBranchIsReferenced(branch, firstNodeId, filename))
-    rewireShortcircuit(nodes, filename)
-    branches.forEach(branch => cutOffBranch(nodes, branch))
-    var branchTrees = structFlow(nodes, branches, filename, translate)
-    return {
-        name: name,
-        params: drakonGraph.params || "",
-        description: drakonGraph.description || "",
-        branches: branchTrees
+function sortMindChildren(nodes) {
+    for (var id in nodes) {
+        var node = nodes[id]
+        if (node.children) {
+            sortByProperty(node.children, "ordinal")
+        }
     }
+}
+
+function printMindNode(node, depth, lines, htmlToString, first) {
+    var printed = htmlToString(node.content)
+    const indent = makeIndent(depth)
+    printWithIndent(printed, indent, lines)
+    var childDepth = depth + 1
+    if (first) {
+        lines.push("")
+        childDepth = 0
+    }
+    if (node.children) {
+        for (var child of node.children) {
+            printMindNode(child, childDepth, lines, htmlToString, false)
+        }
+    }
+}
+
+function createMindNode(name) {
+    return {
+        "type": "idea",
+        "content": "<p>" + name + "</p>",
+        "parent": undefined,
+        "treeType": "treeview",
+        "ordinal": 0
+    }
+}
+
+module.exports = { drakonToPseudocode, mindToTree };
+},{"./drakonToStruct":3,"./printPseudo":5,"./tools":8}],3:[function(require,module,exports){
+const { structFlow, redirectNode } = require("./structFlow");
+const { createError, remove } = require("./tools");
+
+var translate;
+
+function drakonToStruct(drakonJson, name, filename, translateFunction) {
+  translate = translateFunction;
+  let drakonGraph;
+  try {
+    drakonJson = drakonJson || "";
+    drakonJson = drakonJson.trim();
+    drakonJson = drakonJson || "{}";
+    drakonGraph = JSON.parse(drakonJson);
+  } catch (error) {
+    var message = translate("Error parsing JSON") + ": " + error.message;
+    throw createError(message, filename);
+  }
+
+  const nodes = drakonGraph.items || {};
+
+  var branches = [];
+  var firstNodeId = findStartNode(nodes, filename, branches);
+
+  if (!firstNodeId) {
+    return {
+      name: name,
+      params: drakonGraph.params || "",
+      description: drakonGraph.description || "",
+      branches: [],
+    };
+  }
+
+  buildTwoWayConnections(nodes, firstNodeId);
+
+  rewireSelectsMarkLoops(nodes, filename);
+  branches.forEach((branch) =>
+    checkBranchIsReferenced(branch, firstNodeId, filename),
+  );
+  rewireShortcircuit(nodes, filename);
+  branches.forEach((branch) => cutOffBranch(nodes, branch));
+  var branchTrees = structFlow(nodes, branches, filename, translate);
+  return {
+    name: name,
+    params: drakonGraph.params || "",
+    description: drakonGraph.description || "",
+    branches: branchTrees,
+  };
 }
 
 function drakonToGraph(drakonJson, name, filename, translateFunction) {
-    translate = translateFunction
-    let drakonGraph;
-    try {
-        drakonGraph = JSON.parse(drakonJson);
-    } catch (error) {
-        var message = translate("Error parsing JSON") + ": " + error.message
-        throw createError(message, filename)
-    }
+  translate = translateFunction;
+  let drakonGraph;
+  try {
+    drakonGraph = JSON.parse(drakonJson);
+  } catch (error) {
+    var message = translate("Error parsing JSON") + ": " + error.message;
+    throw createError(message, filename);
+  }
 
-    const nodes = drakonGraph.items || {};
+  const nodes = drakonGraph.items || {};
 
-    var branches = []
-    var firstNodeId = findStartNode(nodes, filename, branches)
+  var branches = [];
+  var firstNodeId = findStartNode(nodes, filename, branches);
 
-    if (!firstNodeId) {
-        return undefined
-    }
+  if (!firstNodeId) {
+    return undefined;
+  }
 
-    buildTwoWayConnections(nodes, firstNodeId)
+  buildTwoWayConnections(nodes, firstNodeId);
 
-    rewireSelectsMarkLoops(nodes, filename)
-    rewireShortcircuit(nodes, filename)
-    branches.forEach(branch => checkBranchIsReferenced(branch, firstNodeId, filename))
-    branches.forEach(branch => cutOffBranch(nodes, branch))
-    
-    var branchTrees = structFlow(nodes, branches, filename, translate)
+  rewireSelectsMarkLoops(nodes, filename);
+  rewireShortcircuit(nodes, filename);
+  branches.forEach((branch) =>
+    checkBranchIsReferenced(branch, firstNodeId, filename),
+  );
+  branches.forEach((branch) => cutOffBranch(nodes, branch));
 
-    return {
-        name: name,
-        params: drakonGraph.params || "",
-        description: drakonGraph.description || "",
-        branches: branchTrees
-    }
+  var branchTrees = structFlow(nodes, branches, filename, translate);
+
+  return {
+    name: name,
+    params: drakonGraph.params || "",
+    description: drakonGraph.description || "",
+    branches: branchTrees,
+  };
 }
 
-
 function checkBranchIsReferenced(branch, firstNodeId, filename) {
-    if (branch.id === firstNodeId) {
-        return
-    }
-    if (branch.prev.length === 0) {
-        throw createError(translate("A silhouette branch is not referenced"), filename, branch.id)
-    }
+  if (branch.id === firstNodeId) {
+    return;
+  }
+  if (branch.prev.length === 0) {
+    throw createError(
+      translate("A silhouette branch is not referenced"),
+      filename,
+      branch.id,
+    );
+  }
 }
 
 function cutOffBranch(nodes, branch) {
-    var end = {
-        type: "end",
-        id: branch.id + "-end",
-        prev: []
-    }
-    nodes[end.id] = end
-    branch.next = branch.one
-    var addresses = []
-    traverseToHitBranch(nodes, branch.id, {}, (prev, node) => addFakeEnd(nodes, prev, node, end, addresses))
+  var end = {
+    type: "end",
+    id: branch.id + "-end",
+    prev: [],
+  };
+  nodes[end.id] = end;
+  branch.next = branch.one;
+  var addresses = [];
+  traverseToHitBranch(nodes, branch.id, {}, (prev, node) =>
+    addFakeEnd(nodes, prev, node, end, addresses),
+  );
 }
 
 function traverseToHitBranch(nodes, nodeId, visited, action) {
-    if (!nodeId) {return}
-    if (nodeId in visited) {return}
-    visited[nodeId] = true
-    var node = nodes[nodeId]
-    if (!node) {return}
-    if (node.one) {
-        var one = nodes[node.one]
-        if (one.type === "branch") {
-            action(node, one)
-        } else {
-            traverseToHitBranch(nodes, node.one, visited, action)
-        }
+  if (!nodeId) {
+    return;
+  }
+  if (nodeId in visited) {
+    return;
+  }
+  visited[nodeId] = true;
+  var node = nodes[nodeId];
+  if (!node) {
+    return;
+  }
+  if (node.one) {
+    var one = nodes[node.one];
+    if (one.type === "branch") {
+      action(node, one);
+    } else {
+      traverseToHitBranch(nodes, node.one, visited, action);
     }
-    if (node.two) {
-        var two = nodes[node.two]
-        if (two.type === "branch") {
-            action(node, two)
-        } else {
-            traverseToHitBranch(nodes, node.two, visited, action)
-        }
-    }    
+  }
+  if (node.two) {
+    var two = nodes[node.two];
+    if (two.type === "branch") {
+      action(node, two);
+    } else {
+      traverseToHitBranch(nodes, node.two, visited, action);
+    }
+  }
 }
 
-var idCounter = 1000
+var idCounter = 1000;
 function addFakeEnd(nodes, prev, node, end, addresses) {
-    var lastAddress = undefined
-    if (addresses.length > 0) {
-        lastAddress = addresses[addresses.length - 1]
-    }        
-    var address
-    if (lastAddress && lastAddress.branch === node.id) {
-        address = lastAddress
-    } else {
-        address = {
-            type: "address",
-            content: node.content,
-            id: "ad-" + idCounter,
-            branch: node.id,
-            one: end.id,
-            prev: []
-        }   
-        idCounter++
-        nodes[address.id] = address
-        end.prev.push(address.id)
-        addresses.push(address)
-        node.prev.push(address.id)
-    }
-    redirectNode(nodes, prev, node.id, address.id)
-    address.prev.push(prev.id)
-    node.prev = remove(node.prev, prev.id)
+  var lastAddress = undefined;
+  if (addresses.length > 0) {
+    lastAddress = addresses[addresses.length - 1];
+  }
+  var address;
+  if (lastAddress && lastAddress.branch === node.id) {
+    address = lastAddress;
+  } else {
+    address = {
+      type: "address",
+      content: node.content,
+      id: "ad-" + idCounter,
+      branch: node.id,
+      one: end.id,
+      prev: [],
+    };
+    idCounter++;
+    nodes[address.id] = address;
+    end.prev.push(address.id);
+    addresses.push(address);
+    node.prev.push(address.id);
+  }
+  redirectNode(nodes, prev, node.id, address.id);
+  address.prev.push(prev.id);
+  node.prev = remove(node.prev, prev.id);
 }
 
 function buildTwoWayConnections(nodes, firstNodeId) {
-    for (var id in nodes) {
-        var node = nodes[id]
-        node.id = id
-        node.prev = []        
-    }
+  for (var id in nodes) {
+    var node = nodes[id];
+    node.id = id;
+    node.prev = [];
+  }
 
-    traverse(nodes, firstNodeId, {}, connectBack)
+  traverse(nodes, firstNodeId, {}, connectBack);
 }
 
 function findStartNode(nodes, filename, branches) {
-    var firstNodeId = undefined
-    var minBranchId = 10000    
-    for (var id in nodes) {
-        var node = nodes[id]
-        if (node.type === "branch") {
-            if (node.branchId < minBranchId) {
-                firstNodeId = id
-                minBranchId = node.branchId
-            }
-            branches.push(node)
-        } else if (node.type === "select") {
-            if (!node.content) {
-                throw createError(translate("A Select icon must have content"), filename, id)
-            }            
-            node.cases = [];
-        } else if (node.type === "loopbegin") {
-            if (!node.content) {
-                throw createError(translate("A Loop begin icon must have content"), filename, id)
-            }             
-        } else if (node.type === "question") {
-            if (!node.content) {
-                throw createError(translate("A Question icon must have content"), filename, id)
-            }             
-        }
+  var firstNodeId = undefined;
+  var minBranchId = 10000;
+  for (var id in nodes) {
+    var node = nodes[id];
+    if (node.type === "branch") {
+      if (node.branchId < minBranchId) {
+        firstNodeId = id;
+        minBranchId = node.branchId;
+      }
+      branches.push(node);
+    } else if (node.type === "select") {
+      if (!node.content) {
+        throw createError(
+          translate("A Select icon must have content"),
+          filename,
+          id,
+        );
+      }
+      node.cases = [];
+    } else if (node.type === "loopbegin") {
+      if (!node.content) {
+        throw createError(
+          translate("A Loop begin icon must have content"),
+          filename,
+          id,
+        );
+      }
+    } else if (node.type === "question") {
+      if (!node.content) {
+        throw createError(
+          translate("A Question icon must have content"),
+          filename,
+          id,
+        );
+      }
     }
+  }
 
-    return firstNodeId
+  return firstNodeId;
 }
 
 function rewireSelectsMarkLoops(nodes, filename) {
-    for (var id of Object.keys(nodes)) {
-        var node = nodes[id]
-        if (!node) { continue }
-        if (node.type === "select") {
-            rewireSelect(nodes, node, filename)
-        } else if (node.type === "loopbegin") {
-            markLoopBody(nodes, node, filename)
-        }
+  for (var id of Object.keys(nodes)) {
+    var node = nodes[id];
+    if (!node) {
+      continue;
     }
+    if (node.type === "select") {
+      rewireSelect(nodes, node, filename);
+    } else if (node.type === "loopbegin") {
+      markLoopBody(nodes, node, filename);
+    }
+  }
 }
 
 function rewireSelect(nodes, selectNode, filename) {
-    var caseNodeId = selectNode.one
-    while (caseNodeId) {
-        var caseNode = nodes[caseNodeId]
-        caseNodeId = caseNode.two
-        if (caseNode.content) {
-            caseNode.type = "question"
-            caseNode.flag1 = 1
-            caseNode.content = {operator: "equal", left:selectNode.content, right:caseNode.content}
-            if (!caseNode.two) {
-                var errorId = caseNode.id + "-unexpected"
-                var errorAction = insertIcon(nodes, "error", errorId,  selectNode.content)
-                errorAction.message = "Unexpected case value"
+  var caseNodeId = selectNode.one;
+  while (caseNodeId) {
+    var caseNode = nodes[caseNodeId];
+    caseNodeId = caseNode.two;
+    if (caseNode.content) {
+      caseNode.type = "question";
+      caseNode.flag1 = 1;
+      caseNode.content = {
+        operator: "equal",
+        left: selectNode.content,
+        right: caseNode.content,
+      };
+      if (!caseNode.two) {
+        var errorId = caseNode.id + "-unexpected";
+        var errorAction = insertIcon(
+          nodes,
+          "error",
+          errorId,
+          selectNode.content,
+        );
+        errorAction.message = translate("Unexpected case value");
 
-                caseNode.two = errorId
-                errorAction.prev.push(caseNode.id)
-                errorAction.one = caseNode.one
+        caseNode.two = errorId;
+        errorAction.prev.push(caseNode.id);
+        errorAction.one = caseNode.one;
 
-                var next = nodes[caseNode.one]
-                next.prev.push(errorId)
-            }
-        } else {
-            if (caseNode.two) {
-                throw createError(translate("Only the rightmost Case icon can be empty"), filename, caseNode.id)
-            }
-            removeNodeOne(nodes, caseNode.id)
-        }
+        var next = nodes[caseNode.one];
+        next.prev.push(errorId);
+      }
+    } else {
+      if (caseNode.two) {
+        throw createError(
+          translate("Only the rightmost Case icon can be empty"),
+          filename,
+          caseNode.id,
+        );
+      }
+      removeNodeOne(nodes, caseNode.id);
     }
-    removeNodeOne(nodes, selectNode.id)
+  }
+  removeNodeOne(nodes, selectNode.id);
 }
 
 function insertIcon(nodes, type, id, content) {
-    var node = {
-        type: type,
-        id: id,
-        content: content,
-        prev: []
-    }
-    nodes[id] = node
-    return node
+  var node = {
+    type: type,
+    id: id,
+    content: content,
+    prev: [],
+  };
+  nodes[id] = node;
+  return node;
 }
 
 function removeNodeOne(nodes, nodeId) {
-    var node = nodes[nodeId]
-    redirectPrev(nodes, node, node.one)
-    redirectNext(nodes, node, node.one)
-    delete nodes[nodeId]
+  var node = nodes[nodeId];
+  redirectPrev(nodes, node, node.one);
+  redirectNext(nodes, node, node.one);
+  delete nodes[nodeId];
 }
 
 function removeFromNext(node, next) {
-    next.prev = next.prev.filter(prevId => prevId !== node.id)
+  next.prev = next.prev.filter((prevId) => prevId !== node.id);
 }
 
 function redirectPrev(nodes, node, newTarget) {
-    for (var prevId of node.prev) {
-        var prev = nodes[prevId]
-        if (prev.one === node.id) {
-            prev.one = newTarget
-        }
-        if (prev.two === node.id) {
-            prev.two = newTarget
-        }      
+  for (var prevId of node.prev) {
+    var prev = nodes[prevId];
+    if (prev.one === node.id) {
+      prev.one = newTarget;
     }
+    if (prev.two === node.id) {
+      prev.two = newTarget;
+    }
+  }
 }
 
 function redirectNext(nodes, node, newTarget) {
-    var target = nodes[newTarget]
-    removeFromNext(node, target)
-    for (var prevId of node.prev) {
-        target.prev.push(prevId)
-    }
+  var target = nodes[newTarget];
+  removeFromNext(node, target);
+  for (var prevId of node.prev) {
+    target.prev.push(prevId);
+  }
 }
 
 function rewireShortcircuit(nodes) {
-    while (findShortcusts(nodes)) {
-
-    }
+  while (findShortcusts(nodes)) {}
 }
 
 function findShortcusts(nodes) {
-    for (var id in nodes) {
-        var node = nodes[id]
-        if (node.type === "question") {
-            var andOperand = findAndOperand(nodes, node)
-            if (andOperand) {
-                writeAndShortcut(nodes, node, andOperand)
-                return true
-            }
-            var orOperand = findOrOperand(nodes, node)
-            if (orOperand) {
-                writeOrShortcut(nodes, node, orOperand)
-                return true
-            }            
-        }
+  for (var id in nodes) {
+    var node = nodes[id];
+    if (node.type === "question") {
+      var andOperand = findAndOperand(nodes, node);
+      if (andOperand) {
+        writeAndShortcut(nodes, node, andOperand);
+        return true;
+      }
+      var orOperand = findOrOperand(nodes, node);
+      if (orOperand) {
+        writeOrShortcut(nodes, node, orOperand);
+        return true;
+      }
     }
-    return false
+  }
+  return false;
 }
 
 function findAndOperand(nodes, node) {
-    var below = nodes[node.one]
-    if (below.type === "question") {
-        if (below.prev.length === 1 && below.two === node.two) {
-            return below
-        }
+  var below = nodes[node.one];
+  if (below.type === "question") {
+    if (below.prev.length === 1 && below.two === node.two) {
+      return below;
     }
-    return undefined
+  }
+  return undefined;
 }
 
 function findOrOperand(nodes, node) {
-    var right = nodes[node.two]
-    if (right.type === "question") {
-        if (right.prev.length === 1 && right.one === node.one) {
-            return right
-        }
+  var right = nodes[node.two];
+  if (right.type === "question") {
+    if (right.prev.length === 1 && right.one === node.one) {
+      return right;
     }
-    return undefined
+  }
+  return undefined;
 }
 
 function writeAndShortcut(nodes, node, andOperand) {
-    var right = nodes[node.two]
-    var down = nodes[andOperand.one]
-    removeFromNext(andOperand, right)
-    removeFromNext(andOperand, down)
-    node.content = {
-        operator: "and",
-        left: normalizeContent(node),
-        right: normalizeContent(andOperand)
-    }
-    node.one = down.id
-    node.flag1 = 1
-    down.prev.push(node.id)
-    delete nodes[andOperand.id]
+  var right = nodes[node.two];
+  var down = nodes[andOperand.one];
+  removeFromNext(andOperand, right);
+  removeFromNext(andOperand, down);
+  node.content = {
+    operator: "and",
+    left: normalizeContent(node),
+    right: normalizeContent(andOperand),
+  };
+  node.one = down.id;
+  node.flag1 = 1;
+  normalizeAnd(node);
+  down.prev.push(node.id);
+  delete nodes[andOperand.id];
 }
 
 function writeOrShortcut(nodes, node, orOperand) {
-    var right = nodes[orOperand.two]
-    var down = nodes[orOperand.one]
-    removeFromNext(orOperand, right)
-    removeFromNext(orOperand, down)
+  var right = nodes[orOperand.two];
+  var down = nodes[orOperand.one];
+  removeFromNext(orOperand, right);
+  removeFromNext(orOperand, down);
+  node.content = {
+    operator: "or",
+    left: normalizeContent(node),
+    right: normalizeContent(orOperand),
+  };
+  node.two = right.id;
+  node.flag1 = 1;
+  normalizeOr(node);
+  right.prev.push(node.id);
+  delete nodes[orOperand.id];
+}
+
+function normalizeAnd(node) {
+  var op = node.content;
+  var left = op.left;
+  var right = op.right;
+  if (left.operator === "not" && right.operator === "not") {
     node.content = {
-        operator: "or",
-        left: normalizeContent(node),
-        right: normalizeContent(orOperand)
-    }
-    node.two = right.id
-    node.flag1 = 1
-    right.prev.push(node.id)
-    delete nodes[orOperand.id]
+      operator: "or",
+      left: left.operand,
+      right: right.operand,
+    };
+    node.flag1 = 0;
+  }
+}
+
+function normalizeOr(node) {
+  var op = node.content;
+  var left = op.left;
+  var right = op.right;
+  if (left.operator === "not" && right.operator === "not") {
+    node.content = {
+      operator: "and",
+      left: left.operand,
+      right: right.operand,
+    };
+    node.flag1 = 0;
+  }
 }
 
 function normalizeContent(question) {
-    if (question.flag1 === 1) {
-        return question.content
-    }
+  if (question.flag1 === 1) {
+    return question.content;
+  }
 
-    return {
-        operator: "not",
-        operand: question.content
-    }
+  return {
+    operator: "not",
+    operand: question.content,
+  };
 }
 
-
 function traverse(nodes, nodeId, visited, action) {
-    if (!nodeId) {
-        return
-    }
+  if (!nodeId) {
+    return;
+  }
 
-    if (nodeId in visited) {
-        return
-    }
-    visited[nodeId] = true
-    var node = nodes[nodeId]
-    action(nodes, node)
-    traverse(nodes, node.one, visited, action)
-    traverse(nodes, node.two, visited, action)
+  if (nodeId in visited) {
+    return;
+  }
+  visited[nodeId] = true;
+  var node = nodes[nodeId];
+  action(nodes, node);
+  traverse(nodes, node.one, visited, action);
+  traverse(nodes, node.two, visited, action);
 }
 
 function connectBack(nodes, node) {
-    if (node.one) {
-        var one = nodes[node.one]
-        one.prev.push(node.id)
-    }
-    if (node.two) {
-        var two = nodes[node.two]
-        two.prev.push(node.id)
-    }    
+  if (node.one) {
+    var one = nodes[node.one];
+    one.prev.push(node.id);
+  }
+  if (node.two) {
+    var two = nodes[node.two];
+    two.prev.push(node.id);
+  }
 }
 
 function markLoopBody(nodes, start, filename) {
-    var nextNodeId = start.one
-    while (nextNodeId) {
-        var current = nodes[nextNodeId]
-        nextNodeId = current.one
-        current.parentLoopId = start.id
-        if (current.type === "loopbegin") {
-            nextNodeId = markLoopBody(nodes, current, filename)
-        } else if (current.type === "loopend") {
-            start.end = current.id
-            start.next = current.one
-            current.start = start.id
-            return nextNodeId
-        }
+  var nextNodeId = start.one;
+  while (nextNodeId) {
+    var current = nodes[nextNodeId];
+    nextNodeId = current.one;
+    current.parentLoopId = start.id;
+    if (current.type === "loopbegin") {
+      nextNodeId = markLoopBody(nodes, current, filename);
+    } else if (current.type === "loopend") {
+      start.end = current.id;
+      start.next = current.one;
+      current.start = start.id;
+      return nextNodeId;
     }
-    throw createError(translate("Loop end expected here"), filename, start.one)
+  }
+  throw createError(translate("Loop end expected here"), filename, start.one);
 }
 
 module.exports = { drakonToStruct, drakonToGraph };
+
 },{"./structFlow":6,"./tools":8}],4:[function(require,module,exports){
-const { drakonToPseudocode } = require('./drakonToPromptStruct');
+const { drakonToPseudocode, mindToTree } = require('./drakonToPromptStruct');
 const { htmlToString } = require("./browserTools")
 const { setUpLanguage, translate } = require("./translate")
 const { drakonToStruct } = require("./drakonToStruct");
@@ -514,6 +654,12 @@ window.drakongen = {
         return drakonToPseudocode(drakonJson, name, filename, htmlToString, translate).text
     },
 
+    toMindTree: function (mindJson, name, filename, language) {
+        setUpLanguage(language)    
+        var result = mindToTree(mindJson, name, filename, htmlToString)
+        return result.text
+    },    
+
     toTree: function (drakonJson, name, filename, language) {
         setUpLanguage(language)
         var result = drakonToStruct(drakonJson, name, filename, translate)
@@ -523,17 +669,19 @@ window.drakongen = {
 },{"./browserTools":1,"./drakonToPromptStruct":2,"./drakonToStruct":3,"./translate":9}],5:[function(require,module,exports){
 var {addRange} = require("./tools")
 
+function makeIndent(depth) {
+    return " ".repeat(depth * 4); 
+}
+
+function printWithIndent(lines, indent, output) {
+    if (!lines) {return}
+    lines.forEach(line => output.push(indent + line))
+}
+
 function printPseudo(algorithm, translate, output, htmlToString) {
-
-
-
     function printStructuredContent(content, indent, output) {
         var lines = printStructuredContentNoIdent(content)
         printWithIndent(lines, indent, output)
-    }
-
-    function printWithIndent(lines, indent, output) {
-        lines.forEach(line => output.push(indent + line))
     }
 
     function printStructuredContentNoIdent(content) {
@@ -582,14 +730,10 @@ function printPseudo(algorithm, translate, output, htmlToString) {
         return lines
     }
 
-    function makeIndent(depth) {
-        return " ".repeat(depth * 4); 
-    }
-
     function printSteps(steps, depth, output) {
         const indent = makeIndent(depth)
         for (var step of steps) {
-            if (step.type === "end" || step.type === "branch" || step.type === "comment") { continue }
+            if (step.type === "end" || step.type === "branch") { continue }
             if (step.type === "question") {
                 printQuestion(step, depth, output)
             } else if (step.type === "loop") {
@@ -613,8 +757,7 @@ function printPseudo(algorithm, translate, output, htmlToString) {
         }
         if (step.content) {
             printStructuredContent(step.content, indent, output)
-        }        
-        output.push("")
+        }
     }
 
     function printAddress(step, indent, output) {
@@ -629,11 +772,12 @@ function printPseudo(algorithm, translate, output, htmlToString) {
 
     function printError(step, indent, output) {
         output.push(indent + translate("error") + ":")
-        output.push(indent + step.message)
+        var ind2 = indent + makeIndent(1)
+        output.push(ind2 + step.message)
         if (step.content) {
-            printStructuredContent(step.content, indent, output)
+            var ind3 = indent + makeIndent(2)
+            printStructuredContent(step.content, ind3, output)
         }        
-        output.push("")
     }    
 
     function empty(array) {
@@ -680,7 +824,7 @@ function printPseudo(algorithm, translate, output, htmlToString) {
     printSteps(algorithm.body, 0, output)
 }
 
-module.exports = {printPseudo}
+module.exports = {printPseudo, printWithIndent, makeIndent}
 },{"./tools":8}],6:[function(require,module,exports){
 var {buildTree} = require("./technicalTree")
 const { createError, sortByProperty } = require("./tools");
@@ -1210,6 +1354,7 @@ var translationsRu = {
     "A Loop begin icon must have content": "Икона начала цикла ДЛЯ должна содержать данные",
     "A Question icon must have content": "Икона Вопрос должна содержать данные",
     "A Select icon must have content": "Икона Выбор должна содержать данные",
+    "Unexpected case value": "Неожиданное значение иконы Вариант",
     "Loop end expected here": "Здесь ожидается конец цикла",
     "An exit from the loop must lead to the point right after the loop end": "Выход из цикла должен вести в точку сразу за его концом",
     "A silhouette branch is not referenced": "Нет ссылок на ветку силуэта",
@@ -1220,7 +1365,8 @@ var translationsRu = {
     "End of subroutine": "Конец подпрограммы",
     "Description": "Описание",
     "Algorithm": "Алгоритм",
-    Remarks: "Замечания"
+    Remarks: "Замечания",
+    Parameters: "Параметры"
 }
 
 var translationsEn = {
@@ -1239,6 +1385,7 @@ var translationsEn = {
     'A Loop begin icon must have content': 'A Loop begin icon must have content',
     'A Question icon must have content': 'A Question icon must have content',
     'A Select icon must have content': 'A Select icon must have content',
+    "Unexpected case value": "Unexpected case value",
     'Loop end expected here': 'Loop end expected here',
     'An exit from the loop must lead to the point right after the loop end': 'An exit from the loop must lead to the point right after the loop end',
     'A silhouette branch is not referenced': 'A silhouette branch is not referenced',
@@ -1249,7 +1396,8 @@ var translationsEn = {
     'End of subroutine': 'End of subroutine',
     Description: 'Description',
     Algorithm: 'Algorithm',
-    Remarks: "Remarks"
+    Remarks: "Remarks",
+    Parameters: "Parameters"
 }
 
 var translationsNo = {
@@ -1268,6 +1416,7 @@ var translationsNo = {
     'A Loop begin icon must have content': 'Et Loop-startikon må ha innhold',
     'A Question icon must have content': 'Et Spørsmål-ikon må ha innhold',
     'A Select icon must have content': 'Et Velg-ikon må ha innhold',
+    "Unexpected case value": "Uventet tilfelle verdi",
     'Loop end expected here': 'Slutt på løkke forventet her',
     'An exit from the loop must lead to the point right after the loop end': 'En utgang fra løkken må føre til punktet rett etter løkkens slutt',
     'A silhouette branch is not referenced': 'En silhuettgren er ikke referert',
@@ -1278,7 +1427,8 @@ var translationsNo = {
     'End of subroutine': 'Slutt på delprosedyre',
     Description: 'Beskrivelse',
     Algorithm: 'Algoritme',
-    Remarks: "Bemerkninger"
+    Remarks: "Bemerkninger",
+    Parameters: "Parametere"
 };
 
 
@@ -1308,8 +1458,8 @@ function optimizeTree(steps) {
     var result = []
 
     for (var step of steps) {
-        if (step.type === "end" || step.type === "branch" || step.type === "comment" || step.type === "loopend") { continue }
-        if (step.type === "action" && !step.content) { continue }
+        if (step.type === "end" || step.type === "branch" || step.type === "loopend") { continue }
+        if ((step.type === "action" || step.type === "comment") && !step.content) { continue }
         var copy
         if (step.type === "question") {
             copy = optimizeQuestion(step)
@@ -1326,6 +1476,7 @@ function optimizeTree(steps) {
 
 function optimizeLoop(step) {
     return {
+        id: step.id,
         type: step.type,
         content: step.content,
         body: optimizeTree(step.body)
