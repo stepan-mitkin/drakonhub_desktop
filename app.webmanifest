@@ -1,11 +1,11 @@
 {
   "name": "DrakonHub",
   "short_name": "DrakonHub",
-  "start_url": "/drakonhub",
+  "start_url": "/drakonhub_desktop/drakonhub",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "icons": [
-    { "src": "/src/static/images/drakonpro-logo-256.png", "sizes": "256x256", "type": "image/png" }
+    { "src": "src/static/images/drakonpro-logo-256.png", "sizes": "256x256", "type": "image/png" }
   ]
 }
