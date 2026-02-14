@@ -1,46 +1,56 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline' 'self'; img-src 'self' data:"
+        />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link
+            rel="icon"
+            type="image/png"
+            href="src/static/images/drakonpro-logo-256.png"
+        />
+        <link rel="stylesheet" href="src/static/styles/reset.css" />
+        <link rel="stylesheet" href="src/static/libs/quill.snow.css" />
+        <link rel="stylesheet" href="src/static/styles/main.css" />
+        <link rel="manifest" href="/app.webmanifest" />
+        <title>DrakonHub</title>
+    </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline' 'self'; img-src 'self' data:">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="icon" type="image/png" href="src/static/images/drakonpro-logo-256.png">
-  <link rel="stylesheet" href="src/static/styles/reset.css">
-  <link rel="stylesheet" href="src/static/libs/quill.snow.css">
-  <link rel="stylesheet" href="src/static/styles/main.css">
-  <title>DrakonHub</title>
-</head>
+    <body style="overflow: hidden">
+        <div id="main">
+            <div id="loading">
+                <img
+                    src="src/static/images/drakonpro-logo-256.png"
+                    alt="DrakonHub logo"
+                />
+            </div>
+            <div id="snack-root"></div>
+            <div id="question-root"></div>
+            <div id="popup-root"></div>
+        </div>
+        <script src="src/static/libs/quill2.min.js"></script>
+        <script src="src/static/libs/mousetrap.min.js"></script>
+        <script src="src/static/libs/rounded.js"></script>
+        <script src="src/static/libs/drakongen.js"></script>
 
-<body style="overflow: hidden;">
-  <div id="main">
-    <div id="loading">
-      <img src="src/static/images/drakonpro-logo-256.png" alt="DrakonHub logo">
-    </div>
-    <div id="snack-root"></div>
-    <div id="question-root"></div>
-    <div id="popup-root"></div>
-  </div>
-  <script src="src/static/libs/quill2.min.js"></script>
-  <script src="src/static/libs/mousetrap.min.js"></script>
-  <script src="src/static/libs/rounded.js"></script>
-  <script src="src/static/libs/drakongen.js"></script>
+        <script src="src/static/js/client_config_github.js"></script>
+        <script src="src/static/strings/localization.js"></script>
 
-  <script src="src/static/js/client_config_github.js"></script>  
-  <script src="src/static/strings/localization.js"></script>
+        <script src="src/static/js/drcore.js"></script>
+        <script src="src/static/js/utils.js"></script>
+        <script src="src/static/js/dh2common.js"></script>
+        <script src="src/static/js/drakon_canvas.js"></script>
+        <script src="src/static/js/drakonhubwidget_10.js"></script>
+        <script src="src/static/js/edit_tools.js"></script>
+        <script src="src/static/js/html_0_1.js"></script>
+        <script src="src/static/js/http_0_1.js"></script>
+        <script src="src/static/js/simplewidgets_0_1.js"></script>
 
-  <script src="src/static/js/drcore.js"></script>
-  <script src="src/static/js/utils.js"></script>
-  <script src="src/static/js/dh2common.js"></script>
-  <script src="src/static/js/drakon_canvas.js"></script>
-  <script src="src/static/js/drakonhubwidget_10.js"></script>
-  <script src="src/static/js/edit_tools.js"></script>
-  <script src="src/static/js/html_0_1.js"></script>
-  <script src="src/static/js/http_0_1.js"></script>
-  <script src="src/static/js/simplewidgets_0_1.js"></script>
-
-  <script src="src/static/js/standalone.js"></script>
-  <script src="src/static/js/local.js"></script>
-</body>
-
+        <script src="src/static/js/standalone.js"></script>
+        <script src="src/static/js/local.js"></script>
+        <script src="src/static/js/pwa.js"></script>
+    </body>
 </html>
