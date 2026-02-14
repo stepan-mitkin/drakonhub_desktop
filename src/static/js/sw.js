@@ -6,11 +6,11 @@ const CACHE_NAME = "app-cache-v1";
 
 // Keep this list SMALL: only what’s required to boot the UI.
 const APP_SHELL = [
-  "../../drakonhub",
+  "../../../drakonhub",
   "../styles/reset.css",
   "../libs/quill.snow.css",
   "../styles/main.css",
-  "app.webmanifest",
+  "../../../app.webmanifest",
   "../images/drakonpro-logo-256.png",
   "../libs/quill2.min.js",
   "../libs/mousetrap.min.js",
