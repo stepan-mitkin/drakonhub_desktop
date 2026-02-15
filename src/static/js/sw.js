@@ -30,6 +30,16 @@ const APP_SHELL = [
   "standalone.js",
   "local.js",
   "pwa.js",
+  "../images/drakosha98b-wide.png",
+  "../images/start_menu_drakosha.png",
+  "../fonts/Arimo-Regular.ttf",
+  "../fonts/Arimo-Bold.ttf",
+  "../fonts/Arimo-Italic.ttf",
+  "../fonts/Arimo-BoldItalic.ttf",
+  "../fonts/LiberationSans-Regular.ttf",
+  "../fonts/LiberationSans-Bold.ttf",
+  "../images/cross.png",
+  "../images/delete.png",
 ];
 
 // Install: pre-cache app shell
