@@ -714,6 +714,13 @@ function dh2common() {
             }
         }
     }
+    function isMobile() {
+        var ua, isAndroid, isIOS;
+        ua = navigator.userAgent || '';
+        isAndroid = /Android/i.test(ua);
+        isIOS = /iPhone|iPad|iPod/i.test(ua);
+        return isAndroid || isIOS;
+    }
     function buildUrlForFolder(id) {
         var parsed, root;
         var __state = '2';
@@ -1208,7 +1215,7 @@ function dh2common() {
         return;
     }
     function saveAsSvg(widget) {
-        var filename, width, height, ctx, box, zoom100, json, obj, image, _var2;
+        var filename, width, height, ctx, box, zoom100, json, obj, image, mime, _var2;
         trace('saveAsSvg');
         zoom100 = 10000;
         box = widget.drakon.getDiagramBox();
@@ -1221,7 +1228,8 @@ function dh2common() {
         _var2 = utils.sanitizeFilename(obj.name);
         filename = _var2 + '.svg';
         image = ctx.getSerializedSvg(true);
-        downloadTextDataAsFile(filename, image);
+        mime = 'image/svg+xml';
+        downloadTextDataAsFile(filename, image, mime);
         return;
     }
     function getHeader1Size() {
@@ -1447,22 +1455,40 @@ function dh2common() {
         return _var2;
     }
     function saveAsJson(widget) {
-        var exported, filename, obj, extension, _var2, _var3;
-        exported = widget.exportJson();
-        obj = JSON.parse(exported);
-        _var3 = widget.getDiagramType();
-        extension = '.' + _var3;
-        _var2 = utils.sanitizeFilename(obj.name);
-        filename = _var2 + extension;
-        downloadTextDataAsFile(filename, exported);
-        return;
+        var exported, filename, obj, extension, type, mime, _var2, _var3;
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '2':
+                exported = widget.exportJson();
+                obj = JSON.parse(exported);
+                type = widget.getDiagramType();
+                extension = '.' + type;
+                _var2 = utils.sanitizeFilename(obj.name);
+                filename = _var2 + extension;
+                _var3 = isMobile();
+                if (_var3) {
+                    mime = 'application/x-' + type;
+                    __state = '35';
+                } else {
+                    mime = 'text/plain';
+                    __state = '35';
+                }
+                break;
+            case '35':
+                downloadTextDataAsFile(filename, exported, mime);
+                return;
+            default:
+                return;
+            }
+        }
     }
     function buildBaseUrl() {
         return window.location.origin + window.location.pathname;
     }
-    function downloadTextDataAsFile(filename, data) {
+    function downloadTextDataAsFile(filename, data, mime) {
         var file, link, url;
-        file = new File([data], filename, { type: 'text/plain' });
+        file = new File([data], filename, { type: mime });
         link = document.createElement('a');
         url = window.URL.createObjectURL(file);
         link.href = url;
