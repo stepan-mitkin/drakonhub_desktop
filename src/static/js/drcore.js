@@ -299,6 +299,10 @@ function drcore() {
             try {
                 while (true) {
                     switch (me.state) {
+                    case '1':
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
                     case '2':
                         widgets.removePopups();
                         freezeScreen();
@@ -313,9 +317,13 @@ function drcore() {
                         return;
                     case '5':
                         unfreezeScreen();
-                        toDiagramCore(file);
-                        me.state = undefined;
-                        __resolve({ ok: true });
+                        me.state = '1';
+                        toDiagramCore(file).then(function () {
+                            _main_saveAsFile(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
                         return;
                     default:
                         return;
@@ -358,6 +366,10 @@ function drcore() {
             try {
                 while (true) {
                     switch (me.state) {
+                    case '1':
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
                     case '2':
                         widgets.removePopups();
                         freezeScreen();
@@ -381,9 +393,13 @@ function drcore() {
                         return;
                     case '13':
                         unfreezeScreen();
-                        toDiagramCore(file);
-                        me.state = undefined;
-                        __resolve({ ok: true });
+                        me.state = '1';
+                        toDiagramCore(file).then(function () {
+                            _main_startOpenFile(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
                         return;
                     default:
                         return;
@@ -416,6 +432,10 @@ function drcore() {
             try {
                 while (true) {
                     switch (me.state) {
+                    case '1':
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
                     case '2':
                         freezeScreen();
                         me.state = '3';
@@ -438,9 +458,13 @@ function drcore() {
                         return;
                     case '7':
                         unfreezeScreen();
-                        toDiagramCore(file);
-                        me.state = undefined;
-                        __resolve({ ok: true });
+                        me.state = '1';
+                        toDiagramCore(file).then(function () {
+                            _main_openRecent(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
                         return;
                     default:
                         return;
@@ -515,9 +539,14 @@ function drcore() {
                         break;
                     case '15':
                         unfreezeScreen();
-                        toDiagramCore(file);
                         me.state = '1';
-                        break;
+                        toDiagramCore(file).then(function () {
+                            _main_startCreateNew(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
                     default:
                         return;
                     }
@@ -920,8 +949,14 @@ function drcore() {
                     case '11':
                         dh2common.hideWaitBlock();
                         if (diagram) {
-                            toDiagramCore(diagram);
                             me.state = '1';
+                            toDiagramCore(diagram).then(function () {
+                                _main_toDiagram(__resolve, __reject);
+                            }, function (error) {
+                                me.state = undefined;
+                                __reject(error);
+                            });
+                            return;
                         } else {
                             _var2 = tr('Could not load diagram');
                             widgets.showErrorSnack(_var2);
@@ -949,43 +984,72 @@ function drcore() {
         var __obj = toDiagram_create();
         return __obj.run();
     }
-    function toDiagramCore(file) {
+    function toDiagramCore_create(file) {
         var diagram, parsed, _var2;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                if (file) {
-                    if (file.error) {
-                        __state = '_item2';
-                    } else {
-                        parsed = dh2common.checkDiagram(file.content);
-                        if (parsed.error) {
-                            __state = '_item2';
+        var me = {
+            state: '2',
+            type: 'toDiagramCore'
+        };
+        function _main_toDiagramCore(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '1':
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
+                    case '2':
+                        if (file) {
+                            if (file.error) {
+                                me.state = '_item2';
+                            } else {
+                                parsed = dh2common.checkDiagram(file.content);
+                                if (parsed.error) {
+                                    me.state = '_item2';
+                                } else {
+                                    diagram = parsed.diagram;
+                                    launcher.setTitle(diagram.name);
+                                    unit.rootWidget.setCurrent('editor');
+                                    unit.diagram = diagram;
+                                    me.state = '1';
+                                    unit.screens.editor.setFolder(unit.diagram, unit.settings).then(function () {
+                                        _main_toDiagramCore(__resolve, __reject);
+                                    }, function (error) {
+                                        me.state = undefined;
+                                        __reject(error);
+                                    });
+                                    return;
+                                }
+                            }
                         } else {
-                            diagram = parsed.diagram;
-                            launcher.setTitle(diagram.name);
-                            unit.rootWidget.setCurrent('editor');
-                            unit.diagram = diagram;
-                            unit.screens.editor.setFolder(unit.diagram, unit.settings);
-                            __state = '1';
+                            me.state = '1';
                         }
+                        break;
+                    case '_item2':
+                        _var2 = tr('Could not load diagram');
+                        widgets.showErrorSnack(_var2);
+                        me.state = '1';
+                        break;
+                    default:
+                        return;
                     }
-                } else {
-                    __state = '1';
                 }
-                break;
-            case '_item2':
-                _var2 = tr('Could not load diagram');
-                widgets.showErrorSnack(_var2);
-                __state = '1';
-                break;
-            default:
-                return;
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
             }
         }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_toDiagramCore(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function toDiagramCore(file) {
+        var __obj = toDiagramCore_create(file);
+        return __obj.run();
     }
     function createUi() {
         var start, editor, multi, _var2, _var3, _var4;
@@ -1101,6 +1165,10 @@ function drcore() {
             try {
                 while (true) {
                     switch (me.state) {
+                    case '1':
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
                     case '2':
                         freezeScreen();
                         me.state = '9';
@@ -1114,9 +1182,13 @@ function drcore() {
                         return;
                     case '9':
                         unfreezeScreen();
-                        toDiagramCore(file);
-                        me.state = undefined;
-                        __resolve({ ok: true });
+                        me.state = '1';
+                        toDiagramCore(file).then(function () {
+                            _main_reloadCurrentFile(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
                         return;
                     default:
                         return;
@@ -1213,8 +1285,14 @@ function drcore() {
                             me.state = '22';
                         } else {
                             rebuildUi();
-                            toDiagramCore(file);
                             me.state = '19';
+                            toDiagramCore(file).then(function () {
+                                _main_start(__resolve, __reject);
+                            }, function (error) {
+                                me.state = undefined;
+                                __reject(error);
+                            });
+                            return;
                         }
                         break;
                     default:
@@ -1438,9 +1516,14 @@ function drcore() {
                         break;
                     case '21':
                         unfreezeScreen();
-                        toDiagramCore(file);
                         me.state = '1';
-                        break;
+                        toDiagramCore(file).then(function () {
+                            _main_editorCreateNew(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
                     default:
                         return;
                     }
@@ -1772,9 +1855,6 @@ function drcore() {
         _var2 = html.createElement('div', properties, args);
         return _var2;
     }
-    function getAppVersion() {
-        return '2026.02.15';
-    }
     function getUrlSource() {
         return '?source=dpro-desktop';
     }
@@ -2055,7 +2135,7 @@ function drcore() {
         return;
     }
     function StartScreen_redraw(self, container) {
-        var start, recent, learn, recentItems, recentList, contentLeft, contentRight, content, dpro, label, langCont, ver, settings, title, header, languageOption, _var2, _var3, item, _var4, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12, _var13, _var14, _var15, _var16, _var17, _var18, _var19, _var20, _var21, _var22, _var23, _var24, _var25, _var26, _var27, _var28, _var29, _var30, _var31, _var32;
+        var start, recent, learn, recentItems, recentList, contentLeft, contentRight, content, dpro, langCont, ver, settings, title, header, ui, label, _var2, _var3, item, _var4, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12, _var13, _var14, _var15, _var16, _var17, _var18, _var19, _var20, _var21, _var22, _var23, _var24, _var25, _var26, _var27, _var28, _var29, _var30, _var31, _var32;
         var __state = '36';
         while (true) {
             switch (__state) {
@@ -2099,9 +2179,9 @@ function drcore() {
                 _var12 = tr('Start');
                 _var11 = div({ text: _var12 }, 'start-header');
                 _var14 = tr('New diagram');
-                _var13 = createDefButton100(_var14 + '...', startCreateNew);
-                _var16 = tr('Open file');
-                _var15 = createButton100(_var16 + '...', startOpenFile);
+                _var13 = createDefButton100(_var14, startCreateNew);
+                _var16 = tr('Import diagram file');
+                _var15 = createButton100(_var16, startOpenFile);
                 start = div('start-section', _var11, _var13, _var15);
                 html.add(contentLeft, start);
                 __state = '27';
@@ -2172,42 +2252,32 @@ function drcore() {
                 break;
             case '47':
                 langCont = div({ padding: '5px' });
-                languageOption = html.createElement('select');
-                languageOption.style.padding = '5px';
-                if (dpro) {
-                    label = div({
-                        padding: '5px',
-                        display: 'inline-block',
-                        text: 'Язык/Language'
-                    });
-                    html.addOption(languageOption, 'ru', 'Русский');
-                    html.addOption(languageOption, 'no', 'Norsk');
-                    html.addOption(languageOption, 'en-us', 'English');
-                    __state = '57';
-                } else {
-                    label = div({
-                        padding: '5px',
-                        display: 'inline-block',
-                        text: 'Language'
-                    });
-                    html.addOption(languageOption, 'en-us', 'English');
-                    html.addOption(languageOption, 'no', 'Norsk');
-                    html.addOption(languageOption, 'ru', 'Русский');
-                    __state = '57';
-                }
-                break;
-            case '57':
-                languageOption.value = settings.language;
-                languageOption.addEventListener('change', function () {
-                    setLanguage(languageOption.value);
+                ui = html.createElement('select');
+                ui.style.padding = '5px';
+                ui.style.width = '150px';
+                label = div({
+                    padding: '5px',
+                    display: 'inline-block',
+                    text: 'Language'
+                });
+                html.addOption(ui, 'en-us', 'English');
+                html.addOption(ui, 'de', 'Deutsch');
+                html.addOption(ui, 'es', 'Español');
+                html.addOption(ui, 'fr', 'Français');
+                html.addOption(ui, 'lt', 'Lietuvių');
+                html.addOption(ui, 'no', 'Norsk');
+                html.addOption(ui, 'ru', 'Русский');
+                ui.value = settings.language;
+                ui.addEventListener('change', function () {
+                    setLanguage(ui.value);
                 });
                 html.add(langCont, label);
-                html.add(langCont, languageOption);
+                html.add(langCont, ui);
                 html.add(container, langCont);
                 __state = '12';
                 break;
             case '61':
-                _var25 = getAppVersion();
+                _var25 = dh2common.getAppVersion();
                 ver = div({
                     'display': 'inline-block',
                     'padding': '5px',
@@ -2269,7 +2339,7 @@ function drcore() {
                 title = createLogoLink();
                 _var2 = div({ 'text-align': 'center' }, title);
                 html.add(dialog, _var2);
-                _var6 = getAppVersion();
+                _var6 = dh2common.getAppVersion();
                 ver = div({
                     'padding': '5px',
                     'text': 'v ' + _var6
@@ -2356,10 +2426,49 @@ function drcore() {
             }
         }
     }
+    function DesktopEditorScreen_setFolder_create(self, folder, userSettings) {
+        var me = {
+            state: '2',
+            type: 'DesktopEditorScreen_setFolder'
+        };
+        function _main_DesktopEditorScreen_setFolder(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '1':
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
+                    case '2':
+                        folder.id = folder.name + '.' + folder.type;
+                        me.state = '1';
+                        self.drakon.setDiagram(folder, userSettings).then(function () {
+                            _main_DesktopEditorScreen_setFolder(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_DesktopEditorScreen_setFolder(__resolve, __reject);
+            });
+        };
+        return me;
+    }
     function DesktopEditorScreen_setFolder(self, folder, userSettings) {
-        folder.id = folder.name + '.' + folder.type;
-        self.drakon.setDiagram(folder, userSettings);
-        return;
+        var __obj = DesktopEditorScreen_setFolder_create(self, folder, userSettings);
+        return __obj.run();
     }
     function DesktopEditorScreen_showItem(self, itemId) {
         var __state = '2';
@@ -2394,32 +2503,32 @@ function drcore() {
     function showTryExportOptions(widget, evt) {
         var items, rect, _var2, _var3, _var4, _var5;
         items = [];
-        _var2 = tr('Export to diagram file');
+        _var5 = tr('Export to diagram file');
         items.push({
-            text: _var2,
+            text: _var5,
             action: function () {
                 dh2common.saveAsJson(widget.drakon);
             }
         });
         items.push({ type: 'separator' });
-        _var3 = tr('Save as picture');
+        _var2 = tr('Save as picture');
         items.push({
-            text: _var3 + ' \xD74',
+            text: _var2 + ' \xD74',
             action: function () {
                 dh2common.saveAsPng(widget.drakon, 4);
             }
         });
-        _var5 = tr('Save as picture');
+        _var4 = tr('Save as picture');
         items.push({
-            text: _var5 + ' \xD72',
+            text: _var4 + ' \xD72',
             action: function () {
                 dh2common.saveAsPng(widget.drakon, 2);
             }
         });
         items.push({ type: 'separator' });
-        _var4 = tr('Save as picture');
+        _var3 = tr('Save as picture');
         items.push({
-            text: _var4,
+            text: _var3,
             action: function () {
                 dh2common.saveAsPng(widget.drakon, 1);
             }
@@ -2429,7 +2538,7 @@ function drcore() {
         return;
     }
     function showDesktopMainMenu_create(widget) {
-        var client, createNew, items, divTopButtons, recentItems, ritems, fitems, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12, _var13, _var14, _var15, _var16;
+        var client, createNew, items, divTopButtons, recentItems, fitems, ritems, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12, _var13, _var14, _var15, _var16, _var17;
         var me = {
             state: '2',
             type: 'showDesktopMainMenu'
@@ -2492,10 +2601,13 @@ function drcore() {
                         break;
                     case '23':
                         recentItems = unit.recent;
-                        if (recentItems.length === 0) {
+                        _var17 = recentItems.map(recentToMenu);
+                        ritems = _var17.filter(function (item) {
+                            return item[0] !== unit.diagram.id;
+                        });
+                        if (ritems.length === 0) {
                             me.state = '8';
                         } else {
-                            ritems = recentItems.map(recentToMenu);
                             _var10 = tr('Recent');
                             _var9 = dh2common.createMenuSection(_var10, ritems);
                             addAsBlock(client, _var9);
@@ -2509,17 +2621,17 @@ function drcore() {
                             _var11,
                             newWindow
                         ]);
-                        _var12 = tr('Open file');
+                        _var12 = tr('Import diagram file');
                         fitems.push([
-                            _var12 + '...',
+                            _var12,
                             startOpenFile
                         ]);
-                        _var13 = tr('Save as');
+                        _var13 = tr('Export to diagram file');
                         fitems.push([
-                            _var13 + '...',
+                            _var13,
                             saveAsFile
                         ]);
-                        _var16 = tr('Close file');
+                        _var16 = tr('Close diagram');
                         fitems.push([
                             _var16,
                             closeFile
@@ -2726,6 +2838,9 @@ function drcore() {
         };
         self.setFolder = function (folder, userSettings) {
             return DesktopEditorScreen_setFolder(self, folder, userSettings);
+        };
+        self.setFolder_create = function (folder, userSettings) {
+            return DesktopEditorScreen_setFolder_create(self, folder, userSettings);
         };
         self.showItem = function (itemId) {
             return DesktopEditorScreen_showItem(self, itemId);

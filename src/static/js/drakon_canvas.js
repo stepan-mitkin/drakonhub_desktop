@@ -2274,7 +2274,8 @@ function drakon_canvas() {
                 copyFieldsWithValue(diagram, src, [
                     'name',
                     'params',
-                    'style'
+                    'style',
+                    'description'
                 ]);
                 _var3 = src.items;
                 _var2 = Object.keys(_var3);
@@ -7695,7 +7696,7 @@ function drakon_canvas() {
         }
     }
     function DrakonCanvas_getVersion(self) {
-        return '1.5.0';
+        return '1.5.1';
     }
     function DrakonCanvas_exportCanvas(self, zoom100, watermark) {
         var width, height, visuals, config, ctx, canvas, zoom, box;
@@ -9019,7 +9020,6 @@ function drakon_canvas() {
         return;
     }
     function GroupTopHandle_dragTo(self, x, y) {
-        console.log(x, y);
         self.element.hiX = x - self.element.x;
         self.element.hiY = y - self.element.y;
         return;
@@ -9357,7 +9357,6 @@ function drakon_canvas() {
         var x, y, _var2;
         x = evt.touches[index].clientX;
         y = evt.touches[index].clientY;
-        console.log(x, y);
         _var2 = buildMouseEvent(x, y, 0, evt.target);
         return _var2;
     }
@@ -29183,8 +29182,8 @@ function drakon_canvas() {
     }
     function drawArrowCap(ctx, color, width) {
         var ARROW_WIDTH, ARROW_HEIGHT;
-        ARROW_WIDTH = 20;
-        ARROW_HEIGHT = 5;
+        ARROW_WIDTH = 14;
+        ARROW_HEIGHT = 3;
         ctx.setLineDash([]);
         ctx.strokeStyle = color;
         ctx.lineWidth = width;
@@ -29202,8 +29201,8 @@ function drakon_canvas() {
     }
     function drawWArrow(ctx, color, fillColor, width) {
         var ARROW_WIDTH, ARROW_HEIGHT;
-        ARROW_WIDTH = 20;
-        ARROW_HEIGHT = 5;
+        ARROW_WIDTH = 14;
+        ARROW_HEIGHT = 3;
         ctx.setLineDash([]);
         ctx.strokeStyle = color;
         ctx.fillStyle = fillColor;
@@ -29221,8 +29220,8 @@ function drakon_canvas() {
     }
     function drawSArrowCap(ctx, color, width) {
         var ARROW_WIDTH, ARROW_HEIGHT;
-        ARROW_WIDTH = 20;
-        ARROW_HEIGHT = 5;
+        ARROW_WIDTH = 14;
+        ARROW_HEIGHT = 3;
         ctx.setLineDash([]);
         ctx.strokeStyle = color;
         ctx.lineWidth = width;
@@ -29237,8 +29236,8 @@ function drakon_canvas() {
     }
     function drawPaw(ctx, color, width) {
         var height, ARROW_WIDTH, ARROW_HEIGHT;
-        ARROW_WIDTH = 20;
-        ARROW_HEIGHT = 5;
+        ARROW_WIDTH = 14;
+        ARROW_HEIGHT = 3;
         ctx.setLineDash([]);
         ctx.strokeStyle = color;
         ctx.lineWidth = width;

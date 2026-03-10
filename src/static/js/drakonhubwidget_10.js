@@ -175,7 +175,7 @@ function drakonhubwidget_10() {
         return _var2;
     }
     function editHtml_create(left, top, header, oldContent, ro, path, tr) {
-        var dialog, contentDiv, quill, result, buttonsDiv, cancel, ok, hint, popup, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9;
+        var dialog, contentDiv, quill, result, buttonsDiv, cancel, ok, hint, popup, safe, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9;
         var me = {
             state: '2',
             type: 'editHtml'
@@ -189,7 +189,8 @@ function drakonhubwidget_10() {
                         if (_var7) {
                             popup = div('shadow', { background: 'white' });
                             popup.style.border = 'solid 1px ' + unit.darkColor;
-                            widgets.pushSemiModalPopup(popup, 0, 0, undefined, true);
+                            safe = widgets.getSafeArea();
+                            widgets.pushSemiModalPopup(popup, safe.left, safe.top, undefined, true);
                             dialog = {
                                 popup: popup,
                                 client: popup
@@ -3247,9 +3248,9 @@ function drakonhubwidget_10() {
         }
     }
     function uploadImage_create(widget, output, total) {
-        var imageContent, client, buttons, input, imp, file, tr, limitTotal, limitBytes, limitText, storage, evt, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9;
+        var client, buttons, input, imp, file, tr, limitBytes, limitTotal, limitText, storage, imageContent, evt, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9;
         var me = {
-            state: '6',
+            state: '42',
             type: 'uploadImage'
         };
         function _main_uploadImage(__resolve, __reject) {
@@ -3257,23 +3258,71 @@ function drakonhubwidget_10() {
                 while (true) {
                     switch (me.state) {
                     case '2':
-                        me.state = '30';
-                        readFileAsBase64(file).then(function (__returnee) {
-                            imageContent = __returnee;
-                            _main_uploadImage(__resolve, __reject);
-                        }, function (error) {
-                            me.state = undefined;
-                            __reject(error);
-                        });
-                        return;
+                        if (imageContent) {
+                            if (imageContent.length > limitBytes) {
+                                _var8 = tr('The image file is too large');
+                                widgets.showErrorSnack(_var8);
+                                me.state = '31';
+                            } else {
+                                storage = imageContent.length + total;
+                                if (storage > limitTotal) {
+                                    _var9 = tr('All images take up too much storage');
+                                    widgets.showErrorSnack(_var9);
+                                    me.state = '31';
+                                } else {
+                                    widgets.removeQuestions();
+                                    output.uploaded(imageContent);
+                                    me.state = '4';
+                                }
+                            }
+                        } else {
+                            _var7 = tr('An error has occurred');
+                            widgets.showErrorSnack(_var7);
+                            me.state = '31';
+                        }
+                        break;
                     case '4':
                         me.state = undefined;
                         __resolve({ ok: true });
                         return;
                     case '6':
-                        limitTotal = 1000000;
-                        limitBytes = 560000;
-                        limitText = '400kb';
+                        if (gconfig.maxImageSizeMb) {
+                            limitBytes = gconfig.maxImageSizeMb * 1024 * 1014 * 4 / 3;
+                            limitTotal = limitBytes * 3;
+                            limitText = gconfig.maxImageSizeMb + 'Mb';
+                            me.state = '33';
+                        } else {
+                            limitBytes = 560000;
+                            limitTotal = 1000000;
+                            limitText = '400kb';
+                            me.state = '33';
+                        }
+                        break;
+                    case '15':
+                        registerEvent(input, 'change', me.chosen);
+                        me.state = '19';
+                        return;
+                    case '20':
+                        widgets.removeQuestions();
+                        me.state = '4';
+                        break;
+                    case '21':
+                        imp.style.display = 'inline-block';
+                        file = evt.target.files[0];
+                        me.state = '23';
+                        break;
+                    case '23':
+                        me.state = '26';
+                        return;
+                    case '27':
+                        widgets.removeQuestions();
+                        me.state = '4';
+                        break;
+                    case '31':
+                        imp.style.display = 'none';
+                        me.state = '15';
+                        break;
+                    case '33':
                         tr = widget.widgetSettings.translate;
                         client = widgets.createMiddleWindow();
                         _var3 = tr('Choose a an image file. ' + 'Max file size is');
@@ -3302,53 +3351,41 @@ function drakonhubwidget_10() {
                         html.add(client, buttons);
                         me.state = '15';
                         break;
-                    case '15':
-                        registerEvent(input, 'change', me.chosen);
-                        me.state = '19';
-                        return;
-                    case '20':
-                        widgets.removeQuestions();
-                        me.state = '4';
-                        break;
-                    case '21':
-                        imp.style.display = 'inline-block';
-                        file = evt.target.files[0];
-                        me.state = '23';
-                        break;
-                    case '23':
-                        me.state = '26';
-                        return;
-                    case '27':
-                        widgets.removeQuestions();
-                        me.state = '4';
-                        break;
-                    case '30':
-                        if (imageContent) {
-                            if (imageContent.length > limitBytes) {
-                                _var8 = tr('The image file is too large');
-                                widgets.showErrorSnack(_var8);
-                                me.state = '31';
+                    case '42':
+                        if (window.padBridge) {
+                            if (window.padBridge.uploadImage) {
+                                me.state = '47';
+                                window.padBridge.uploadImage().then(function (__returnee) {
+                                    imageContent = __returnee;
+                                    _main_uploadImage(__resolve, __reject);
+                                }, function (error) {
+                                    me.state = undefined;
+                                    __reject(error);
+                                });
+                                return;
                             } else {
-                                storage = imageContent.length + total;
-                                if (storage > limitTotal) {
-                                    _var9 = tr('All images take up too much storage');
-                                    widgets.showErrorSnack(_var9);
-                                    me.state = '31';
-                                } else {
-                                    widgets.removeQuestions();
-                                    output.uploaded(imageContent);
-                                    me.state = '4';
-                                }
+                                me.state = '6';
                             }
                         } else {
-                            _var7 = tr('An error has occurred');
-                            widgets.showErrorSnack(_var7);
-                            me.state = '31';
+                            me.state = '6';
                         }
                         break;
-                    case '31':
-                        imp.style.display = 'none';
-                        me.state = '15';
+                    case '45':
+                        me.state = '2';
+                        readFileAsBase64(file).then(function (__returnee) {
+                            imageContent = __returnee;
+                            _main_uploadImage(__resolve, __reject);
+                        }, function (error) {
+                            me.state = undefined;
+                            __reject(error);
+                        });
+                        return;
+                    case '47':
+                        if (imageContent) {
+                            me.state = '2';
+                        } else {
+                            me.state = '4';
+                        }
                         break;
                     default:
                         return;
@@ -3390,7 +3427,7 @@ function drakonhubwidget_10() {
                 me.imp = function () {
                     switch (me.state) {
                     case '26':
-                        me.state = '2';
+                        me.state = '45';
                         _main_uploadImage(__resolve, __reject);
                         break;
                     default:
@@ -3744,7 +3781,7 @@ function drakonhubwidget_10() {
                                 nameChecker = getNameChecker(widget);
                                 _var3 = tr('Rename');
                                 me.state = '25';
-                                widgets.inputBox(prim.left, prim.top, _var3, prim.content, nameChecker).then(function (__returnee) {
+                                widgets.inputBox(prim.left, prim.top, _var3, prim.content, nameChecker, widget.widgetSettings.uniqueChecker).then(function (__returnee) {
                                     newContent = __returnee;
                                     _main_startEditContent(__resolve, __reject);
                                 }, function (error) {
@@ -4148,16 +4185,20 @@ function drakonhubwidget_10() {
     function getNameChecker(widget) {
         var tr, _var2, _var3;
         tr = widget.widgetSettings.translate;
-        if (widget.widgetSettings.strictName) {
-            return function (value) {
-                _var3 = checkGoodFilename(value, tr);
-                return _var3;
-            };
+        if (widget.widgetSettings.nameChecker) {
+            return widget.widgetSettings.nameChecker;
         } else {
-            return function (value) {
-                _var2 = nameNotEmpty(value, tr);
-                return _var2;
-            };
+            if (widget.widgetSettings.strictName) {
+                return function (value) {
+                    _var3 = checkGoodFilename(value, tr);
+                    return _var3;
+                };
+            } else {
+                return function (value) {
+                    _var2 = nameNotEmpty(value, tr);
+                    return _var2;
+                };
+            }
         }
     }
     function onToolbarTypeChanged(widget) {
@@ -5112,7 +5153,7 @@ function drakonhubwidget_10() {
         };
     }
     function showPseudocode(widget, generated, docs) {
-        var dialog, tr, cancel, buttons, headerSize, pre, copy, language, regenerate, combo, options, generate, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9;
+        var dialog, tr, close, buttons, headerSize, pre, copy, language, buttonStyle, regenerate, combo, options, container, generate, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9;
         var __state = '2';
         while (true) {
             switch (__state) {
@@ -5120,7 +5161,10 @@ function drakonhubwidget_10() {
                 language = getPseudoLanguage();
                 tr = widget.widgetSettings.translate;
                 dialog = widgets.createWideMiddleWindow();
-                __state = '12';
+                container = div();
+                container.className = 'column-2-container';
+                html.add(dialog, container);
+                __state = '43';
                 break;
             case '4':
                 return;
@@ -5148,40 +5192,38 @@ function drakonhubwidget_10() {
                 break;
             case '12':
                 _var2 = tr('Close');
-                cancel = widgets.createSimpleButton(_var2, widgets.removeQuestions);
-                cancel.style.marginRight = '0px';
+                close = widgets.createSimpleButton(_var2, widgets.removeQuestions);
+                close.style.marginRight = '0px';
+                buttonStyle = {
+                    'padding': '10px',
+                    'position': 'relative',
+                    'text-align': 'right',
+                    'white-space': 'nowrap'
+                };
                 if (generated.ok) {
                     _var6 = tr('Copy');
                     copy = widgets.createDefaultButton(_var6, function () {
                         copyTextToClipboard(generated.content, tr);
                     });
-                    buttons = div({
-                        'padding-top': '10px',
-                        position: 'relative',
-                        'text-align': 'right'
-                    }, copy, cancel);
+                    buttons = div(buttonStyle, copy, close);
                     __state = '16';
                 } else {
-                    buttons = div({
-                        'padding-top': '10px',
-                        position: 'relative',
-                        'text-align': 'right'
-                    }, cancel);
+                    buttons = div(buttonStyle, close);
                     __state = '16';
                 }
                 break;
             case '16':
-                html.add(dialog, buttons);
-                __state = '27';
+                html.add(container, buttons);
+                __state = '5';
                 break;
-            case '27':
+            case '43':
                 regenerate = div({
-                    display: 'inline-block',
-                    position: 'absolute',
-                    left: '10px',
-                    top: '10px'
+                    'padding': '10px',
+                    'position': 'relative',
+                    'text-align': 'left',
+                    'white-space': 'nowrap'
                 });
-                html.add(buttons, regenerate);
+                html.add(container, regenerate);
                 _var8 = tr('Language');
                 _var7 = div({
                     text: _var8,
@@ -5205,14 +5247,15 @@ function drakonhubwidget_10() {
                 combo = html.createElement('select');
                 combo.style.padding = '5px';
                 combo.style.marginLeft = '5px';
+                combo.style.maxWidth = '130px';
                 html.addOption(combo, 'en', 'English');
                 html.addOption(combo, 'no', 'Norsk');
                 html.addOption(combo, 'ru', 'Русский');
                 combo.value = language;
                 html.add(regenerate, combo);
-                __state = '37';
+                __state = '54';
                 break;
-            case '37':
+            case '54':
                 _var9 = tr('Generate');
                 generate = widgets.createSimpleButton(_var9, function () {
                     regeneratePseudocode(widget, combo.value, docs);
@@ -5220,7 +5263,7 @@ function drakonhubwidget_10() {
                 generate.style.marginLeft = '5px';
                 generate.style.verticalAlign = 'middle';
                 html.add(regenerate, generate);
-                __state = '5';
+                __state = '12';
                 break;
             default:
                 return;

@@ -33,11 +33,26 @@ function simplewidgets_0_1() {
     }
     function addTooltip(element, text) {
         var logic;
-        logic = Tooltip_create(text);
-        logic.run();
-        registerEvent(element, 'mousemove', logic.onMove);
-        registerEvent(element, 'mouseout', logic.onOut);
-        return;
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '1':
+                return;
+            case '2':
+                if (gconfig.pad) {
+                    __state = '1';
+                } else {
+                    logic = Tooltip_create(text);
+                    logic.run();
+                    registerEvent(element, 'mousemove', logic.onMove);
+                    registerEvent(element, 'mouseout', logic.onOut);
+                    __state = '1';
+                }
+                break;
+            default:
+                return;
+            }
+        }
     }
     function Tooltip_create(text) {
         var timeoutId, left, top, evt, _var2;
@@ -203,6 +218,7 @@ function simplewidgets_0_1() {
             padding: '10px',
             width: '1200px'
         });
+        adjustQuestionBody(client);
         html.add(root, client);
         return client;
     }
@@ -289,6 +305,13 @@ function simplewidgets_0_1() {
         var __obj = criticalQuestion_create(title, okText, cancelText);
         return __obj.run();
     }
+    function adjustQuestionBody(client) {
+        var area;
+        area = getSafeArea();
+        client.style.top = area.top + 'px';
+        client.style.maxHeight = area.height + 'px';
+        return;
+    }
     function neutralQuestion_create(title, okText, cancelText) {
         var buttons, message, dialog, cancel, _var2;
         var me = {
@@ -372,16 +395,17 @@ function simplewidgets_0_1() {
         _var2 = div('question-back');
         html.add(root, _var2);
         client = div('question-body shadow', { padding: '10px' });
+        adjustQuestionBody(client);
         html.add(root, client);
         return client;
     }
-    function uploadFile_create(prompt, accept, onStartedLoading) {
+    function uploadFileWithButton_create(prompt, accept, onStartedLoading) {
         var client, buttons, input, imp, reader, file, result, evt, fileData, _var2, _var3, _var4, _var5;
         var me = {
             state: '2',
-            type: 'uploadFile'
+            type: 'uploadFileWithButton'
         };
-        function _main_uploadFile(__resolve, __reject) {
+        function _main_uploadFileWithButton(__resolve, __reject) {
             try {
                 while (true) {
                     switch (me.state) {
@@ -474,7 +498,7 @@ function simplewidgets_0_1() {
                     switch (me.state) {
                     case '23':
                         me.state = '25';
-                        _main_uploadFile(__resolve, __reject);
+                        _main_uploadFileWithButton(__resolve, __reject);
                         break;
                     default:
                         return;
@@ -484,11 +508,11 @@ function simplewidgets_0_1() {
                     switch (me.state) {
                     case '23':
                         me.state = '24';
-                        _main_uploadFile(__resolve, __reject);
+                        _main_uploadFileWithButton(__resolve, __reject);
                         break;
                     case '28':
                         me.state = '29';
-                        _main_uploadFile(__resolve, __reject);
+                        _main_uploadFileWithButton(__resolve, __reject);
                         break;
                     default:
                         return;
@@ -498,7 +522,7 @@ function simplewidgets_0_1() {
                     switch (me.state) {
                     case '28':
                         me.state = '32';
-                        _main_uploadFile(__resolve, __reject);
+                        _main_uploadFileWithButton(__resolve, __reject);
                         break;
                     default:
                         return;
@@ -509,6 +533,111 @@ function simplewidgets_0_1() {
                     switch (me.state) {
                     case '35':
                         me.state = '168';
+                        _main_uploadFileWithButton(__resolve, __reject);
+                        break;
+                    default:
+                        return;
+                    }
+                };
+                _main_uploadFileWithButton(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function uploadFileWithButton(prompt, accept, onStartedLoading) {
+        var __obj = uploadFileWithButton_create(prompt, accept, onStartedLoading);
+        return __obj.run();
+    }
+    function uploadFile_create(prompt, accept, onStartedLoading, skipUpload) {
+        var reader, input, file, result, data, fileData;
+        var me = {
+            state: '2',
+            type: 'uploadFile'
+        };
+        function _main_uploadFile(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '2':
+                        input = unit.fileInput;
+                        if (input) {
+                            html.remove(input);
+                            unit.fileInput = undefined;
+                            me.state = '13';
+                        } else {
+                            me.state = '13';
+                        }
+                        break;
+                    case '4':
+                        result = {
+                            file: file,
+                            data: fileData
+                        };
+                        me.state = undefined;
+                        __resolve(result);
+                        return;
+                    case '5':
+                        me.state = '19';
+                        return;
+                    case '6':
+                        onStartedLoading();
+                        reader = new FileReader();
+                        registerEvent(reader, 'load', function (evt) {
+                            me.loaded(evt.target.result);
+                        });
+                        reader.readAsText(file);
+                        me.state = '9';
+                        return;
+                    case '13':
+                        input = html.createElement('input', { type: 'file' });
+                        input.hidden = true;
+                        unit.fileInput = input;
+                        html.add(document.body, input);
+                        input.accept = accept;
+                        input.onchange = me.selected;
+                        input.click();
+                        me.state = '5';
+                        break;
+                    case '23':
+                        if (input.files.length > 0) {
+                            file = input.files[0];
+                            if (skipUpload) {
+                                data = undefined;
+                                me.state = '4';
+                            } else {
+                                me.state = '6';
+                            }
+                        } else {
+                            me.state = '5';
+                        }
+                        break;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                me.loaded = function (_fileData_) {
+                    fileData = _fileData_;
+                    switch (me.state) {
+                    case '9':
+                        me.state = '4';
+                        _main_uploadFile(__resolve, __reject);
+                        break;
+                    default:
+                        return;
+                    }
+                };
+                me.selected = function () {
+                    switch (me.state) {
+                    case '19':
+                        me.state = '23';
                         _main_uploadFile(__resolve, __reject);
                         break;
                     default:
@@ -520,8 +649,8 @@ function simplewidgets_0_1() {
         };
         return me;
     }
-    function uploadFile(prompt, accept, onStartedLoading) {
-        var __obj = uploadFile_create(prompt, accept, onStartedLoading);
+    function uploadFile(prompt, accept, onStartedLoading, skipUpload) {
+        var __obj = uploadFile_create(prompt, accept, onStartedLoading, skipUpload);
         return __obj.run();
     }
     function moveMovable(moverLogic, evt) {
@@ -1194,7 +1323,7 @@ function simplewidgets_0_1() {
         return;
     }
     function showSnackCore(style, text) {
-        var snackDiv, root, _var2, _var3, _var4, _var5;
+        var snackDiv, root, _var2, _var3, _var4;
         var __state = '2';
         while (true) {
             switch (__state) {
@@ -1214,17 +1343,7 @@ function simplewidgets_0_1() {
                 _var3 = div('snack-field-text', _var4);
                 snackDiv = div('snack-container shadow', _var2, _var3);
                 html.add(root, snackDiv);
-                _var5 = isNarrowScreen();
-                if (_var5) {
-                    snackDiv.style.left = '0px';
-                    snackDiv.style.top = '0px';
-                    snackDiv.style.maxWidth = '100vw';
-                    __state = '7';
-                } else {
-                    __state = '7';
-                }
-                break;
-            case '7':
+                adjustSnackPosition(snackDiv);
                 unit.snack = snackProc_create(snackDiv);
                 unit.snack.run();
                 __state = '4';
@@ -1330,6 +1449,34 @@ function simplewidgets_0_1() {
         var __obj = snackProcLong_create(snackDiv);
         return __obj.run();
     }
+    function adjustSnackPosition(snackDiv) {
+        var area, left, top, _var2;
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '2':
+                area = getSafeArea();
+                left = area.left;
+                top = area.top;
+                _var2 = isNarrowScreen();
+                if (_var2) {
+                    snackDiv.style.maxWidth = '100vw';
+                    __state = '8';
+                } else {
+                    left += 5;
+                    top += 5;
+                    __state = '8';
+                }
+                break;
+            case '8':
+                snackDiv.style.left = left + 'px';
+                snackDiv.style.top = top + 'px';
+                return;
+            default:
+                return;
+            }
+        }
+    }
     function removeSnack() {
         var container;
         var __state = '2';
@@ -1358,7 +1505,7 @@ function simplewidgets_0_1() {
         return;
     }
     function showUndoSnack(text, action) {
-        var snackDiv, root, undoButton, wrapped, _var2, _var3, _var4, _var5, _var6;
+        var snackDiv, root, undoButton, wrapped, _var2, _var3, _var4, _var5;
         var __state = '2';
         while (true) {
             switch (__state) {
@@ -1387,17 +1534,7 @@ function simplewidgets_0_1() {
                 _var3 = div('snack-field-text', _var4, undoButton);
                 snackDiv = div('snack-container shadow', _var2, _var3);
                 html.add(root, snackDiv);
-                _var6 = isNarrowScreen();
-                if (_var6) {
-                    snackDiv.style.left = '0px';
-                    snackDiv.style.top = '0px';
-                    snackDiv.style.maxWidth = '100vw';
-                    __state = '7';
-                } else {
-                    __state = '7';
-                }
-                break;
-            case '7':
+                adjustSnackPosition(snackDiv);
                 unit.snack = snackProcLong_create(snackDiv);
                 unit.snack.run();
                 __state = '4';
@@ -1704,6 +1841,69 @@ function simplewidgets_0_1() {
         registerEvent(button, 'click', action);
         return button;
     }
+    function calculateSafeArea() {
+        var insets, width, height;
+        insets = readSafeAreaInsets();
+        console.log('insets', insets);
+        width = window.innerWidth;
+        height = window.innerHeight - insets.top - insets.bottom;
+        unit.safeArea = {
+            left: insets.left,
+            top: insets.top,
+            width: width,
+            height: height
+        };
+        return;
+    }
+    function getSafeAreaTop() {
+        var style, value, _var2;
+        if (gconfig.safeTop) {
+            return gconfig.safeTop;
+        } else {
+            style = getComputedStyle(document.documentElement);
+            value = style.getPropertyValue('--safe-area-top');
+            _var2 = parseFloat(value);
+            return _var2 || 0;
+        }
+    }
+    function getSafeAreaBottom() {
+        var style, value, _var2;
+        if (gconfig.safeBottom) {
+            return gconfig.safeBottom;
+        } else {
+            style = getComputedStyle(document.documentElement);
+            value = style.getPropertyValue('--safe-area-bottom');
+            _var2 = parseFloat(value);
+            return _var2 || 0;
+        }
+    }
+    function readSafeAreaInsets() {
+        var el, cs, px, n, insets, _var2, _var3, _var4, _var5, _var6;
+        el = document.createElement('div');
+        el.style.cssText = 'position: fixed; ' + 'left: 0; top: 0; ' + 'width: 0; height: 0; ' + 'padding: env(safe-area-inset-top) env(safe-area-inset-right) ' + '         env(safe-area-inset-bottom) env(safe-area-inset-left); ' + 'visibility: hidden; ' + 'pointer-events: none; ';
+        document.body.appendChild(el);
+        cs = getComputedStyle(el);
+        px = v => {
+            n = parseFloat(v || '0');
+            _var2 = Number.isFinite(n);
+            return _var2 ? n : 0;
+        };
+        _var3 = px(cs.paddingTop);
+        _var4 = px(cs.paddingRight);
+        _var5 = px(cs.paddingBottom);
+        _var6 = px(cs.paddingLeft);
+        insets = {
+            top: _var3,
+            right: _var4,
+            bottom: _var5,
+            left: _var6
+        };
+        el.remove();
+        return insets;
+    }
+    function getSafeArea() {
+        return unit.safeArea;
+    }
     function LoadingScreen_redraw(self, container) {
         var label, _var2;
         _var2 = tr('Loading...');
@@ -1726,7 +1926,7 @@ function simplewidgets_0_1() {
                 html.addClass('.title', 'font: ' + header, 'margin-top: 10px');
                 html.addClass('.shadow', 'box-shadow: 0px 0px 7px 2px rgba(0,0,0,0.27)');
                 html.addClass('.full-screen', 'display: inline-block', 'position: fixed', 'left: 0px', 'top: 0px', 'width: 100vw', 'height: 100vh');
-                html.addClass('input:not([type=checkbox]), textarea', 'font: ' + font, 'width: 100%', 'padding: 5px');
+                html.addClass('input:not([type=checkbox]), textarea, select', 'font: ' + font, 'width: 100%', 'padding: 5px');
                 html.addClass('.screen-container', 'display:inline-block', 'width:100%', 'height:100%');
                 html.addClass('.middle', 'display: inline-block', 'position: absolute', 'left: 50%', 'top: 50%', 'transform: translate(-50%, -50%)');
                 html.addClass('.middle-v', 'display: inline-block', 'position: absolute', 'left: 0px', 'top: 50%', 'transform: translateY(-50%)');
@@ -1770,7 +1970,7 @@ function simplewidgets_0_1() {
                 html.addClass('.snack-field-back-warning', 'display: inline-block', 'position: absolute', 'left: 0px', 'top: 0px', 'width: 30px', 'height: 80px', 'background: darkgrey');
                 html.addClass('.snack-field-back-good', 'display: inline-block', 'position: absolute', 'left: 0px', 'top: 0px', 'width: 30px', 'height: 80px', 'background: green');
                 html.addClass('.snack-field-text', 'display: inline-block', 'position: absolute', 'left: 30px', 'top: 0px', 'width: calc(100% - 30px)', 'height: 80px');
-                __state = '54';
+                __state = '100';
                 break;
             case '82':
                 html.addClass('.question-body ol', 'list-style-type: decimal', 'margin-left:15px');
@@ -1788,6 +1988,10 @@ function simplewidgets_0_1() {
                 html.addClass('.grid-item-long', 'display: inline-block', 'vertical-align: bottom', 'white-space: nowrap', 'padding-left: 5px');
                 html.addClass('.grid-item input[type="checkbox"]', 'display: inline-block', 'vertical-align: bottom', 'width: 24px', 'height: 24px', 'margin: 3px');
                 __state = '82';
+                break;
+            case '100':
+                html.addClass(':root', '--safe-area-top: env(safe-area-inset-top)', '--safe-area-bottom: env(safe-area-inset-bottom)');
+                __state = '54';
                 break;
             default:
                 return;
@@ -1874,8 +2078,8 @@ function simplewidgets_0_1() {
         unit.unsaved = false;
         return;
     }
-    function inputBox_create(x, y, title, text, check) {
-        var input, ok, cancel, bottom, dialog, error, errorMessage, shift, x2, y2, form, _var2, _var3, _var4, _var5;
+    function inputBox_create(x, y, title, text, check, action) {
+        var input, ok, cancel, bottom, dialog, error, errorMessage, form, coords, x2, y2, _var2, _var3, _var4;
         var me = {
             state: '2',
             type: 'inputBox'
@@ -1911,19 +2115,9 @@ function simplewidgets_0_1() {
                         me.state = '43';
                         break;
                     case '22':
-                        _var5 = isMobileDevice();
-                        if (_var5) {
-                            x2 = 0;
-                            y2 = 0;
-                            me.state = '28';
-                        } else {
-                            shift = 10;
-                            x2 = x + shift;
-                            y2 = y + shift;
-                            me.state = '28';
-                        }
-                        break;
-                    case '28':
+                        coords = adjustInputBoxCoords(x, y);
+                        x2 = coords[0];
+                        y2 = coords[1];
                         removePopups();
                         pushSemiModalPopup(dialog, x2, y2, me.cancel);
                         input.value = text;
@@ -1960,20 +2154,41 @@ function simplewidgets_0_1() {
                         text = input.value.trim();
                         errorMessage = checkInputText(text, check);
                         if (errorMessage) {
-                            error.style.display = 'block';
-                            html.setText(error, errorMessage);
-                            me.state = '43';
-                            setTimeout(function () {
-                                _main_inputBox(__resolve, __reject);
-                            }, 1000);
-                            return;
+                            me.state = '56';
                         } else {
-                            me.state = '20';
+                            if (action) {
+                                me.state = '78';
+                                action(text).then(function (__returnee) {
+                                    errorMessage = __returnee;
+                                    _main_inputBox(__resolve, __reject);
+                                }, function (error) {
+                                    me.state = undefined;
+                                    __reject(error);
+                                });
+                                return;
+                            } else {
+                                me.state = '20';
+                            }
                         }
                         break;
+                    case '56':
+                        error.style.display = 'block';
+                        html.setText(error, errorMessage);
+                        me.state = '43';
+                        setTimeout(function () {
+                            _main_inputBox(__resolve, __reject);
+                        }, 1000);
+                        return;
                     case '63':
                         text = undefined;
                         me.state = '20';
+                        break;
+                    case '78':
+                        if (errorMessage) {
+                            me.state = '56';
+                        } else {
+                            me.state = '20';
+                        }
                         break;
                     default:
                         return;
@@ -2012,8 +2227,8 @@ function simplewidgets_0_1() {
         };
         return me;
     }
-    function inputBox(x, y, title, text, check) {
-        var __obj = inputBox_create(x, y, title, text, check);
+    function inputBox(x, y, title, text, check, action) {
+        var __obj = inputBox_create(x, y, title, text, check, action);
         return __obj.run();
     }
     function onLargeInputKeyDown(self, evt) {
@@ -2053,6 +2268,35 @@ function simplewidgets_0_1() {
             return _var2;
         } else {
             return undefined;
+        }
+    }
+    function adjustInputBoxCoords(x, y) {
+        var shift, x2, y2, safe, _var2;
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '2':
+                _var2 = isMobileDevice();
+                if (_var2) {
+                    safe = getSafeArea();
+                    x2 = safe.left;
+                    y2 = safe.top;
+                    __state = '3';
+                } else {
+                    shift = 10;
+                    x2 = x + shift;
+                    y2 = y + shift;
+                    __state = '3';
+                }
+                break;
+            case '3':
+                return [
+                    x2,
+                    y2
+                ];
+            default:
+                return;
+            }
         }
     }
     function onInputKeyDown(self, evt) {
@@ -2203,7 +2447,7 @@ function simplewidgets_0_1() {
         return __obj.run();
     }
     function inputBoxRo_create(x, y, title, text) {
-        var input, cancel, bottom, dialog, shift, x2, y2, _var2, _var3, _var4;
+        var input, cancel, bottom, dialog, coords, x2, y2, _var2, _var3;
         var me = {
             state: '2',
             type: 'inputBoxRo'
@@ -2229,19 +2473,9 @@ function simplewidgets_0_1() {
                         __resolve({ ok: true });
                         return;
                     case '22':
-                        _var4 = isMobileDevice();
-                        if (_var4) {
-                            x2 = 0;
-                            y2 = 0;
-                            me.state = '28';
-                        } else {
-                            shift = 10;
-                            x2 = x + shift;
-                            y2 = y + shift;
-                            me.state = '28';
-                        }
-                        break;
-                    case '28':
+                        coords = adjustInputBoxCoords(x, y);
+                        x2 = coords[0];
+                        y2 = coords[1];
                         removePopups();
                         pushSemiModalPopup(dialog, x2, y2);
                         input.value = text;
@@ -2699,6 +2933,8 @@ function simplewidgets_0_1() {
     unit.neutralQuestion_create = neutralQuestion_create;
     unit.neutralQuestion = neutralQuestion;
     unit.createMiddleWindow = createMiddleWindow;
+    unit.uploadFileWithButton_create = uploadFileWithButton_create;
+    unit.uploadFileWithButton = uploadFileWithButton;
     unit.uploadFile_create = uploadFile_create;
     unit.uploadFile = uploadFile;
     unit.createMovablePopup = createMovablePopup;
@@ -2720,6 +2956,10 @@ function simplewidgets_0_1() {
     unit.createSimpleButton = createSimpleButton;
     unit.createBadButton = createBadButton;
     unit.createDefaultButton = createDefaultButton;
+    unit.calculateSafeArea = calculateSafeArea;
+    unit.getSafeAreaTop = getSafeAreaTop;
+    unit.getSafeAreaBottom = getSafeAreaBottom;
+    unit.getSafeArea = getSafeArea;
     unit.isMobileDevice = isMobileDevice;
     unit.isNarrowScreen = isNarrowScreen;
     unit.init = init;

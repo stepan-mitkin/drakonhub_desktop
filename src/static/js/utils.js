@@ -416,6 +416,43 @@ function utils() {
         comp = comparerAsc(property, left, right);
         return -1 * comp;
     }
+    function copyNotNull(dst, src, fields) {
+        var value, _var2, _var3, field;
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '2':
+                _var2 = fields;
+                _var3 = 0;
+                __state = '5';
+                break;
+            case '4':
+                _var3++;
+                __state = '5';
+                break;
+            case '5':
+                if (_var3 < _var2.length) {
+                    field = _var2[_var3];
+                    value = src[field];
+                    if (value === undefined) {
+                        __state = '4';
+                    } else {
+                        if (value === null) {
+                            __state = '4';
+                        } else {
+                            dst[field] = value;
+                            __state = '4';
+                        }
+                    }
+                } else {
+                    return;
+                }
+                break;
+            default:
+                return;
+            }
+        }
+    }
     function debounceAsync_create(action, delay) {
         var tobj, nextRequested, msg, _var2;
         var me = {
@@ -1002,6 +1039,7 @@ function utils() {
     unit.findBy = findBy;
     unit.isSpace = isSpace;
     unit.removeBy = removeBy;
+    unit.copyNotNull = copyNotNull;
     unit.debounceAsync_create = debounceAsync_create;
     unit.debounceAsync = debounceAsync;
     unit.remove = remove;

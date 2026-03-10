@@ -309,7 +309,7 @@ function dh2common() {
                 __state = '37';
                 break;
             case '37':
-                html.addClass('.main-menu', 'display: inline-block', 'background: white', 'border: solid 1px #a0a0a0', 'min-width: 300px', 'max-width: 100vw', 'max-height: calc(100vh - 100px)', 'overflow: auto', 'opacity: 0', 'transform: translateY(-30px)', 'transition: transform 300ms, opacity 300ms');
+                html.addClass('.main-menu', 'display: inline-block', 'background: white', 'border: solid 1px #a0a0a0', 'min-width: 300px', 'max-width: 100vw', 'max-height: calc(100vh - 10px)', 'overflow: auto', 'opacity: 0', 'transform: translateY(-30px)', 'transition: transform 300ms, opacity 300ms');
                 html.addClass('.main-menu-title', 'display: inline-block', 'vertical-align: top', 'font-weight: bold', 'font-size: 20px', 'line-height: 49px', 'padding-left: 10px', 'padding-right: 10px');
                 html.addClass('.main-menu-top', 'position: relative', 'background: white');
                 html.addClass('.main-menu-bottom', 'white-space: nowrap', 'padding-right: 5px');
@@ -338,118 +338,67 @@ function dh2common() {
         return unit.globals.labels;
     }
     function initDiagramLabels() {
-        var labels, bucket, code, labelsByCode, _var2, _var3, item;
+        var bucket, code, labelsByCode, labels, _var2, _var3, item;
         var __state = '2';
         while (true) {
             switch (__state) {
             case '2':
-                labels = [
-                    [
-                        'de',
-                        'Deutsch',
-                        'Ja',
-                        'Nein',
-                        'Ende'
-                    ],
-                    [
-                        'en-us',
-                        'English',
-                        'Yes',
-                        'No',
-                        'End'
-                    ],
-                    [
-                        'es',
-                        'Español',
-                        'Si',
-                        'No',
-                        'Final'
-                    ],
-                    [
-                        'lv',
-                        'Latviešu',
-                        'Jā',
-                        'Nē',
-                        'Beigas'
-                    ],
-                    [
-                        'lt',
-                        'Lietuvių',
-                        'Taip',
-                        'Ne',
-                        'Pabaiga'
-                    ],
-                    [
-                        'nl',
-                        'Nederlands',
-                        'Ja',
-                        'Nee',
-                        'Einde'
-                    ],
-                    [
-                        'no',
-                        'Norsk',
-                        'Ja',
-                        'Nei',
-                        'Slutt',
-                        'Gren',
-                        'Utgang'
-                    ],
-                    [
-                        'pl',
-                        'Polski',
-                        'Tak',
-                        'Nie',
-                        'Koniec',
-                        'Gałąź',
-                        'Wyjście'
-                    ],
-                    [
-                        'ro',
-                        'Român',
-                        'Da',
-                        'Nu',
-                        'Sfârșit'
-                    ],
-                    [
-                        'fi',
-                        'Suomi',
-                        'Kyllä',
-                        'Ei',
-                        'Loppu'
-                    ],
-                    [
-                        'sv',
-                        'Svenska',
-                        'Ja',
-                        'Nej',
-                        'Slut'
-                    ],
-                    [
-                        'ru',
-                        'Русский',
-                        'Да',
-                        'Нет',
-                        'Конец',
-                        'Ветка',
-                        'Завершение'
-                    ],
-                    [
-                        'uk',
-                        'Українська',
-                        'Так',
-                        'Нi',
-                        'Кiнець'
-                    ],
-                    [
-                        'zh',
-                        '中文',
-                        '是',
-                        '否',
-                        '结束'
-                    ]
-                ];
-                __state = '5';
+                labels = [];
+                labels.push([
+                    'de',
+                    'Deutsch',
+                    'Ja',
+                    'Nein',
+                    'Ende',
+                    'Zweig',
+                    'Abschluss'
+                ]);
+                labels.push([
+                    'en-us',
+                    'English',
+                    'Yes',
+                    'No',
+                    'End',
+                    'Branch',
+                    'Completion'
+                ]);
+                labels.push([
+                    'es',
+                    'Español',
+                    'Sí',
+                    'No',
+                    'Final',
+                    'Rama',
+                    'Finalización'
+                ]);
+                labels.push([
+                    'fr',
+                    'Français',
+                    'Oui',
+                    'Non',
+                    'Fin',
+                    'Branche',
+                    'Terminaison'
+                ]);
+                labels.push([
+                    'lv',
+                    'Latviešu',
+                    'Jā',
+                    'Nē',
+                    'Beigas',
+                    'Zars',
+                    'Pabeigšana'
+                ]);
+                labels.push([
+                    'lt',
+                    'Lietuvių',
+                    'Taip',
+                    'Ne',
+                    'Pabaiga',
+                    'Šaka',
+                    'Užbaigimas'
+                ]);
+                __state = '19';
                 break;
             case '4':
                 unit.globals.labels = labels;
@@ -478,6 +427,93 @@ function dh2common() {
                 } else {
                     __state = '4';
                 }
+                break;
+            case '19':
+                labels.push([
+                    'nl',
+                    'Nederlands',
+                    'Ja',
+                    'Nee',
+                    'Einde',
+                    'Tak',
+                    'Voltooiing'
+                ]);
+                labels.push([
+                    'no',
+                    'Norsk',
+                    'Ja',
+                    'Nei',
+                    'Slutt',
+                    'Gren',
+                    'Fullføring'
+                ]);
+                labels.push([
+                    'pl',
+                    'Polski',
+                    'Tak',
+                    'Nie',
+                    'Koniec',
+                    'Gałąź',
+                    'Zakończenie'
+                ]);
+                labels.push([
+                    'ro',
+                    'Român',
+                    'Da',
+                    'Nu',
+                    'Sfârșit',
+                    'Ramură',
+                    'Finalizare'
+                ]);
+                labels.push([
+                    'fi',
+                    'Suomi',
+                    'Kyllä',
+                    'Ei',
+                    'Loppu',
+                    'Haara',
+                    'Suorittaminen'
+                ]);
+                labels.push([
+                    'sv',
+                    'Svenska',
+                    'Ja',
+                    'Nej',
+                    'Slut',
+                    'Gren',
+                    'Slutförande'
+                ]);
+                __state = '26';
+                break;
+            case '26':
+                labels.push([
+                    'ru',
+                    'Русский',
+                    'Да',
+                    'Нет',
+                    'Конец',
+                    'Ветка',
+                    'Завершение'
+                ]);
+                labels.push([
+                    'uk',
+                    'Українська',
+                    'Так',
+                    'Ні',
+                    'Кінець',
+                    'Гілка',
+                    'Завершення'
+                ]);
+                labels.push([
+                    'zh',
+                    '中文',
+                    '是',
+                    '否',
+                    '结束',
+                    '分支',
+                    '完成'
+                ]);
+                __state = '5';
                 break;
             default:
                 return;
@@ -558,9 +594,10 @@ function dh2common() {
     }
     function initResize() {
         unit.resizables = {};
-        unit.resizeDebounce = utils.debounce_create(invokeWindowResize, 1000);
+        unit.resizeDebounce = utils.debounce_create(invokeWindowResize, 400);
         unit.resizeDebounce.run();
         window.onresize = onWindowResize;
+        setTimeout(onWindowResize, 500);
         return;
     }
     function subscribeOnResize(action) {
@@ -799,19 +836,25 @@ function dh2common() {
                     case '6':
                         internal = drakonToInternal(parsed.diagram);
                         parsedFilename = stripExtension(filename);
-                        if (internal.name) {
-                            me.state = '11';
+                        internal.name = parsedFilename.name;
+                        internal.type = parsedFilename.extension;
+                        _var2 = internal.type;
+                        if (_var2 === 'drakon') {
+                            me.state = '14';
                         } else {
-                            internal.name = parsedFilename.name;
-                            me.state = '11';
-                        }
-                        break;
-                    case '11':
-                        if (internal.type) {
-                            me.state = '_item2';
-                        } else {
-                            internal.type = parsedFilename.extension;
-                            me.state = '_item2';
+                            if (_var2 === 'free') {
+                                me.state = '14';
+                            } else {
+                                if (_var2 === 'graf') {
+                                    me.state = '14';
+                                } else {
+                                    _var3 = translate('Unknown document type');
+                                    widgets.showErrorSnack(_var3);
+                                    me.state = undefined;
+                                    __resolve(undefined);
+                                    return;
+                                }
+                            }
                         }
                         break;
                     case '14':
@@ -864,26 +907,6 @@ function dh2common() {
                         me.state = undefined;
                         __resolve(id);
                         return;
-                    case '_item2':
-                        _var2 = internal.type;
-                        if (_var2 === 'drakon') {
-                            me.state = '14';
-                        } else {
-                            if (_var2 === 'free') {
-                                me.state = '14';
-                            } else {
-                                if (_var2 === 'graf') {
-                                    me.state = '14';
-                                } else {
-                                    _var3 = translate('Unknown document type');
-                                    widgets.showErrorSnack(_var3);
-                                    me.state = undefined;
-                                    __resolve(undefined);
-                                    return;
-                                }
-                            }
-                        }
-                        break;
                     default:
                         return;
                     }
@@ -986,12 +1009,21 @@ function dh2common() {
         return spaceId + ' ' + folderId;
     }
     function checkJsonContent(jsonString) {
-        var error, diagram, obj, limit, _var3, _var2, _var4, id, item, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12, _var13, _var14, _var15, _var16, _var17;
+        var error, diagram, obj, limitBytes, limit, _var3, _var2, _var4, id, item, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12, _var13, _var14, _var15, _var16, _var17;
         var __state = '2';
         while (true) {
             switch (__state) {
             case '2':
-                limit = 1000000;
+                if (gconfig.maxImageSizeMb) {
+                    limitBytes = gconfig.maxImageSizeMb * 1024 * 1014;
+                    limit = limitBytes * 3;
+                    __state = '3';
+                } else {
+                    limit = 1000000;
+                    __state = '3';
+                }
+                break;
+            case '3':
                 error = '';
                 diagram = undefined;
                 if (jsonString.length > limit) {
@@ -1206,31 +1238,111 @@ function dh2common() {
             }
         }
     }
+    function saveAsPng_create(widget, res) {
+        var exported, filename, _var2, _var3;
+        var me = {
+            state: '2',
+            type: 'saveAsPng'
+        };
+        function _main_saveAsPng(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '1':
+                        me.state = undefined;
+                        __resolve({ ok: true });
+                        return;
+                    case '2':
+                        exported = widget.exportImage(res, '');
+                        _var2 = utils.sanitizeFilename(exported.name);
+                        filename = _var2 + '.png';
+                        if (window.padBridge) {
+                            if (window.padBridge.exportPng) {
+                                me.state = '_item3';
+                                window.padBridge.exportPng(filename, exported.image).then(function () {
+                                    _main_saveAsPng(__resolve, __reject);
+                                }, function (error) {
+                                    me.state = undefined;
+                                    __reject(error);
+                                });
+                                return;
+                            } else {
+                                me.state = '32';
+                            }
+                        } else {
+                            me.state = '32';
+                        }
+                        break;
+                    case '32':
+                        downloadImageDataAsFile(filename, exported.image);
+                        me.state = '1';
+                        break;
+                    case '_item3':
+                        _var3 = translate('Saved');
+                        widgets.showGoodSnack(_var3 + ': ' + filename);
+                        me.state = '1';
+                        break;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                _main_saveAsPng(__resolve, __reject);
+            });
+        };
+        return me;
+    }
     function saveAsPng(widget, res) {
-        var exported, filename, _var2;
-        exported = widget.exportImage(res, '');
-        _var2 = utils.sanitizeFilename(exported.name);
-        filename = _var2 + '.png';
-        downloadImageDataAsFile(filename, exported.image);
-        return;
+        var __obj = saveAsPng_create(widget, res);
+        return __obj.run();
     }
     function saveAsSvg(widget) {
         var filename, width, height, ctx, box, zoom100, json, obj, image, mime, _var2;
-        trace('saveAsSvg');
-        zoom100 = 10000;
-        box = widget.drakon.getDiagramBox();
-        width = box.right - box.left;
-        height = box.bottom - box.top;
-        ctx = new C2S(width, height);
-        widget.drakon.exportToContext(box, zoom100, ctx);
-        json = widget.drakon.exportJson();
-        obj = JSON.parse(json);
-        _var2 = utils.sanitizeFilename(obj.name);
-        filename = _var2 + '.svg';
-        image = ctx.getSerializedSvg(true);
-        mime = 'image/svg+xml';
-        downloadTextDataAsFile(filename, image, mime);
-        return;
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '1':
+                return;
+            case '2':
+                trace('saveAsSvg');
+                zoom100 = 10000;
+                box = widget.drakon.getDiagramBox();
+                width = box.right - box.left;
+                height = box.bottom - box.top;
+                ctx = new C2S(width, height);
+                widget.drakon.exportToContext(box, zoom100, ctx);
+                json = widget.drakon.exportJson();
+                obj = JSON.parse(json);
+                _var2 = utils.sanitizeFilename(obj.name);
+                filename = _var2 + '.svg';
+                image = ctx.getSerializedSvg(true);
+                mime = 'image/svg+xml';
+                if (window.padBridge) {
+                    if (window.padBridge.exportSvg) {
+                        window.padBridge.exportSvg(filename, image, mime);
+                        __state = '1';
+                    } else {
+                        __state = '32';
+                    }
+                } else {
+                    __state = '32';
+                }
+                break;
+            case '32':
+                downloadTextDataAsFile(filename, image, mime);
+                __state = '1';
+                break;
+            default:
+                return;
+            }
+        }
     }
     function getHeader1Size() {
         return gconfig.fontSize + 4 + 'px';
@@ -1294,6 +1406,28 @@ function dh2common() {
                 return { error: error };
             } else {
                 return parsed;
+            }
+        }
+    }
+    function isSuccess(response) {
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '2':
+                if (response.status === 200) {
+                    __state = '3';
+                } else {
+                    if (response.status === 204) {
+                        __state = '3';
+                    } else {
+                        return false;
+                    }
+                }
+                break;
+            case '3':
+                return true;
+            default:
+                return;
             }
         }
     }
@@ -1455,29 +1589,29 @@ function dh2common() {
         return _var2;
     }
     function saveAsJson(widget) {
-        var exported, filename, obj, extension, type, mime, _var2, _var3;
+        var dia;
         var __state = '2';
         while (true) {
             switch (__state) {
+            case '1':
+                return;
             case '2':
-                exported = widget.exportJson();
-                obj = JSON.parse(exported);
-                type = widget.getDiagramType();
-                extension = '.' + type;
-                _var2 = utils.sanitizeFilename(obj.name);
-                filename = _var2 + extension;
-                _var3 = isMobile();
-                if (_var3) {
-                    mime = 'application/x-' + type;
-                    __state = '35';
+                dia = saveAsJsonCore(widget);
+                if (window.padBridge) {
+                    if (window.padBridge.exportJson) {
+                        window.padBridge.exportJson(dia.filename, dia.exported, dia.mime);
+                        __state = '1';
+                    } else {
+                        __state = '35';
+                    }
                 } else {
-                    mime = 'text/plain';
                     __state = '35';
                 }
                 break;
             case '35':
-                downloadTextDataAsFile(filename, exported, mime);
-                return;
+                downloadTextDataAsFile(dia.filename, dia.exported, dia.mime);
+                __state = '1';
+                break;
             default:
                 return;
             }
@@ -1485,6 +1619,21 @@ function dh2common() {
     }
     function buildBaseUrl() {
         return window.location.origin + window.location.pathname;
+    }
+    function saveAsJsonCore(widget) {
+        var exported, filename, obj, extension, type, mime, _var2;
+        exported = widget.exportJson();
+        obj = JSON.parse(exported);
+        type = widget.getDiagramType();
+        extension = '.' + type;
+        _var2 = utils.sanitizeFilename(obj.name);
+        filename = _var2 + extension;
+        mime = 'application/x-' + type;
+        return {
+            filename: filename,
+            exported: exported,
+            mime: mime
+        };
     }
     function downloadTextDataAsFile(filename, data, mime) {
         var file, link, url;
@@ -1726,7 +1875,6 @@ function dh2common() {
             '>': true,
             ':': true,
             '"': true,
-            '\'': true,
             '/': true,
             '\\': true,
             '|': true,
@@ -1738,7 +1886,7 @@ function dh2common() {
         return;
     }
     function sendRequestWithCheck_create(method, url, payload) {
-        var response, error, _var2, _var3;
+        var response, error, _var2, _var3, _var4;
         var me = {
             state: '2',
             type: 'sendRequestWithCheck'
@@ -1748,7 +1896,7 @@ function dh2common() {
                 while (true) {
                     switch (me.state) {
                     case '2':
-                        me.state = '6';
+                        me.state = '_item3';
                         sendRequestRaw(method, url, payload).then(function (__returnee) {
                             response = __returnee;
                             _main_sendRequestWithCheck(__resolve, __reject);
@@ -1757,32 +1905,26 @@ function dh2common() {
                             __reject(error);
                         });
                         return;
-                    case '6':
-                        if (response.status === 200) {
-                            me.state = '26';
-                        } else {
-                            if (response.status === 204) {
-                                me.state = '26';
-                            } else {
-                                console.error(response);
-                                error = new Error('HTTP error. Status=' + response.status + ' url=' + url);
-                                error.status = response.status;
-                                _var3 = error;
+                    case '_item3':
+                        _var3 = isSuccess(response);
+                        if (_var3) {
+                            if (response.responseText) {
+                                _var2 = JSON.parse(response.responseText);
                                 me.state = undefined;
-                                __reject(_var3);
+                                __resolve(_var2);
+                                return;
+                            } else {
+                                me.state = undefined;
+                                __resolve(undefined);
                                 return;
                             }
-                        }
-                        break;
-                    case '26':
-                        if (response.responseText) {
-                            _var2 = JSON.parse(response.responseText);
-                            me.state = undefined;
-                            __resolve(_var2);
-                            return;
                         } else {
+                            console.error(response);
+                            error = new Error('HTTP error. Status=' + response.status + ' url=' + url);
+                            error.status = response.status;
+                            _var4 = error;
                             me.state = undefined;
-                            __resolve(undefined);
+                            __reject(_var4);
                             return;
                         }
                     default:
@@ -2092,6 +2234,9 @@ function dh2common() {
     function fetchUserSettings() {
         var __obj = fetchUserSettings_create();
         return __obj.run();
+    }
+    function getAppVersion() {
+        return '2026.03.10';
     }
     function removeLoading() {
         var loading;
@@ -2978,7 +3123,7 @@ function dh2common() {
                         return;
                     case '26':
                         hideWaitBlock();
-                        _var2 = http.isSuccess(response);
+                        _var2 = isSuccess(response);
                         if (_var2) {
                             widgets.removeQuestions();
                             _var7 = translate('Email confirmed');
@@ -3008,7 +3153,7 @@ function dh2common() {
                         return;
                     case '34':
                         hideWaitBlock();
-                        _var4 = http.isSuccess(response);
+                        _var4 = isSuccess(response);
                         if (_var4) {
                             _var6 = translate('A new PIN has been sent');
                             widgets.showGoodSnack(_var6);
@@ -3196,24 +3341,47 @@ function dh2common() {
         return;
     }
     function PanicScreen_showPanicMessage(self, message) {
-        var central, home, _var2, _var3, _var4, _var5, _var6, _var7, _var8;
-        home = function () {
-            _var8 = getAppRoot();
-            html.goTo(_var8);
-        };
-        _var2 = div('header1', { text: message });
-        _var5 = translate('Reload');
-        _var4 = widgets.createDefaultButton(_var5, html.reload);
-        _var7 = translate('Home');
-        _var6 = widgets.createSimpleButton(_var7, home);
-        _var3 = div({
-            'padding-top': '20px',
-            'text-align': 'center'
-        }, _var4, _var6);
-        central = div('middle', _var2, _var3);
-        html.clear(self.container);
-        html.add(self.container, central);
-        return;
+        var central, home, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12;
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '2':
+                if (gconfig.pad) {
+                    _var9 = div('header1', { text: message });
+                    _var12 = translate('Restart app');
+                    _var11 = widgets.createDefaultButton(_var12, html.reload);
+                    _var10 = div({
+                        'padding-top': '20px',
+                        'text-align': 'center'
+                    }, _var11);
+                    central = div('middle', _var9, _var10);
+                    __state = '3';
+                } else {
+                    home = function () {
+                        _var8 = getAppRoot();
+                        html.goTo(_var8);
+                    };
+                    _var2 = div('header1', { text: message });
+                    _var5 = translate('Reload');
+                    _var4 = widgets.createDefaultButton(_var5, html.reload);
+                    _var7 = translate('Home');
+                    _var6 = widgets.createSimpleButton(_var7, home);
+                    _var3 = div({
+                        'padding-top': '20px',
+                        'text-align': 'center'
+                    }, _var4, _var6);
+                    central = div('middle', _var2, _var3);
+                    __state = '3';
+                }
+                break;
+            case '3':
+                html.clear(self.container);
+                html.add(self.container, central);
+                return;
+            default:
+                return;
+            }
+        }
     }
     function buildWidgetDom(parentElement, widget) {
         var container;
@@ -3469,12 +3637,13 @@ function dh2common() {
             }
         }
     }
-    function createMenuSection(name, lines) {
+    function createMenuSection(name, lines, forceNarrow) {
         var container, header, body, sep, _var2, _var3, line, _var4;
         var __state = '2';
         while (true) {
             switch (__state) {
             case '2':
+                name = name || '';
                 header = div('main-menu-section-header', { text: name });
                 body = div();
                 _var2 = lines;
@@ -3502,13 +3671,20 @@ function dh2common() {
                     container = div('main-menu-section', header, body);
                     _var4 = widgets.isNarrowScreen();
                     if (_var4) {
-                        container.style.display = 'block';
-                        container.style.marginRight = '5px';
-                        __state = '4';
+                        __state = '13';
                     } else {
-                        __state = '4';
+                        if (forceNarrow) {
+                            __state = '13';
+                        } else {
+                            __state = '4';
+                        }
                     }
                 }
+                break;
+            case '13':
+                container.style.display = 'block';
+                container.style.marginRight = '5px';
+                __state = '4';
                 break;
             default:
                 return;
@@ -3532,7 +3708,7 @@ function dh2common() {
         return;
     }
     function showMainMenu(client) {
-        var container, image, close, _var2, _var3, _var4, _var5;
+        var container, image, close, area, _var2, _var3, _var4, _var5;
         _var4 = ipath(gconfig.wideLogo);
         image = img(_var4);
         image.style.height = '49px';
@@ -3545,7 +3721,11 @@ function dh2common() {
         _var2 = div('main-menu-top', image, close);
         _var3 = div('main-menu-bottom', client);
         container = div('shadow main-menu', _var2, _var3);
-        widgets.pushSemiModalPopup(container, 0, 0);
+        area = widgets.getSafeArea();
+        container.style.left = area.left + 'px';
+        container.style.top = area.top + 'px';
+        container.style.maxHeight = area.height + 'px';
+        widgets.pushSemiModalPopup(container, area.left, area.top);
         container.style.transform = 'translateY(0px)';
         container.style.opacity = 1;
         return;
@@ -3556,22 +3736,24 @@ function dh2common() {
         return;
     }
     function setRootStyle() {
-        var style;
+        var style, area;
         var __state = '2';
         while (true) {
             switch (__state) {
             case '1':
                 return;
             case '2':
+                widgets.calculateSafeArea();
                 if (unit.rootElement) {
+                    area = widgets.getSafeArea();
                     style = unit.rootElement.style;
                     style.display = 'inline-block';
                     style.position = 'fixed';
-                    style.left = '0px';
-                    style.top = '0px';
+                    style.left = area.left + 'px';
+                    style.top = area.top + 'px';
                     style.overflow = 'hidden';
-                    style.width = window.innerWidth + 'px';
-                    style.height = window.innerHeight + 'px';
+                    style.width = area.width + 'px';
+                    style.height = area.height + 'px';
                     __state = '1';
                 } else {
                     __state = '1';
@@ -3876,6 +4058,312 @@ function dh2common() {
         var __obj = loadFonts_create(fonts);
         return __obj.run();
     }
+    function registerLeftButtonEvent(element, tapper, name, id) {
+        element.addEventListener(name, function (evt) {
+            runLeftButtonEvent(tapper, name, id, evt);
+        });
+        return;
+    }
+    function runLeftButtonEvent(tapper, name, id, evt) {
+        var callback;
+        var __state = '2';
+        while (true) {
+            switch (__state) {
+            case '1':
+                return;
+            case '2':
+                if (evt.button === 0) {
+                    callback = tapper[name];
+                    callback(evt, id);
+                    __state = '1';
+                } else {
+                    __state = '1';
+                }
+                break;
+            default:
+                return;
+            }
+        }
+    }
+    function registerClickerEvents(tapper, element, id) {
+        registerLeftButtonEvent(element, tapper, 'pointerdown', id);
+        registerLeftButtonEvent(element, tapper, 'pointermove', id);
+        registerLeftButtonEvent(element, tapper, 'pointerup', id);
+        registerLeftButtonEvent(element, tapper, 'pointercancel', id);
+        return;
+    }
+    function ClickerTapper_create() {
+        var startX, startY, longTimer, dx, dy, dist, faraway, tapped, evt, id;
+        var me = {
+            state: '2',
+            type: 'ClickerTapper'
+        };
+        function _main_ClickerTapper(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '2':
+                        me.state = '27';
+                        return;
+                    case '3':
+                        startX = evt.clientX;
+                        startY = evt.clientY;
+                        longTimer = setTimeout(me.timeout, 500);
+                        faraway = false;
+                        tapped = false;
+                        me.state = '5';
+                        break;
+                    case '5':
+                        me.state = '11';
+                        return;
+                    case '12':
+                        clearTimeout(longTimer);
+                        dx = evt.clientX - startX;
+                        dy = evt.clientY - startY;
+                        dist = Math.hypot(dx, dy);
+                        if (dist > 4) {
+                            faraway = true;
+                            me.state = '5';
+                        } else {
+                            me.state = '5';
+                        }
+                        break;
+                    case '13':
+                        clearTimeout(longTimer);
+                        me.target.click(evt, id);
+                        me.state = '2';
+                        break;
+                    case '14':
+                        clearTimeout(longTimer);
+                        me.state = '2';
+                        break;
+                    case '26':
+                        if (faraway) {
+                            me.state = '2';
+                        } else {
+                            me.target.longTap(evt, id);
+                            me.state = '2';
+                        }
+                        break;
+                    case '33':
+                        if (tapped) {
+                            evt.preventDefault();
+                            me.state = '5';
+                        } else {
+                            me.state = '5';
+                        }
+                        break;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                me.pointermove = function (_evt_) {
+                    evt = _evt_;
+                    switch (me.state) {
+                    case '11':
+                        me.state = '12';
+                        _main_ClickerTapper(__resolve, __reject);
+                        break;
+                    case '27':
+                        me.state = '33';
+                        _main_ClickerTapper(__resolve, __reject);
+                        break;
+                    default:
+                        return;
+                    }
+                };
+                me.pointerup = function (_evt_) {
+                    evt = _evt_;
+                    switch (me.state) {
+                    case '11':
+                        me.state = '13';
+                        _main_ClickerTapper(__resolve, __reject);
+                        break;
+                    default:
+                        return;
+                    }
+                };
+                me.pointercancel = function () {
+                    switch (me.state) {
+                    case '11':
+                        me.state = '14';
+                        _main_ClickerTapper(__resolve, __reject);
+                        break;
+                    default:
+                        return;
+                    }
+                };
+                me.timeout = function () {
+                    switch (me.state) {
+                    case '11':
+                        me.state = '26';
+                        _main_ClickerTapper(__resolve, __reject);
+                        break;
+                    default:
+                        return;
+                    }
+                };
+                me.pointerdown = function (_evt_, _id_) {
+                    evt = _evt_;
+                    id = _id_;
+                    switch (me.state) {
+                    case '27':
+                        me.state = '3';
+                        _main_ClickerTapper(__resolve, __reject);
+                        break;
+                    default:
+                        return;
+                    }
+                };
+                _main_ClickerTapper(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function ClickerTapper() {
+        var __obj = ClickerTapper_create();
+        return __obj.run();
+    }
+    function DoubleClick_create() {
+        var doubleTimer, evt, id;
+        var me = {
+            state: '2',
+            type: 'DoubleClick'
+        };
+        function _main_DoubleClick(__resolve, __reject) {
+            try {
+                while (true) {
+                    switch (me.state) {
+                    case '2':
+                        me.state = '9';
+                        return;
+                    case '3':
+                        doubleTimer = setTimeout(me.timeout, 400);
+                        me.state = '5';
+                        break;
+                    case '5':
+                        me.state = '14';
+                        return;
+                    case '10':
+                        me.target.longTap(evt, id);
+                        me.state = '2';
+                        break;
+                    case '11':
+                        if (me.prev === id) {
+                            me.state = '3';
+                        } else {
+                            me.prev = id;
+                            me.target.click(evt, id);
+                            me.state = '3';
+                        }
+                        break;
+                    case '20':
+                        clearTimeout(doubleTimer);
+                        me.target.longTap(evt, id);
+                        me.state = '2';
+                        break;
+                    case '24':
+                        clearTimeout(doubleTimer);
+                        if (me.prev === id) {
+                            setTimeout(function () {
+                                me.target.doubleClick(evt, id);
+                            }, 0);
+                            me.state = '2';
+                        } else {
+                            me.prev = id;
+                            me.target.click(evt, id);
+                            me.state = '2';
+                        }
+                        break;
+                    default:
+                        return;
+                    }
+                }
+            } catch (ex) {
+                me.state = undefined;
+                __reject(ex);
+            }
+        }
+        me.run = function () {
+            me.run = undefined;
+            return new Promise(function (__resolve, __reject) {
+                me.click = function (_evt_, _id_) {
+                    evt = _evt_;
+                    id = _id_;
+                    switch (me.state) {
+                    case '9':
+                        me.state = '11';
+                        _main_DoubleClick(__resolve, __reject);
+                        break;
+                    case '14':
+                        me.state = '24';
+                        _main_DoubleClick(__resolve, __reject);
+                        break;
+                    default:
+                        return;
+                    }
+                };
+                me.longTap = function (_evt_, _id_) {
+                    evt = _evt_;
+                    id = _id_;
+                    switch (me.state) {
+                    case '9':
+                        me.state = '10';
+                        _main_DoubleClick(__resolve, __reject);
+                        break;
+                    case '14':
+                        me.state = '20';
+                        _main_DoubleClick(__resolve, __reject);
+                        break;
+                    default:
+                        return;
+                    }
+                };
+                me.timeout = function () {
+                    switch (me.state) {
+                    case '14':
+                        me.state = '2';
+                        _main_DoubleClick(__resolve, __reject);
+                        break;
+                    default:
+                        return;
+                    }
+                };
+                _main_DoubleClick(__resolve, __reject);
+            });
+        };
+        return me;
+    }
+    function DoubleClick() {
+        var __obj = DoubleClick_create();
+        return __obj.run();
+    }
+    function createLongClicker(target) {
+        var tapper, clicker;
+        tapper = ClickerTapper_create();
+        clicker = DoubleClick_create();
+        tapper.target = clicker;
+        clicker.target = target;
+        tapper.run();
+        clicker.run();
+        return {
+            stop: function () {
+                tapper.state = undefined;
+                clicker.state = undefined;
+            },
+            registerEvents: function (element, id) {
+                registerClickerEvents(tapper, element, id);
+            }
+        };
+    }
     function PanicScreen() {
         var self = {};
         self.redraw = function (container) {
@@ -3931,14 +4419,17 @@ function dh2common() {
     unit.importDiagram_create = importDiagram_create;
     unit.importDiagram = importDiagram;
     unit.stripExtension = stripExtension;
+    unit.saveAsPng_create = saveAsPng_create;
     unit.saveAsPng = saveAsPng;
     unit.saveAsSvg = saveAsSvg;
     unit.generateRandomString = generateRandomString;
     unit.isNetworkError = isNetworkError;
     unit.checkDiagram = checkDiagram;
+    unit.isSuccess = isSuccess;
     unit.getQuery = getQuery;
     unit.stripTags = stripTags;
     unit.saveAsJson = saveAsJson;
+    unit.saveAsJsonCore = saveAsJsonCore;
     unit.downloadTextDataAsFile = downloadTextDataAsFile;
     unit.downloadImageDataAsFile = downloadImageDataAsFile;
     unit.setTitle = setTitle;
@@ -3957,6 +4448,7 @@ function dh2common() {
     unit.saveUserSettings = saveUserSettings;
     unit.fetchUserSettings_create = fetchUserSettings_create;
     unit.fetchUserSettings = fetchUserSettings;
+    unit.getAppVersion = getAppVersion;
     unit.removeLoading = removeLoading;
     unit.chooseDocumentType_create = chooseDocumentType_create;
     unit.chooseDocumentType = chooseDocumentType;
@@ -3983,6 +4475,7 @@ function dh2common() {
     unit.prepareFonts = prepareFonts;
     unit.loadFonts_create = loadFonts_create;
     unit.loadFonts = loadFonts;
+    unit.createLongClicker = createLongClicker;
     unit.PanicScreen = PanicScreen;
     unit.MultiWidget = MultiWidget;
     Object.defineProperty(unit, 'utils', {
