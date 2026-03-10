@@ -14,7 +14,7 @@ The downloadable version of DrakonHub runs on Windows, Linux, and Mac. The insta
 
 DrakonHub for desktop is based on [DrakonWidget library](https://github.com/stepan-mitkin/drakonwidget)
 
-![Drakon example: Should I make art?](images/should_i_make_art.png)
+![Drakon example: Should I make art?](assets/images/should_i_make_art.png)
 
 ## Download DrakonHub
 
