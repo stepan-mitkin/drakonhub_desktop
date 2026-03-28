@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline' 'self'; img-src 'self' data:"
+        />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link rel="icon" type="image/png" href="/favicon.png" />
+        <title>Examples of Software Requirements (SRS) in Drakon</title>
+        <meta name="description" content="Examples of software requirements specifications in the Drakon language" />
+        <meta property="og:title" content="Examples of Software Requirements (SRS) in Drakon" />
+        <meta property="og:description" content="Examples of software requirements specifications in the Drakon language" />
+        <meta property="og:image" content="instrument-price.png" />
+        <meta property="og:url" content="https://drakonhub.com/en/software-requirements-in-drakon" />
+        <meta property="og:type" content="website" />
+        <style>
+            html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+ol,
+ul {
+    list-style: none;
+}
+blockquote,
+q {
+    quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+    content: "";
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+*,
+*:before,
+*:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 17px;
+}
+
+p {
+    margin-bottom: 20px;
+    line-height: 1.3;
+}
+
+#main-container {
+    width: 1100px;
+    max-width: 100%;
+    margin: auto;
+    padding: 20px;
+}
+
+.logo-header img {
+    display: inline-block;
+    vertical-align: middle;
+    width: 200px;
+    height: 49px;
+}
+
+h2 {
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-weight: bold;
+    font-size: 24px;
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
+
+.button-div {
+    margin-bottom: 20px;
+}
+
+.button-div a {
+    display: inline-block;
+    width: 200px;
+    padding: 20px;
+    border-radius: 4px;
+    color: white;
+    background: #007820;
+    cursor: pointer;
+    user-select: none;
+}
+
+.button-div a:link,
+.button-div a:visited {
+    color: white;
+    text-decoration: none;
+}
+
+.button-div a:hover {
+    background: #015216;
+}
+
+.button-div a:active {
+    background: #003b0f;
+}
+
+.illu {
+    width: 667px;
+    max-width: 100%;
+}
+
+.ill {
+    margin-bottom: 20px;
+}
+
+.ill-block {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.ill-block p {
+    text-align: center;
+    font-size: 15px;
+}
+
+strong {
+    font-weight: bold;
+}
+
+em {
+    font-style: italic;
+}
+
+ol {
+    list-style-type: decimal;
+    margin-left: 15px;
+    margin-bottom: 5px;
+}
+
+ul {
+    list-style-type: disc;
+    margin-left: 17px;
+    margin-bottom: 5px;
+}
+
+li {
+    margin-bottom: 10px;
+    text-align: justify;
+}
+
+ul + p, ol + p {
+    margin-top: 25px;
+}
+
+        </style>
+    </head>
+
+    <body>
+        <div id="main-container">
+            <div class="logo-header">
+                <a href="/">
+                    <img
+                        src="/assets/images/drakosha98b-wide.png"
+                        alt="DrakonHub logo"
+                    />
+                </a>
+            </div>
+            <h1>Examples of Software Requirements (SRS) in Drakon</h1>
+            <p><a href="/">Home</a></p>
+            <h2 id="market-price-of-an-instrument">Market Price of an Instrument</h2>
+<div class="ill-block">
+<img class="ill" src="/assets/images/instrument-price.png" alt="Market Price of an Instrument" style="max-width: 100%; width: 610px;"/>
+</div>
+
+<h2 id="vehicle-status">Vehicle Status</h2>
+<div class="ill-block">
+<img class="ill" src="/assets/images/car-status.png" alt="Vehicle Status" style="max-width: 100%;"/>
+</div>
+
+
+<h2 id="receiving-orders-via-website-from-corporate-clients">Receiving Orders via Website from Corporate Clients</h2>
+<div class="ill-block">
+<img class="ill" src="/assets/images/receiving-order-via-web.png" alt="Receiving Orders via Website from Corporate Clients" style="max-width: 100%;"/>
+</div>
+
+
+<h2 id="login-with-password">Login with Password</h2>
+<div class="ill-block">
+<img class="ill" src="/assets/images/password-login.png" alt="Login with Password" style="max-width: 100%; width:765px;"/>
+</div>
+
+
+
+            <h2>Feedback and support</h2>
+            <p>
+                <a href="mailto:drakon.editor@gmail.com"
+                    >drakon.editor@gmail.com</a
+                >
+            </p>
+            <p><a href="/privacy">Privacy policy</a></p>
+        </div>
+    </body>
+</html>

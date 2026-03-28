@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline' 'self'; img-src 'self' data:"
+        />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link rel="icon" type="image/png" href="/favicon.png" />
+        <title>Concurrent Work and Child Business Processes</title>
+        <meta name="description" content="Learn how to effectively organize concurrent work, parallel and sequential business processes. A detailed guide with examples and diagrams for optimizing the interaction of business processes in your organization." />
+        <meta property="og:title" content="Concurrent Work and Child Business Processes" />
+        <meta property="og:description" content="Learn how to effectively organize concurrent work, parallel and sequential business processes. A detailed guide with examples and diagrams for optimizing the interaction of business processes in your organization." />
+        <meta property="og:image" content="morning-parallel.png" />
+        <meta property="og:url" content="https://drakonhub.com/en/concurrent-work" />
+        <meta property="og:type" content="website" />
+        <style>
+            html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+ol,
+ul {
+    list-style: none;
+}
+blockquote,
+q {
+    quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+    content: "";
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+*,
+*:before,
+*:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 17px;
+}
+
+p {
+    margin-bottom: 20px;
+    line-height: 1.3;
+}
+
+#main-container {
+    width: 1100px;
+    max-width: 100%;
+    margin: auto;
+    padding: 20px;
+}
+
+.logo-header img {
+    display: inline-block;
+    vertical-align: middle;
+    width: 200px;
+    height: 49px;
+}
+
+h2 {
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-weight: bold;
+    font-size: 24px;
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
+
+.button-div {
+    margin-bottom: 20px;
+}
+
+.button-div a {
+    display: inline-block;
+    width: 200px;
+    padding: 20px;
+    border-radius: 4px;
+    color: white;
+    background: #007820;
+    cursor: pointer;
+    user-select: none;
+}
+
+.button-div a:link,
+.button-div a:visited {
+    color: white;
+    text-decoration: none;
+}
+
+.button-div a:hover {
+    background: #015216;
+}
+
+.button-div a:active {
+    background: #003b0f;
+}
+
+.illu {
+    width: 667px;
+    max-width: 100%;
+}
+
+.ill {
+    margin-bottom: 20px;
+}
+
+.ill-block {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.ill-block p {
+    text-align: center;
+    font-size: 15px;
+}
+
+strong {
+    font-weight: bold;
+}
+
+em {
+    font-style: italic;
+}
+
+ol {
+    list-style-type: decimal;
+    margin-left: 15px;
+    margin-bottom: 5px;
+}
+
+ul {
+    list-style-type: disc;
+    margin-left: 17px;
+    margin-bottom: 5px;
+}
+
+li {
+    margin-bottom: 10px;
+    text-align: justify;
+}
+
+ul + p, ol + p {
+    margin-top: 25px;
+}
+
+        </style>
+    </head>
+
+    <body>
+        <div id="main-container">
+            <div class="logo-header">
+                <a href="/">
+                    <img
+                        src="/assets/images/drakosha98b-wide.png"
+                        alt="DrakonHub logo"
+                    />
+                </a>
+            </div>
+            <h1>Concurrent Work and Child Business Processes</h1>
+            <p><a href="/">Home</a></p>
+            <h2 id="introduction">Introduction</h2>
+<p>In most business processes, actions and child processes are executed sequentially, one after another. However, in some cases it is necessary to perform multiple actions simultaneously or to run several child processes in parallel.</p>
+<h2 id="why-are-parallel-processes-needed">Why are parallel processes needed?</h2>
+<p>Parallel execution of processes is necessary in two main cases:</p>
+<ol>
+<li>To reduce the execution time of a business process through simultaneous work.</li>
+<li>To implement scenarios where multiple performers must work in parallel on the same task.</li>
+</ol>
+<h2 id="sequential-execution-of-child-processes">Sequential execution of child processes</h2>
+<p>If you need to start a child business process and wait for it to complete, use the <strong>&quot;Insertion&quot;</strong> icon (a rectangle with double vertical lines). The parent process pauses and waits for the child process to finish.</p>
+<p><strong>Example</strong>: the business process &quot;Breakfast&quot;.</p>
+<div class="ill-block">
+<img class="ill" src="/assets/images/breakfast.png" style="max-width: 100%; width: 240px;" alt="Sequential execution of child business processes"/>
+<p>Sequential execution of child business processes</p>
+</div>
+
+<p>The process &quot;Breakfast&quot; includes three sequential steps:</p>
+<ol>
+<li>Execute the child process &quot;Prepare breakfast&quot; (the &quot;Insertion&quot; icon).</li>
+<li>Perform the action &quot;Eat breakfast&quot;.</li>
+<li>Perform the action &quot;Wash the dishes&quot;.</li>
+</ol>
+<p>In this case, the child process &quot;Prepare breakfast&quot; must be completed before the parent process &quot;Breakfast&quot; proceeds to the next step — &quot;Eat breakfast&quot;. There is no parallel execution here — the parent process waits for the child process to finish. The &quot;Insertion&quot; icon indicates that the business process &quot;Prepare breakfast&quot; is defined in another Drakon diagram.</p>
+<h2 id="parallel-execution-of-a-child-process">Parallel execution of a child process</h2>
+<p>If you need to start a child process and continue executing the parent process at the same time, use the <strong>&quot;Parallel process&quot;</strong> icon. In this case, the parent process continues its actions in parallel with the child process performed by another actor.</p>
+<p>To wait for the completion of a parallel process, use the <strong>&quot;Simple input&quot;</strong> icon.</p>
+<p><strong>Example</strong>: the process &quot;Morning&quot;</p>
+<div class="ill-block">
+<img class="ill" src="/assets/images/morning-process.png" style="max-width: 100%; width: 300px;" alt="Parallel execution of child business processes, Parallel process icon"/>
+<p>Parallel execution of child business processes, "Parallel process" icon</p>
+</div>
+
+<ol>
+<li>The husband goes for a walk with the dog (the &quot;Parallel process&quot; icon).</li>
+<li>The wife prepares breakfast.</li>
+<li>The &quot;Simple input&quot; icon indicates that the wife waits for the husband to return from the walk to continue the &quot;Morning&quot; process.</li>
+</ol>
+<h2 id="using-the-concurrent-work-construct">Using the &quot;Concurrent work&quot; construct</h2>
+<p>If the exact number of parallel actions is known in advance, it is preferable to use the <strong>&quot;Concurrent work&quot;</strong> construct.</p>
+<p>Let’s consider the &quot;Morning&quot; example using the &quot;Concurrent work&quot; construct.</p>
+<div class="ill-block">
+<img class="ill" src="/assets/images/morning-parallel.png" style="max-width: 100%; width: 575px;" alt="Parallel execution of actions, Concurrent work construct"/>
+<p>Parallel execution of actions, "Concurrent work" construct</p>
+</div>
+
+<p>As we can see, this way of representing parallel actions is more visual. Another advantage of this construct is that there is no need to assume which action will finish first or who should wait for whom.</p>
+<p>In addition, &quot;Concurrent work&quot; constructs can be nested within each other.</p>
+<p>Only if the number of simultaneously executed processes is not known in advance should you use the <strong>&quot;Parallel process&quot;</strong> and <strong>&quot;Simple input&quot;</strong> icons.</p>
+<p>Besides parallel processes, the &quot;Simple input&quot; icon can also be used in situations where a process must wait for an event. These can be external events or actions of different participants within the same process.</p>
+<p><strong>Example</strong>: a classroom test</p>
+<div class="ill-block">
+<img class="ill" src="/assets/images/classroom-test.png" style="max-width: 100%; width: 680px;" alt="An arbitrary number of simultaneous child processes"/>
+<p>An arbitrary number of simultaneous child processes</p>
+</div>
+
+<ol>
+<li>The teacher gives each student a blank sheet and an assignment.</li>
+<li>The students complete the test, following the business process &quot;Test&quot;.</li>
+<li>The teacher waits until all students finish (the &quot;Simple input&quot; icon).</li>
+<li>The teacher collects the completed sheets.</li>
+<li>The teacher checks the work.</li>
+</ol>
+<p>Here, the parent process &quot;Classroom test&quot; starts as many parallel child business processes &quot;Test&quot; as there are students. Then, at the &quot;Simple input&quot; icon, the parent process waits for all child processes to complete.</p>
+<h2 id="conclusion">Conclusion</h2>
+<div class="ill-block">
+<img class="ill" src="/assets/images/child-processes.png" style="max-width: 100%; width: 850px;" alt="Instruction: how to organize child business processes"/>
+<p>Instruction: how to organize child business processes</p>
+</div>
+
+<p>For sequential execution of child processes, use the &quot;Insertion&quot; icon.</p>
+<p>To model parallel child processes, use the &quot;Concurrent work&quot; construct.</p>
+<p>If the number of simultaneously executed child processes is unknown in advance, use the &quot;Parallel process&quot; and &quot;Simple input&quot; icons.</p>
+<p>Use these tools to model interactions between business processes in your organization so that they are clear to all participants.</p>
+
+            <h2>Feedback and support</h2>
+            <p>
+                <a href="mailto:drakon.editor@gmail.com"
+                    >drakon.editor@gmail.com</a
+                >
+            </p>
+            <p><a href="/privacy">Privacy policy</a></p>
+        </div>
+    </body>
+</html>

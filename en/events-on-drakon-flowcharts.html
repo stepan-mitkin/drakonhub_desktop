@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline' 'self'; img-src 'self' data:"
+        />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link rel="icon" type="image/png" href="/favicon.png" />
+        <title>How to Represent an Event in a Business Process</title>
+        <meta name="description" content="Learn how to correctly represent waiting for external events in business processes using the Drakon language." />
+        <meta property="og:title" content="How to Represent an Event in a Business Process" />
+        <meta property="og:description" content="Learn how to correctly represent waiting for external events in business processes using the Drakon language." />
+        <meta property="og:image" content="feed-the-cat.png" />
+        <meta property="og:url" content="https://drakonhub.com/en/events-on-drakon-flowcharts" />
+        <meta property="og:type" content="website" />
+        <style>
+            html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+ol,
+ul {
+    list-style: none;
+}
+blockquote,
+q {
+    quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+    content: "";
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+*,
+*:before,
+*:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 17px;
+}
+
+p {
+    margin-bottom: 20px;
+    line-height: 1.3;
+}
+
+#main-container {
+    width: 1100px;
+    max-width: 100%;
+    margin: auto;
+    padding: 20px;
+}
+
+.logo-header img {
+    display: inline-block;
+    vertical-align: middle;
+    width: 200px;
+    height: 49px;
+}
+
+h2 {
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-weight: bold;
+    font-size: 24px;
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
+
+.button-div {
+    margin-bottom: 20px;
+}
+
+.button-div a {
+    display: inline-block;
+    width: 200px;
+    padding: 20px;
+    border-radius: 4px;
+    color: white;
+    background: #007820;
+    cursor: pointer;
+    user-select: none;
+}
+
+.button-div a:link,
+.button-div a:visited {
+    color: white;
+    text-decoration: none;
+}
+
+.button-div a:hover {
+    background: #015216;
+}
+
+.button-div a:active {
+    background: #003b0f;
+}
+
+.illu {
+    width: 667px;
+    max-width: 100%;
+}
+
+.ill {
+    margin-bottom: 20px;
+}
+
+.ill-block {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.ill-block p {
+    text-align: center;
+    font-size: 15px;
+}
+
+strong {
+    font-weight: bold;
+}
+
+em {
+    font-style: italic;
+}
+
+ol {
+    list-style-type: decimal;
+    margin-left: 15px;
+    margin-bottom: 5px;
+}
+
+ul {
+    list-style-type: disc;
+    margin-left: 17px;
+    margin-bottom: 5px;
+}
+
+li {
+    margin-bottom: 10px;
+    text-align: justify;
+}
+
+ul + p, ol + p {
+    margin-top: 25px;
+}
+
+        </style>
+    </head>
+
+    <body>
+        <div id="main-container">
+            <div class="logo-header">
+                <a href="/">
+                    <img
+                        src="/assets/images/drakosha98b-wide.png"
+                        alt="DrakonHub logo"
+                    />
+                </a>
+            </div>
+            <h1>How to Represent an Event in a Business Process</h1>
+            <p><a href="/">Home</a></p>
+            <h2 id="instruction-how-to-represent-an-event-in-a-business-process-using-a-drakon-flowchart">Instruction: How to Represent an Event in a Business Process Using a Drakon Flowchart</h2>
+<p>When modeling business processes, it is important to correctly represent waiting for external events. This guide explains how to properly depict events in a Drakon flowchart.</p>
+<h2 id="1-if-the-event-is-required-to-start-the-business-process">1. If the event is required to start the business process</h2>
+<p>If the process begins only after an event occurs, indicate this in the diagram.</p>
+<p><strong>Example</strong>: the process &quot;Order Processing&quot; starts after the event &quot;Customer placed an order&quot;.</p>
+<p>How to represent this:</p>
+<ol>
+<li>Add the <strong>&quot;Formal Parameters&quot;</strong> icon next to the diagram title.</li>
+<li>In the icon text, describe the event, for example: &quot;Process start condition: the customer placed an order on the website&quot;.</li>
+<li>To add &quot;Formal Parameters&quot;, right-click the diagram title and select &quot;Add parameters&quot;.</li>
+</ol>
+<div class="ill-block">
+<img class="ill" src="/assets/images/add-parameters.png" style="max-width: 100%; width: 534px;" alt="How to add the Formal Parameters icon"/>
+<p>How to add the "Formal Parameters" icon</p>
+</div>
+
+<div class="ill-block">
+<img class="ill" src="/assets/images/process-start-condition.png" style="max-width: 100%; width: 530px;" alt="Example of an event that starts a business process"/>
+<p>Example of an event that starts a business process</p>
+</div>
+
+<h2 id="2-if-the-event-is-expected-during-the-execution-of-the-business-process">2. If the event is expected during the execution of the business process</h2>
+<p>If an event may occur during the process, you need to determine whether the process pauses while waiting for it.</p>
+<p><strong>2.1. Is the event required for the process to continue?</strong></p>
+<p>If the process cannot continue without the event, waiting for the event must be explicitly shown.</p>
+<p><em>If multiple events are possible</em></p>
+<ol>
+<li>Use the &quot;Decision&quot; (branching) icon with the text <strong>event</strong>.</li>
+<li>For each possible outcome, add a &quot;Case&quot; icon with its name.</li>
+</ol>
+<p><strong>Example</strong>: in a sales process, one of the following client responses is expected:</p>
+<ul>
+<li>The client agreed to the deal.</li>
+<li>The client declined the deal.</li>
+<li>The client asked for time to think.</li>
+<li>15 minutes passed and the client did not respond.</li>
+</ul>
+<p>In this case, use the &quot;Decision&quot; icon with the text &quot;event&quot; and four &quot;Case&quot; icons, one for each outcome.</p>
+<div class="ill-block">
+<img class="ill" src="/assets/images/choice-event.png" style="max-width: 100%; width: 673px;" alt="Waiting for multiple events in a business process"/>
+<p>Waiting for multiple events in a business process</p>
+</div>
+
+<p><em>If only one event is expected</em></p>
+<p>Use the &quot;Simple Input&quot; icon with the event text.</p>
+<p><strong>Example</strong>: only &quot;Client response&quot; is expected.</p>
+<ul>
+<li>Add a &quot;Simple Input&quot; icon with the text &quot;The client responded&quot;.</li>
+</ul>
+<div class="ill-block">
+<img class="ill" src="/assets/images/single-event.png" style="max-width: 100%; width: 232px;" alt="Waiting for a single event in a business process"/>
+<p>Waiting for a single event in a business process</p>
+</div>
+
+<p><strong>2.2. The event is not required for process continuation but requires action</strong></p>
+<p>If an event occurs independently of the main process and requires action, create a separate Drakon flowchart.</p>
+<p><strong>Example</strong>: during &quot;Washing dishes&quot;, a cat suddenly arrives and demands food.</p>
+<p>How to represent this:</p>
+<ol>
+<li>Create a new Drakon flowchart for the process &quot;Feed the cat&quot;.</li>
+<li>Insert the &quot;Formal Parameters&quot; icon with the text &quot;Process start condition: the cat arrived and demands food&quot;.</li>
+</ol>
+<p>When such an external event occurs, pause the current business process, execute the process corresponding to the event, and then continue the main process.</p>
+<div class="ill-block">
+<img class="ill" src="/assets/images/feed-the-cat.png" style="max-width: 100%; width: 655px;" alt="The process 'Feed the cat' can start at any time"/>
+<p>The process "Feed the cat" can start at any time</p>
+</div>
+
+<h2 id="conclusion">Conclusion</h2>
+<div class="ill-block">
+<img class="ill" src="/assets/images/how-to-represent-event-in-business-process.png" style="max-width: 100%; width:900px;" alt="Algorithm: how to represent an event in a business process using a Drakon flowchart"/>
+<p>Algorithm: how to represent an event in a business process using a Drakon flowchart</p>
+</div>
+
+<ol>
+<li>If the event is required to start the process → Add it to &quot;Formal Parameters&quot; next to the title.</li>
+<li>If the process waits for an event and cannot continue until it occurs:</li>
+</ol>
+<ul>
+<li>Use &quot;Decision&quot; with the keyword <strong>event</strong> (if there are multiple outcomes).</li>
+<li>Use &quot;Simple Input&quot; (if there is only one event).</li>
+</ul>
+<ol start="3">
+<li>If the event requires separate actions but does not affect the main process → Create a separate Drakon flowchart.</li>
+</ol>
+<p>Now you know how to correctly represent events in business processes using the Drakon language!</p>
+
+            <h2>Feedback and support</h2>
+            <p>
+                <a href="mailto:drakon.editor@gmail.com"
+                    >drakon.editor@gmail.com</a
+                >
+            </p>
+            <p><a href="/privacy">Privacy policy</a></p>
+        </div>
+    </body>
+</html>

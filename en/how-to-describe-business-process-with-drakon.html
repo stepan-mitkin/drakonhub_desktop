@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline' 'self'; img-src 'self' data:"
+        />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link rel="icon" type="image/png" href="/favicon.png" />
+        <title>How to Describe a Business Process Using a Drakon Flowchart</title>
+        <meta name="description" content="This article covers all stages of visual modeling of a business process—from choosing a name and actors to detailing steps, decisions, and trigger conditions. Learn how to make processes clear, logical, and easy to understand!" />
+        <meta property="og:title" content="How to Describe a Business Process Using a Drakon Flowchart" />
+        <meta property="og:description" content="This article covers all stages of visual modeling of a business process—from choosing a name and actors to detailing steps, decisions, and trigger conditions. Learn how to make processes clear, logical, and easy to understand!" />
+        <meta property="og:image" content="business-process-modelling.png" />
+        <meta property="og:url" content="https://drakonhub.com/en/how-to-describe-business-process-with-drakon" />
+        <meta property="og:type" content="website" />
+        <style>
+            html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+ol,
+ul {
+    list-style: none;
+}
+blockquote,
+q {
+    quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+    content: "";
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+*,
+*:before,
+*:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 17px;
+}
+
+p {
+    margin-bottom: 20px;
+    line-height: 1.3;
+}
+
+#main-container {
+    width: 1100px;
+    max-width: 100%;
+    margin: auto;
+    padding: 20px;
+}
+
+.logo-header img {
+    display: inline-block;
+    vertical-align: middle;
+    width: 200px;
+    height: 49px;
+}
+
+h2 {
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-weight: bold;
+    font-size: 24px;
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
+
+.button-div {
+    margin-bottom: 20px;
+}
+
+.button-div a {
+    display: inline-block;
+    width: 200px;
+    padding: 20px;
+    border-radius: 4px;
+    color: white;
+    background: #007820;
+    cursor: pointer;
+    user-select: none;
+}
+
+.button-div a:link,
+.button-div a:visited {
+    color: white;
+    text-decoration: none;
+}
+
+.button-div a:hover {
+    background: #015216;
+}
+
+.button-div a:active {
+    background: #003b0f;
+}
+
+.illu {
+    width: 667px;
+    max-width: 100%;
+}
+
+.ill {
+    margin-bottom: 20px;
+}
+
+.ill-block {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.ill-block p {
+    text-align: center;
+    font-size: 15px;
+}
+
+strong {
+    font-weight: bold;
+}
+
+em {
+    font-style: italic;
+}
+
+ol {
+    list-style-type: decimal;
+    margin-left: 15px;
+    margin-bottom: 5px;
+}
+
+ul {
+    list-style-type: disc;
+    margin-left: 17px;
+    margin-bottom: 5px;
+}
+
+li {
+    margin-bottom: 10px;
+    text-align: justify;
+}
+
+ul + p, ol + p {
+    margin-top: 25px;
+}
+
+        </style>
+    </head>
+
+    <body>
+        <div id="main-container">
+            <div class="logo-header">
+                <a href="/">
+                    <img
+                        src="/assets/images/drakosha98b-wide.png"
+                        alt="DrakonHub logo"
+                    />
+                </a>
+            </div>
+            <h1>How to Describe a Business Process Using a Drakon Flowchart</h1>
+            <p><a href="/">Home</a></p>
+            <h2 id="steps-of-visual-business-process-modeling">Steps of Visual Business Process Modeling</h2>
+<ol>
+<li>Come up with a name that reflects the goal of the business process.</li>
+<li>Identify the actors of the business process.</li>
+<li>Determine the resources required for the process.</li>
+<li>Determine the measurable outcome of the process.</li>
+<li>Define the trigger conditions of the process.</li>
+<li>Break the process into steps: actions and decisions.</li>
+<li>There must be only one end.</li>
+<li>Use a silhouette for complex processes.</li>
+</ol>
+<div class="ill-block">
+<img class="ill" src="/assets/images/business-process-modelling.png" style="max-width: 100%; width:820px;" alt="How to visually represent a business process"/>
+<p>Example of a business process represented with a Drakon flowchart</p>
+</div>
+
+<h2 id="1-come-up-with-a-name-that-reflects-the-goal-of-the-business-process">1. Come up with a name that reflects the goal of the business process</h2>
+<p>The name of a business process is its first and most important element.<br>It must be clear, understandable, and reflect the main goal of the process.</p>
+<p>When choosing a name, consider the following principles:</p>
+<ul>
+<li><strong>The name should be informative.</strong> It should describe what the process does. For example, &quot;Processing a supply request&quot; is better than simply &quot;Request&quot;.</li>
+<li><strong>It should not be too short.</strong> Short names can be unclear. For example, &quot;Registration&quot; is too general, while &quot;New customer registration&quot; is more specific.</li>
+<li><strong>It should not be too long.</strong> Long names are hard to read. For example, &quot;The process of registering a customer when they contact the company for the first time&quot; is too detailed—better to simplify it to &quot;New customer registration&quot;.</li>
+<li><strong>The name should be placed correctly.</strong> In Drakon flowcharts, it is placed in the top-left corner.</li>
+<li><strong>The name should match the goal of the process.</strong> If the process is aimed at achieving a specific task, it should be reflected in the name.</li>
+</ul>
+<p>Example of a good name:</p>
+<ul>
+<li>✅ &quot;Placing an order on the website&quot;</li>
+</ul>
+<p>Bad examples:</p>
+<ul>
+<li>❌ &quot;Process&quot; (too general)  </li>
+<li>❌ &quot;Creating a product order request by a customer through an e-commerce interface&quot; (too long)</li>
+</ul>
+<h2 id="2-identify-the-participants-of-the-business-process">2. Identify the participants of the business process</h2>
+<p>A business process is always carried out by specific participants.<br>These participants can be <strong>internal</strong> (company employees) and <strong>external</strong> (customers, contractors, partners). Participants are sometimes called <strong>actors</strong>.</p>
+<p>Basic rules:</p>
+<ul>
+<li><strong>Each step must have a responsible actor.</strong> There should be no actions without an assigned actor.</li>
+<li><strong>Actors can vary.</strong> They may be employees (managers, operators), automated systems (e.g., CRM), customers, or external contractors.</li>
+<li><strong>Actor information is recorded in the diagram.</strong> In Drakon, actors are specified in the &quot;Formal parameters&quot; icon next to the title.</li>
+<li><strong>If there are multiple actors, indicate roles in each step.</strong> For example, &quot;Confirm order&quot; is performed by the customer, while &quot;Send invoice&quot; is performed by a manager.</li>
+</ul>
+<p>Example:</p>
+<ol>
+<li>Customer fills out a request.</li>
+<li>Manager reviews the request.</li>
+<li>Warehouse employee ships the product.</li>
+</ol>
+<div class="ill-block">
+<img class="ill" src="/assets/images/ordering-goods-through-the-website.png" style="max-width: 100%; width:620px;" alt="Example of a business process with multiple actors"/>
+<p>Example of a business process with multiple actors</p>
+</div>
+
+<p>Each step has a clear actor, making the process understandable for those who will perform it.</p>
+<h2 id="3-determine-the-resources-required-for-the-business-process">3. Determine the resources required for the business process</h2>
+<p>Each action in a business process requires certain resources:</p>
+<ul>
+<li>Information (e.g., customer data, order details)</li>
+<li>Equipment (e.g., computer, scanner)</li>
+<li>Tools (e.g., hammer, pot, data processing software, CRM system)</li>
+</ul>
+<p>How to identify resources:</p>
+<ol>
+<li>Go through each step and record required resources.</li>
+<li>Combine them into a single list.</li>
+<li>Place the list in the <strong>diagram description</strong>.</li>
+</ol>
+<p>Example:</p>
+<ul>
+<li>For customer registration: customer form, CRM database, internet access.</li>
+<li>For order processing: accounting system, available inventory.</li>
+</ul>
+<div class="ill-block">
+<img class="ill" src="/assets/images/description-button.png" style="max-width: 100%; width:720px;" alt="Diagram description in DrakonHub"/>
+<p>Diagram description in DrakonHub</p>
+</div>
+
+<p>The more precise the resource description, the easier it is to understand what is needed.</p>
+<h2 id="4-determine-the-measurable-outcome-of-the-process">4. Determine the measurable outcome of the process</h2>
+<p>Сlearly define what “success” looks like for this business process. Use objective, verifiable terms.</p>
+<p>Identify the specific result the process must produce—such as a completed order, a verified payment, or a resolved support request.</p>
+<p>Then, attach measurable criteria to it. These may include quantity (how many), time (how fast), quality (error rate), or cost. </p>
+<p>The outcome should be easy to observe so that anyone can tell whether the process achieved its goal.</p>
+<h2 id="5-define-trigger-conditions-for-the-business-process">5. Define trigger conditions for the business process</h2>
+<p>A business process does not start on its own—it begins under certain conditions.<br>It is important to clearly define when the process starts.</p>
+<p>How to define triggers:</p>
+<ol>
+<li>Answer: what must happen for the process to begin?</li>
+<li>Record the conditions in the &quot;Formal parameters&quot; icon.</li>
+</ol>
+<p>Examples:</p>
+<ul>
+<li>&quot;Order processing&quot; starts when a customer places an order.</li>
+<li>&quot;Payment verification&quot; starts when a payment is received.</li>
+<li>&quot;Feed the cat&quot; starts when the cat shows up and demands food.</li>
+</ul>
+<p>Clearly defined triggers help understand when the process begins and what activates it.</p>
+<h2 id="6-break-the-process-into-steps-actions-and-decisions">6. Break the process into steps: actions and decisions</h2>
+<p>A business process must be divided into clear, logical steps.</p>
+<p>Each step is either an <strong>action</strong> or a <strong>decision</strong>.  
+Do not mix them in one step.</p>
+<p>Drakon also includes other expressive elements (events, pauses, durations, loops, parallel processes), but they all support the main structure: actions and decisions.</p>
+<h3 id="rules-for-actions">Rules for actions</h3>
+<p>An action is a specific instruction of what to do.<br>It is represented by the <strong>&quot;Action&quot;</strong> icon.</p>
+<p>Follow the principle: <strong>one action — one step</strong>.</p>
+<p>If multiple actions are combined, understanding becomes harder.<br>Instead of &quot;Open the form and enter data&quot;, split into:</p>
+<ol>
+<li>Open the form.</li>
+<li>Enter data.</li>
+</ol>
+<div class="ill-block">
+<img class="ill" src="/assets/images/data-entry.png" style="max-width: 100%; width:234px;" alt="Example of Action icons"/>
+<p>Multiple "Action" icons</p>
+</div>
+
+<p>Action icons must contain commands. Avoid single nouns like &quot;Database&quot; or &quot;Invoice&quot;.<br>Instead write: &quot;Save customer data to database&quot;, &quot;Send invoice to customer&quot;.</p>
+<p>If a step calls another process, use the <strong>&quot;Insertion&quot;</strong> icon instead of &quot;Action&quot;.<br>It indicates execution of a separate diagram.</p>
+<h3 id="rules-for-decisions">Rules for decisions</h3>
+<p>A decision is a choice based on conditions.<br>It is expressed as a question.</p>
+<p>For yes/no questions, use the <strong>&quot;Question&quot;</strong> icon.</p>
+<div class="ill-block">
+<img class="ill" src="/assets/images/question-icon.png" style="max-width: 100%; width:508px;" alt="Question icon"/>
+<p>"Question" icon</p>
+</div>
+
+<p>Rules:</p>
+<ul>
+<li>Preferred/likely path goes downward.</li>
+<li>Less likely/unwanted path goes to the right.</li>
+</ul>
+<p>This is the <strong>&quot;the further right, the worse&quot;</strong> rule.</p>
+<p>To swap Yes/No, right-click and choose <strong>Swap Yes and No</strong>.</p>
+<p>For multiple outcomes, use the <strong>&quot;Choice&quot;</strong> icon with <strong>&quot;Case&quot;</strong> branches.</p>
+<div class="ill-block">
+<img class="ill" src="/assets/images/choice-icon.png" style="max-width: 100%; width:501px;" alt="Choice icon"/>
+<p>"Choice" icon with cases</p>
+</div>
+
+<p>Arrange cases so the most likely are on the left.<br>If needed, add a final &quot;other cases&quot; branch on the right.</p>
+<h3 id="combining-actions-and-decisions">Combining actions and decisions</h3>
+<p>A correct process is logical:</p>
+<ul>
+<li><strong>Decisions</strong> lead to different actions.</li>
+<li><strong>Actions</strong> follow a sequence.</li>
+</ul>
+<p>Example:</p>
+<p><strong>Question</strong>: &quot;Does the user have an account?&quot;</p>
+<ul>
+<li>Yes → &quot;System Login&quot;</li>
+<li>No → &quot;Register new user&quot;</li>
+</ul>
+<div class="ill-block">
+<img class="ill" src="/assets/images/user-login-without-session.png" style="max-width: 100%; width:480px;" alt="Example with decisions and actions"/>
+<p>"Question" and "Insertion" icons</p>
+</div>
+
+<p><strong>Action</strong>: &quot;Request login and password&quot;</p>
+<p><strong>Question</strong>: &quot;Is the password correct?&quot;</p>
+<ul>
+<li>Yes → &quot;Open the personal account&quot;</li>
+<li>No → &quot;Login error&quot;</li>
+</ul>
+<div class="ill-block">
+<img class="ill" src="/assets/images/system-login.png" style="max-width: 100%; width:535px;" alt="Example with decisions and actions"/>
+<p>"Question" and "Action" icons</p>
+</div>
+
+<p>Each step clearly defines either an action or a decision.</p>
+<h2 id="7-there-must-be-only-one-end">7. There must be only one end</h2>
+<p>Every business process must end at a single final point, marked with the <strong>&quot;End&quot;</strong> icon.</p>
+<p>Rules:</p>
+<ul>
+<li>Only one &quot;End&quot; icon is allowed.</li>
+<li>The process must always end explicitly.</li>
+<li>You cannot replace the end with the name of another process.</li>
+</ul>
+<p>Correct example:</p>
+<ol>
+<li>Customer places order.</li>
+<li>Assemble order.</li>
+<li>Deliver order.</li>
+<li>End.</li>
+</ol>
+<p>Incorrect:</p>
+<ul>
+<li>❌ &quot;After placing an order, delivery starts&quot; (no explicit end)</li>
+</ul>
+<h2 id="8-use-a-silhouette-for-complex-processes">8. Use a silhouette for complex processes</h2>
+<p>If the diagram is too long vertically, convert it into a silhouette.</p>
+<p>A silhouette divides the process into logical parts.</p>
+<p>It answers three key questions:</p>
+<ol>
+<li>What is the process called?</li>
+<li>How many parts does it have?</li>
+<li>What are those parts called?</li>
+</ol>
+<div class="ill-block">
+<img class="ill" src="/assets/images/lunch-break.png" style="max-width: 100%; width:800px;" alt="Silhouette example"/>
+<p>Example of a silhouette Drakon flowchart</p>
+</div>
+
+<p>Example:</p>
+<ul>
+<li>Process: <strong>&quot;Lunch break&quot;</strong></li>
+<li>Parts: <strong>three</strong></li>
+<li>Names: <strong>&quot;Chat with colleagues&quot;</strong>, <strong>&quot;Eat&quot;</strong>, <strong>&quot;Prepare for work&quot;</strong></li>
+</ul>
+<p>How to use:</p>
+<ol>
+<li>Identify main stages.</li>
+<li>Turn them into branches.</li>
+<li>Arrange left to right.</li>
+</ol>
+<h2 id="conclusion">Conclusion</h2>
+<p>A business process is a clearly defined set of steps aimed at achieving a goal.</p>
+<p>These steps are performed by actors, who are the main users of process diagrams.</p>
+<p>Steps are of two types: <strong>actions</strong> and <strong>decisions</strong>.</p>
+<ul>
+<li>Actions → instructions (Action, Call icons)</li>
+<li>Decisions → questions and responses (Question, Choice icons)</li>
+</ul>
+<p>The clearer the steps, the more efficient the business.</p>
+
+            <h2>Feedback and support</h2>
+            <p>
+                <a href="mailto:drakon.editor@gmail.com"
+                    >drakon.editor@gmail.com</a
+                >
+            </p>
+            <p><a href="/privacy">Privacy policy</a></p>
+        </div>
+    </body>
+</html>
