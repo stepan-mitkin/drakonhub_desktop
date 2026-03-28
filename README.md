@@ -18,7 +18,7 @@ DrakonHub for desktop is based on [DrakonWidget library](https://github.com/step
 
 ## Download DrakonHub
 
-- [Download DrakonHub from GitHub releases](https://stepan-mitkin.github.io/drakonhub_desktop/)
+- [Download DrakonHub from GitHub releases](https://github.com/stepan-mitkin/drakonhub_desktop/releases)
 
 ## Run this app in the browser without downloading
 
