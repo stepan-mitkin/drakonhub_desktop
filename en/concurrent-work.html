@@ -228,6 +228,8 @@ h1 {
 .ill-block {
     margin-top: 20px;
     text-align: center;
+    max-width: 100%;
+    overflow-x: auto;
 }
 
 .ill-block p {
@@ -260,7 +262,8 @@ li {
     text-align: justify;
 }
 
-ul + p, ol + p {
+ul + p,
+ol + p {
     margin-top: 25px;
 }
 
@@ -320,7 +323,7 @@ ul + p, ol + p {
 <p>If the exact number of parallel actions is known in advance, it is preferable to use the <strong>&quot;Concurrent work&quot;</strong> construct.</p>
 <p>Let’s consider the &quot;Morning&quot; example using the &quot;Concurrent work&quot; construct.</p>
 <div class="ill-block">
-<img class="ill" src="/assets/images/morning-parallel.png" style="max-width: 100%; width: 575px;" alt="Parallel execution of actions, Concurrent work construct"/>
+<img class="ill" src="/assets/images/morning-parallel.png" style="width: 575px;" alt="Parallel execution of actions, Concurrent work construct"/>
 <p>Parallel execution of actions, "Concurrent work" construct</p>
 </div>
 
@@ -344,7 +347,7 @@ ul + p, ol + p {
 <p>Here, the parent process &quot;Classroom test&quot; starts as many parallel child business processes &quot;Test&quot; as there are students. Then, at the &quot;Simple input&quot; icon, the parent process waits for all child processes to complete.</p>
 <h2 id="conclusion">Conclusion</h2>
 <div class="ill-block">
-<img class="ill" src="/assets/images/child-processes.png" style="max-width: 100%; width: 850px;" alt="Instruction: how to organize child business processes"/>
+<img class="ill" src="/assets/images/child-processes.png" style="width: 850px;" alt="Instruction: how to organize child business processes"/>
 <p>Instruction: how to organize child business processes</p>
 </div>
 
