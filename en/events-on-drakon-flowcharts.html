@@ -173,6 +173,12 @@ p {
     height: 49px;
 }
 
+h3 {
+    font-weight: bold;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
 h2 {
     font-weight: bold;
     font-size: 18px;
@@ -260,6 +266,13 @@ ul {
 li {
     margin-bottom: 10px;
     text-align: justify;
+    line-height: 1.3;
+}
+
+h1,
+h2,
+h3 {
+    line-height: 1.3;
 }
 
 ul + p,
@@ -309,17 +322,16 @@ ol + p {
 <p>If the process cannot continue without the event, waiting for the event must be explicitly shown.</p>
 <p><em>If multiple events are possible</em></p>
 <ol>
-<li>Use the &quot;Decision&quot; (branching) icon with the text <strong>event</strong>.</li>
+<li>Use the &quot;Choice&quot; (branching) icon with the text <strong>event</strong>.</li>
 <li>For each possible outcome, add a &quot;Case&quot; icon with its name.</li>
 </ol>
 <p><strong>Example</strong>: in a sales process, one of the following client responses is expected:</p>
 <ul>
 <li>The client agreed to the deal.</li>
 <li>The client declined the deal.</li>
-<li>The client asked for time to think.</li>
 <li>15 minutes passed and the client did not respond.</li>
 </ul>
-<p>In this case, use the &quot;Decision&quot; icon with the text &quot;event&quot; and four &quot;Case&quot; icons, one for each outcome.</p>
+<p>In this case, use the &quot;Choice&quot; icon with the text &quot;event&quot; and four &quot;Case&quot; icons, one for each outcome.</p>
 <div class="ill-block">
 <img class="ill" src="/assets/images/choice-event.png" style="max-width: 100%; width: 673px;" alt="Waiting for multiple events in a business process"/>
 <p>Waiting for multiple events in a business process</p>
@@ -361,7 +373,7 @@ ol + p {
 <li>If the process waits for an event and cannot continue until it occurs:</li>
 </ol>
 <ul>
-<li>Use &quot;Decision&quot; with the keyword <strong>event</strong> (if there are multiple outcomes).</li>
+<li>Use &quot;Choice&quot; with the keyword <strong>event</strong> (if there are multiple outcomes).</li>
 <li>Use &quot;Simple Input&quot; (if there is only one event).</li>
 </ul>
 <ol start="3">
