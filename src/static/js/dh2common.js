@@ -1,2608 +1,1384 @@
 function dh2common() {
-    var unit = {};
-    var utils, html, http, widgets, gconfig, drakon_canvas;
-    function runWriteDrakonAction(action, callbacks) {
-        var _var2, _var3, _var4;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                _var4 = hasDialog();
-                if (_var4) {
-                    __state = '1';
-                } else {
-                    _var2 = callbacks.isDrakon();
-                    if (_var2) {
-                        _var3 = callbacks.isReadonly();
-                        if (_var3) {
-                            __state = '1';
-                        } else {
-                            action();
-                            __state = '1';
-                        }
-                    } else {
-                        __state = '1';
-                    }
-                }
-                break;
-            default:
-                return;
+var unit = {};
+var drakon_canvas;
+var gconfig;
+var html;
+var http;
+var utils;
+var widgets;
+function ClickerTapper() {
+    var _obj_;
+    _obj_ = ClickerTapper_create();
+    return _obj_.run();
+}
+function DoubleClick() {
+    var _obj_;
+    _obj_ = DoubleClick_create();
+    return _obj_.run();
+}
+function createLongClicker(target) {
+    var clicker, tapper;
+    tapper = ClickerTapper_create();
+    clicker = DoubleClick_create();
+    tapper.target = clicker;
+    clicker.target = target;
+    tapper.run();
+    clicker.run();
+    return {
+        stop: function () {
+            tapper.state = undefined;
+            clicker.state = undefined;
+        },
+        registerEvents: function (element, id) {
+            registerClickerEvents(tapper, element, id);
+        }
+    };
+}
+function registerClickerEvents(tapper, element, id) {
+    registerLeftButtonEvent(element, tapper, 'pointerdown', id);
+    registerLeftButtonEvent(element, tapper, 'pointermove', id);
+    registerLeftButtonEvent(element, tapper, 'pointerup', id);
+    registerLeftButtonEvent(element, tapper, 'pointercancel', id);
+}
+function registerLeftButtonEvent(element, tapper, name, id) {
+    element.addEventListener(name, function (evt) {
+        runLeftButtonEvent(tapper, name, id, evt);
+    });
+}
+function runLeftButtonEvent(tapper, name, id, evt) {
+    var callback;
+    if (evt.button === 0) {
+        callback = tapper[name];
+        callback(evt, id);
+    }
+}
+function getDiagramLabels() {
+    return unit.globals.labels;
+}
+function getLabelsByCode(code) {
+    return unit.globals.labelsByCode[code];
+}
+function initDiagramLabels() {
+    var bucket, code, item, labels, labelsByCode;
+    labels = [];
+    labels.push([
+        'de',
+        'Deutsch',
+        'Ja',
+        'Nein',
+        'Ende',
+        'Zweig',
+        'Abschluss'
+    ]);
+    labels.push([
+        'en-us',
+        'English',
+        'Yes',
+        'No',
+        'End',
+        'Branch',
+        'Completion'
+    ]);
+    labels.push([
+        'es',
+        'Español',
+        'Sí',
+        'No',
+        'Final',
+        'Rama',
+        'Finalización'
+    ]);
+    labels.push([
+        'fr',
+        'Français',
+        'Oui',
+        'Non',
+        'Fin',
+        'Branche',
+        'Terminaison'
+    ]);
+    labels.push([
+        'lv',
+        'Latviešu',
+        'Jā',
+        'Nē',
+        'Beigas',
+        'Zars',
+        'Pabeigšana'
+    ]);
+    labels.push([
+        'lt',
+        'Lietuvių',
+        'Taip',
+        'Ne',
+        'Pabaiga',
+        'Šaka',
+        'Užbaigimas'
+    ]);
+    labels.push([
+        'nl',
+        'Nederlands',
+        'Ja',
+        'Nee',
+        'Einde',
+        'Tak',
+        'Voltooiing'
+    ]);
+    labels.push([
+        'no',
+        'Norsk',
+        'Ja',
+        'Nei',
+        'Slutt',
+        'Gren',
+        'Fullføring'
+    ]);
+    labels.push([
+        'pl',
+        'Polski',
+        'Tak',
+        'Nie',
+        'Koniec',
+        'Gałąź',
+        'Zakończenie'
+    ]);
+    labels.push([
+        'ro',
+        'Român',
+        'Da',
+        'Nu',
+        'Sfârșit',
+        'Ramură',
+        'Finalizare'
+    ]);
+    labels.push([
+        'fi',
+        'Suomi',
+        'Kyllä',
+        'Ei',
+        'Loppu',
+        'Haara',
+        'Suorittaminen'
+    ]);
+    labels.push([
+        'sv',
+        'Svenska',
+        'Ja',
+        'Nej',
+        'Slut',
+        'Gren',
+        'Slutförande'
+    ]);
+    labels.push([
+        'ru',
+        'Русский',
+        'Да',
+        'Нет',
+        'Конец',
+        'Ветка',
+        'Завершение'
+    ]);
+    labels.push([
+        'uk',
+        'Українська',
+        'Так',
+        'Ні',
+        'Кінець',
+        'Гілка',
+        'Завершення'
+    ]);
+    labels.push([
+        'zh',
+        '中文',
+        '是',
+        '否',
+        '结束',
+        '分支',
+        '完成'
+    ]);
+    labelsByCode = {};
+    for (item of labels) {
+        code = item[0];
+        bucket = {
+            yes: item[2],
+            no: item[3],
+            end: item[4],
+            branch: item[5] || 'Branch',
+            exit: item[6] || 'Exit'
+        };
+        labelsByCode[code] = bucket;
+    }
+    unit.globals.labels = labels;
+    unit.globals.labelsByCode = labelsByCode;
+}
+function setLabelsForLanguage(settings, language) {
+    var bucket;
+    bucket = getLabelsByCode(language);
+    settings.language = language;
+    settings.yes = bucket.yes;
+    settings.no = bucket.no;
+    settings.end = bucket.end;
+    settings.branch = bucket.branch;
+    settings.exit = bucket.exit;
+}
+function initLoadedFonts() {
+    var fonts;
+    if (!(unit.loadedFonts && unit.fontPaths)) {
+        unit.loadedFonts = {};
+        unit.fontPaths = {};
+    }
+    fonts = unit.fontPaths;
+    fonts['Roboto Condensed/normal/normal'] = 'RobotoCondensed-Regular.ttf';
+    fonts['Roboto Condensed/italic/normal'] = 'RobotoCondensed-Italic.ttf';
+    fonts['Roboto Condensed/normal/bold'] = 'RobotoCondensed-Bold.ttf';
+    fonts['Roboto Condensed/italic/bold'] = 'RobotoCondensed-BoldItalic.ttf';
+    fonts['Roboto Mono/normal/normal'] = 'RobotoMono-Regular.ttf';
+    fonts['Roboto Mono/italic/normal'] = 'RobotoMono-Italic.ttf';
+    fonts['Roboto Mono/normal/bold'] = 'RobotoMono-Bold.ttf';
+    fonts['Roboto Mono/italic/bold'] = 'RobotoMono-BoldItalic.ttf';
+    fonts['Ubuntu/normal/normal'] = 'Ubuntu-Regular.ttf';
+    fonts['Ubuntu/italic/normal'] = 'Ubuntu-Italic.ttf';
+    fonts['Ubuntu/normal/bold'] = 'Ubuntu-Bold.ttf';
+    fonts['Ubuntu/italic/bold'] = 'Ubuntu-BoldItalic.ttf';
+    fonts['Ubuntu Mono/normal/normal'] = 'UbuntuMono-Regular.ttf';
+    fonts['Ubuntu Mono/italic/normal'] = 'UbuntuMono-Italic.ttf';
+    fonts['Ubuntu Mono/normal/bold'] = 'UbuntuMono-Bold.ttf';
+    fonts['Ubuntu Mono/italic/bold'] = 'UbuntuMono-BoldItalic.ttf';
+    fonts['Arimo/normal/normal'] = 'Arimo-Regular.ttf';
+    fonts['Arimo/italic/normal'] = 'Arimo-Italic.ttf';
+    fonts['Arimo/normal/bold'] = 'LiberationSans-Bold.ttf';
+    fonts['Arimo/italic/bold'] = 'Arimo-BoldItalic.ttf';
+    fonts['Arimo, Arial/normal/normal'] = 'Arimo-Regular.ttf';
+    fonts['Arimo, Arial/italic/normal'] = 'Arimo-Italic.ttf';
+    fonts['Arimo, Arial/normal/bold'] = 'LiberationSans-Bold.ttf';
+    fonts['Arimo, Arial/italic/bold'] = 'Arimo-BoldItalic.ttf';
+    fonts['PTSans/normal/normal'] = 'PTSans-Regular.ttf';
+    fonts['PTSans/italic/normal'] = 'PTSans-Italic.ttf';
+    fonts['PTSans/normal/bold'] = 'PTSans-Bold.ttf';
+    fonts['PTSans/italic/bold'] = 'PTSans-BoldItalic.ttf';
+    fonts['Tinos/normal/normal'] = 'Tinos-Regular.ttf';
+    fonts['Tinos/italic/normal'] = 'Tinos-Italic.ttf';
+    fonts['Tinos/normal/bold'] = 'Tinos-Bold.ttf';
+    fonts['Tinos/italic/bold'] = 'Tinos-BoldItalic.ttf';
+    fonts['Tinos, Times New Roman, Times/normal/normal'] = 'Tinos-Regular.ttf';
+    fonts['Tinos, Times New Roman, Times/italic/normal'] = 'Tinos-Italic.ttf';
+    fonts['Tinos, Times New Roman, Times/normal/bold'] = 'Tinos-Bold.ttf';
+    fonts['Tinos, Times New Roman, Times/italic/bold'] = 'Tinos-BoldItalic.ttf';
+    fonts['Liberation Sans/normal/normal'] = 'LiberationSans-Regular.ttf';
+    fonts['Liberation Sans/italic/normal'] = 'LiberationSans-Italic.ttf';
+    fonts['Liberation Sans/normal/bold'] = 'LiberationSans-Bold.ttf';
+    fonts['Liberation Sans/italic/bold'] = 'LiberationSans-BoldItalic.ttf';
+}
+async function loadFonts(fonts) {
+    var family, familyParts, ff, file, font, loaded, mustRedraw, parts, path, style, url, weight;
+    mustRedraw = false;
+    path = gconfig.fontPath;
+    initLoadedFonts();
+    showWaitBlock();
+    for (font of fonts) {
+        if (!unit.loadedFonts[font]) {
+            file = unit.fontPaths[font];
+            if (file) {
+                mustRedraw = true;
+                parts = font.split('/');
+                familyParts = parts[0];
+                style = parts[1];
+                weight = parts[2];
+                family = familyParts.split(',')[0];
+                url = 'url(' + path + file + ')';
+                ff = new FontFace(family, url, {
+                    style: style,
+                    weight: weight
+                });
+                trace('Loading font', url);
+                loaded = await ff.load();
+                document.fonts.add(loaded);
+                unit.loadedFonts[font] = true;
+            } else {
+                console.error('Unknown font', font);
             }
         }
     }
-    function stretchElement(element) {
-        display(element, 'inline-block');
-        element.style.position = 'absolute';
-        element.style.left = '0px';
-        element.style.top = '0px';
-        element.style.width = '100%';
-        element.style.height = '100%';
-        return;
+    hideWaitBlock();
+    return mustRedraw;
+}
+async function prepareFonts() {
+    var face;
+    face = gconfig.fontFamily;
+    await loadFonts([
+        face + '/normal/normal',
+        face + '/normal/bold'
+    ]);
+}
+function initResize() {
+    unit.resizables = {};
+    unit.resizeDebounce = utils.debounce_create(invokeWindowResize, 400);
+    unit.resizeDebounce.run();
+    window.onresize = onWindowResize;
+    setTimeout(onWindowResize, 500);
+}
+function invokeWindowResize() {
+    var _collection_147, action, id;
+    setRootStyle();
+    _collection_147 = unit.resizables;
+    for (id in _collection_147) {
+        action = _collection_147[id];
+        action();
     }
-    function registerWriteDrakonShortcut(keys, action, callbacks) {
-        var callback;
-        callback = function () {
-            runWriteDrakonAction(action, callbacks);
-        };
-        Mousetrap.bind(keys, callback, 'keydown');
-        return;
+}
+function onWindowResize() {
+    unit.resizeDebounce.onInput();
+}
+function subscribeOnResize(action) {
+    var id;
+    id = generateRandomString();
+    unit.resizables[id] = action;
+    return id;
+}
+function unsubscribeFromResize(id) {
+    delete unit.resizables[id];
+}
+async function fetchAccount() {
+    var account;
+    account = await sendRequestRaw('GET', '/api/account');
+    if (account.status === 401) {
+        account = {};
+    } else {
+        account = JSON.parse(account.responseText);
     }
-    function sendCreateFolder_create(parentId, type, name) {
-        var payload, id, responseRaw, url, parsed, response;
-        var me = {
-            state: '2',
-            type: 'sendCreateFolder'
-        };
-        function _main_sendCreateFolder(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '2':
-                        parsed = parseId(parentId);
-                        payload = {
-                            name: name,
-                            parent: parsed.folderId,
-                            type: type
-                        };
-                        url = '/api/folder/' + parsed.spaceId;
-                        me.state = '11';
-                        sendRequestRaw('POST', url, payload).then(function (__returnee) {
-                            responseRaw = __returnee;
-                            _main_sendCreateFolder(__resolve, __reject);
-                        }, function (error) {
-                            me.state = undefined;
-                            __reject(error);
-                        });
-                        return;
-                    case '11':
-                        response = JSON.parse(responseRaw.responseText);
-                        id = makeId(parsed.spaceId, response.folder_id);
-                        me.state = undefined;
-                        __resolve({
-                            id: id,
-                            name: name,
-                            type: type,
-                            parent: parentId
-                        });
-                        return;
-                    default:
-                        return;
-                    }
-                }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
-        }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                _main_sendCreateFolder(__resolve, __reject);
-            });
-        };
-        return me;
-    }
-    function sendCreateFolder(parentId, type, name) {
-        var __obj = sendCreateFolder_create(parentId, type, name);
-        return __obj.run();
-    }
-    function ipath(image) {
-        return gconfig.imagePath + image;
-    }
-    function createLogonScreen(widget, onSuccessCallback, goToRegisterCallback, onCancel, accountUrl) {
-        var user, password, inputStyle, title, userLab, passLab, noAccountLab, forgotLab, spacer, spacer2, error, logonButt, createAccountButton, reset, form, formClass, formStyle, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9, _var10, _var11;
-        var __state = '10';
-        while (true) {
-            switch (__state) {
-            case '2':
-                widget.form = form;
-                user.focus();
-                __state = '7';
-                break;
-            case '7':
-                return form;
-            case '10':
-                inputStyle = {
-                    width: 'calc(100% - 20px)',
-                    'margin-bottom': '10px'
-                };
-                inputStyle = { 'margin-bottom': '10px' };
-                user = html.createElement('input', {
-                    type: 'text',
-                    autocomplete: 'username'
-                }, [inputStyle]);
-                user.id = 'user';
-                password = html.createElement('input', {
-                    type: 'password',
-                    autocomplete: 'current-password'
-                }, [inputStyle]);
-                password.id = 'password';
-                widget.user = user;
-                widget.password = password;
-                __state = '22';
-                break;
-            case '14':
-                formClass = 'middle-h';
-                formStyle = {
-                    position: 'relative',
-                    padding: '10px',
-                    width: '300px',
-                    'max-width': '100vw'
-                };
-                form = html.createElement('form', {}, [
-                    formClass,
-                    formStyle,
-                    title,
-                    userLab,
-                    user,
-                    passLab,
-                    password,
-                    spacer2,
-                    logonButt,
-                    error,
-                    spacer,
-                    noAccountLab,
-                    createAccountButton,
-                    reset
-                ]);
-                addChangeLanguageBlock(form);
-                __state = '2';
-                break;
-            case '22':
-                _var2 = translate('Login to');
-                _var3 = getHeader1Size();
-                title = div({
-                    text: _var2 + ' ' + gconfig.appName,
-                    'font-weight': 'bold',
-                    'font-size': _var3,
-                    'text-align': 'center',
-                    'margin': '10px'
-                });
-                _var4 = translate('User name');
-                userLab = div({ text: _var4 });
-                _var6 = translate('No account?');
-                noAccountLab = div({ text: _var6 });
-                _var7 = translate('Forgot password?');
-                forgotLab = div({ text: _var7 });
-                _var5 = translate('Password');
-                passLab = div({ text: _var5 });
-                spacer = div({ height: '20px' });
-                spacer2 = div({ height: '10px' });
-                error = div({
-                    color: 'darkred',
-                    'margin-top': '10px'
-                });
-                widget.error = error;
-                __state = '28';
-                break;
-            case '28':
-                _var8 = translate('Login');
-                logonButt = widgets.createDefaultButton(_var8, function () {
-                    doLogon(widget, onSuccessCallback);
-                });
-                logonButt.style.width = '100%';
-                logonButt.style.textAlign = 'center';
-                _var9 = translate('Create account');
-                createAccountButton = widgets.createSimpleButton(_var9, goToRegisterCallback);
-                _var11 = translate('Forgot password?');
-                _var10 = html.createElement('a', { href: accountUrl }, [{ text: _var11 }]);
-                reset = div({ 'margin-top': '20px' }, _var10);
-                registerEvent(password, 'keydown', function (evt) {
-                    logonOnEnter(widget, evt, onSuccessCallback);
-                });
-                __state = '14';
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function checkDrakonIntegrity(diagram) {
-        var tmpDrakon, tmpContainer, canvas, config, fakeSender, ok, _var2, _var3;
-        tmpContainer = div({ display: 'none' });
-        html.add(document.body, tmpContainer);
-        config = {};
-        _var2 = drakon_canvas.DrakonCanvas();
-        tmpDrakon = createWidget(_var2);
-        canvas = tmpDrakon.render(100, 100, config);
-        html.add(tmpContainer, canvas);
-        fakeSender = {
-            pushEdit: function () {
-            },
-            stop: function () {
-            }
-        };
-        ok = false;
-        try {
-            tmpDrakon.setDiagram('hello', diagram, fakeSender);
-            ok = true;
-        } catch (ex) {
-            console.error(ex);
-        }
-        html.remove(tmpContainer);
-        if (ok) {
-            return undefined;
+    unit.globals.account = account;
+    return account;
+}
+async function fetchUserSettings() {
+    var response, settings;
+    if (isLoggedOn()) {
+        response = await sendRequestRaw('GET', '/api/theme');
+        if (response.status === 401) {
+            settings = {};
         } else {
-            _var3 = translate('Error in diagram structure');
-            return _var3;
+            settings = JSON.parse(response.responseText);
         }
+    } else {
+        settings = getSettingsFromLocalStorage();
     }
-    function addLabelsToSettings(settings) {
-        var bucket, language;
-        language = settings.language || 'en-us';
-        bucket = getLabelsByCode(language);
-        copyIfMissing(settings, bucket, 'yes');
-        copyIfMissing(settings, bucket, 'no');
-        copyIfMissing(settings, bucket, 'end');
-        copyIfMissing(settings, bucket, 'branch');
-        copyIfMissing(settings, bucket, 'exit');
-        return;
+    if (!settings.language) {
+        settings.language = guessLanguage();
     }
-    function createSpecialStyles() {
-        var _var2;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                html.addClass('*', '-webkit-tap-highlight-color: transparent');
-                html.addClass('.top-bar', 'position: relative', 'white-space: nowrap', 'height:50px', 'border-bottom: solid 1px #a0a0a0');
-                html.addClass('.top-bar-padding', 'height:2px', 'background:red');
-                html.addClass('.top-bar-logo', 'display: inline-block');
-                html.addClass('.top-bar-logo img', 'height:40px', 'width:40px', 'display:inline-block');
-                html.addClass('.top-bar-stripe', 'display:inline-block', 'width:calc(100% - 40px)', 'height:40px', 'vertical-align: top');
-                html.addClass('.top-bar-below', 'display:inline-block', 'position:relative', 'width:100%', 'height:calc(100% - 50px)');
-                html.addClass('.top-text', 'display: inline-block', 'line-height: 50px', 'padding-left: 5px', 'padding-right: 5px', 'vertical-align: top');
-                html.addClass('.top-right', 'display: inline-block', 'line-height: 50px', 'padding-left: 5px', 'padding-right: 5px', 'vertical-align: top', 'position: absolute', 'right: 0px', 'top: 0px');
-                __state = '13';
-                break;
-            case '4':
-                return;
-            case '13':
-                html.addClass('.generic-button', 'display:inline-block', 'vertical-align: top', 'padding-left: 10px', 'padding-right: 10px', 'cursor: pointer', 'border-radius: 3px', 'margin-right: 5px', 'line-height:34px', 'user-select: none');
-                html.addClass('.generic-button:active', 'transform: translateY(2px)');
-                html.addClass('.simple-button', 'background: white', 'border: solid 1px #a0a0a0');
-                html.addClass('.simple-button:hover', 'background: #9fd694');
-                html.addClass('.default-button', 'border: solid 1px #038009', 'background: #038009', 'color: white');
-                html.addClass('.default-button:hover', 'border: solid 1px #004a04', 'background: #004a04');
-                html.addClass('.bad-button', 'border: solid 1px darkred', 'background: darkred', 'color: white');
-                html.addClass('.bad-button:hover', 'border: solid 1px red', 'background: red');
-                html.addClass('.icon-button', 'height: 34px', 'width: 34px');
-                html.addClass('img.icon-button', 'display: inline-block', 'vertical-align: top', 'padding:0px', 'margin:0px');
-                __state = '24';
-                break;
-            case '24':
-                html.addClass('.question-back', 'display: inline-block', 'position: fixed', 'left: 0px', 'top: 0px', 'width: 100vw', 'height: 100vh', 'background: rgba(0, 0, 0, 0.2)', 'z-index: 2000');
-                html.addClass('.question-body', 'display: inline-block', 'position: fixed', 'left: 50%', 'transform: translateX(-50%)', 'top: 0px', 'max-width: 100vw', 'width: 400px', 'background: white', 'z-index: 2001');
-                __state = '27';
-                break;
-            case '27':
-                html.addClass('.context-menu', 'display: inline-block', 'position: absolute', 'background: white', 'max-width: 100vw', 'min-width: 200px', 'border: solid 1px #a0a0a0', 'padding: 10px');
-                html.addClass('.context-menu-separator', 'background: #a0a0a0', 'height: 1px', 'margin-top:5px', 'margin-bottom:5px');
-                __state = '32';
-                break;
-            case '32':
-                html.addClass('.snack-container', 'display: inline-block', 'position: fixed', 'left: 20px', 'top: 20px', 'width: 400px', 'max-width: calc(100vw - 20px)', 'height: 80px', 'background: white', 'z-index: 500', 'border: solid 1px #a0a0a0', 'transition: opacity 500ms');
-                html.addClass('.snack-field-back', 'display: inline-block', 'position: absolute', 'left: 0px', 'top: 0px', 'width: 30px', 'height: 80px', 'background: darkred');
-                html.addClass('.snack-field-text', 'display: inline-block', 'position: absolute', 'left: 30px', 'top: 0px', 'width: 370px', 'height: 80px');
-                __state = '37';
-                break;
-            case '37':
-                html.addClass('.main-menu', 'display: inline-block', 'background: white', 'border: solid 1px #a0a0a0', 'min-width: 300px', 'max-width: 100vw', 'max-height: calc(100vh - 10px)', 'overflow: auto', 'opacity: 0', 'transform: translateY(-30px)', 'transition: transform 300ms, opacity 300ms');
-                html.addClass('.main-menu-title', 'display: inline-block', 'vertical-align: top', 'font-weight: bold', 'font-size: 20px', 'line-height: 49px', 'padding-left: 10px', 'padding-right: 10px');
-                html.addClass('.main-menu-top', 'position: relative', 'background: white');
-                html.addClass('.main-menu-bottom', 'white-space: nowrap', 'padding-right: 5px');
-                html.addClass('.main-menu-section', 'display: inline-block', 'margin: 5px', 'margin-right: 0px', 'vertical-align: top', 'white-space: normal');
-                _var2 = getHeader2Size();
-                html.addClass('.main-menu-section-header', 'color: green', 'font-weight: bold', 'font-size: ' + _var2, 'text-align: center', 'border-bottom: solid 2px green');
-                __state = '44';
-                break;
-            case '44':
-                html.addClass('.active-border', 'background: white', 'border: solid 2px #d0d0d0', 'margin-bottom: 5px', 'border-radius: 5px');
-                html.addClass('.active-border:hover, .active-border:active', 'background: white', 'border: solid 2px green', 'cursor: pointer', 'user-select: none');
-                __state = '48';
-                break;
-            case '48':
-                html.addClass('.common-table th', 'padding: 5px', 'font-weight: bold', 'text-align: center');
-                html.addClass('.common-table td', 'padding: 5px');
-                html.addClass('table.common-table, table.common-table th, table.common-table td', 'padding: 5px', 'border: solid 1px #e0e0e0');
-                __state = '4';
-                break;
-            default:
-                return;
-            }
+    unit.globals.userSettings = settings;
+    return settings;
+}
+function getAccountObj() {
+    return unit.globals.account;
+}
+function getBaseUrl() {
+    return gconfig.baseUrl;
+}
+function getHeaders() {
+    var csrf;
+    csrf = document.body.dataset.csrf;
+    if (csrf) {
+        return { 'csrf-token': csrf };
+    } else {
+        return undefined;
+    }
+}
+function getSettingsFromLocalStorage() {
+    var settings, settingsStr;
+    settingsStr = localStorage.getItem('userSetting');
+    if (settingsStr) {
+        settings = JSON.parse(settingsStr);
+    } else {
+        settings = {};
+    }
+    return settings;
+}
+function getSettingsObj() {
+    var settings;
+    settings = unit.globals.userSettings;
+    addLabelsToSettings(settings);
+    return settings;
+}
+function guessLanguage() {
+    return gconfig.defaultLanguage;
+}
+function isLoggedOn() {
+    var account;
+    account = getAccountObj();
+    if (account && account.user_id) {
+        return true;
+    } else {
+        return false;
+    }
+}
+function saveUserSettings(userSettings) {
+    var existingSettings;
+    existingSettings = getSettingsObj();
+    copyAllFieldsWithValue(existingSettings, userSettings);
+    if (isLoggedOn()) {
+        return sendRequestRaw('POST', '/api/theme', existingSettings);
+    } else {
+        localStorage.setItem('userSetting', JSON.stringify(existingSettings));
+    }
+}
+async function sendRequestRaw(method, url, payload) {
+    var body, error, fullUrl, headers, response;
+    if (payload) {
+        body = JSON.stringify(payload);
+    } else {
+        body = '';
+    }
+    fullUrl = getBaseUrl() + url;
+    headers = getHeaders();
+    trace('sendRequestRaw', method + ' ' + fullUrl);
+    response = await http.sendRequest(method, fullUrl, body, headers);
+    if (response.status === 0) {
+        error = new Error('No connection');
+        error.disconnected = true;
+        throw error;
+    } else {
+        return response;
+    }
+}
+async function sendRequestWithCheck(method, url, payload) {
+    var error, response;
+    response = await sendRequestRaw(method, url, payload);
+    if (isSuccess(response)) {
+        if (response.responseText) {
+            return JSON.parse(response.responseText);
+        } else {
+            return undefined;
         }
+    } else {
+        console.error(response);
+        error = new Error('HTTP error. Status=' + response.status + ' url=' + url);
+        error.status = response.status;
+        throw error;
     }
-    function getDiagramLabels() {
-        return unit.globals.labels;
+}
+function hasDialog() {
+    if (widgets.questionVisible || widgets.hasPopup()) {
+        return true;
+    } else {
+        return false;
     }
-    function initDiagramLabels() {
-        var bucket, code, labelsByCode, labels, _var2, _var3, item;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                labels = [];
-                labels.push([
-                    'de',
-                    'Deutsch',
-                    'Ja',
-                    'Nein',
-                    'Ende',
-                    'Zweig',
-                    'Abschluss'
-                ]);
-                labels.push([
-                    'en-us',
-                    'English',
-                    'Yes',
-                    'No',
-                    'End',
-                    'Branch',
-                    'Completion'
-                ]);
-                labels.push([
-                    'es',
-                    'Español',
-                    'Sí',
-                    'No',
-                    'Final',
-                    'Rama',
-                    'Finalización'
-                ]);
-                labels.push([
-                    'fr',
-                    'Français',
-                    'Oui',
-                    'Non',
-                    'Fin',
-                    'Branche',
-                    'Terminaison'
-                ]);
-                labels.push([
-                    'lv',
-                    'Latviešu',
-                    'Jā',
-                    'Nē',
-                    'Beigas',
-                    'Zars',
-                    'Pabeigšana'
-                ]);
-                labels.push([
-                    'lt',
-                    'Lietuvių',
-                    'Taip',
-                    'Ne',
-                    'Pabaiga',
-                    'Šaka',
-                    'Užbaigimas'
-                ]);
-                __state = '19';
-                break;
-            case '4':
-                unit.globals.labels = labels;
-                unit.globals.labelsByCode = labelsByCode;
-                return;
-            case '5':
-                labelsByCode = {};
-                _var2 = labels;
-                _var3 = 0;
-                __state = '7';
-                break;
-            case '7':
-                if (_var3 < _var2.length) {
-                    item = _var2[_var3];
-                    code = item[0];
-                    bucket = {
-                        yes: item[2],
-                        no: item[3],
-                        end: item[4],
-                        branch: item[5] || 'Branch',
-                        exit: item[6] || 'Exit'
-                    };
-                    labelsByCode[code] = bucket;
-                    _var3++;
-                    __state = '7';
-                } else {
-                    __state = '4';
-                }
-                break;
-            case '19':
-                labels.push([
-                    'nl',
-                    'Nederlands',
-                    'Ja',
-                    'Nee',
-                    'Einde',
-                    'Tak',
-                    'Voltooiing'
-                ]);
-                labels.push([
-                    'no',
-                    'Norsk',
-                    'Ja',
-                    'Nei',
-                    'Slutt',
-                    'Gren',
-                    'Fullføring'
-                ]);
-                labels.push([
-                    'pl',
-                    'Polski',
-                    'Tak',
-                    'Nie',
-                    'Koniec',
-                    'Gałąź',
-                    'Zakończenie'
-                ]);
-                labels.push([
-                    'ro',
-                    'Român',
-                    'Da',
-                    'Nu',
-                    'Sfârșit',
-                    'Ramură',
-                    'Finalizare'
-                ]);
-                labels.push([
-                    'fi',
-                    'Suomi',
-                    'Kyllä',
-                    'Ei',
-                    'Loppu',
-                    'Haara',
-                    'Suorittaminen'
-                ]);
-                labels.push([
-                    'sv',
-                    'Svenska',
-                    'Ja',
-                    'Nej',
-                    'Slut',
-                    'Gren',
-                    'Slutförande'
-                ]);
-                __state = '26';
-                break;
-            case '26':
-                labels.push([
-                    'ru',
-                    'Русский',
-                    'Да',
-                    'Нет',
-                    'Конец',
-                    'Ветка',
-                    'Завершение'
-                ]);
-                labels.push([
-                    'uk',
-                    'Українська',
-                    'Так',
-                    'Ні',
-                    'Кінець',
-                    'Гілка',
-                    'Завершення'
-                ]);
-                labels.push([
-                    'zh',
-                    '中文',
-                    '是',
-                    '否',
-                    '结束',
-                    '分支',
-                    '完成'
-                ]);
-                __state = '5';
-                break;
-            default:
-                return;
-            }
-        }
+}
+function initShortcuts(callbacks) {
+    registerInsertShortcut('a', 'action', callbacks);
+    registerInsertShortcut('q', 'question', callbacks);
+    registerInsertShortcut('s', 'select', callbacks);
+    registerInsertShortcut('c', 'case', callbacks);
+    registerInsertShortcut('b', 'branch', callbacks);
+    registerInsertShortcut('n', 'insertion', callbacks);
+    registerInsertShortcut('l', 'foreach', callbacks);
+    registerInsertShortcut('t', 'text', callbacks);
+    registerInsertShortcut('r', 'rounded', callbacks);
+    registerInsertShortcut('w', 'arrow', callbacks);
+    registerInsertShortcut('e', 'f_circle', callbacks);
+    registerWriteDrakonShortcut('enter', function () {
+        callbacks.getWidget().editContent();
+    }, callbacks);
+    registerWriteDrakonShortcut('del', function () {
+        callbacks.getWidget().deleteSelection();
+    }, callbacks);
+    registerWriteDrakonShortcut('backspace', function () {
+        callbacks.getWidget().deleteSelection();
+    }, callbacks);
+    registerWriteDrakonShortcut('mod+x', function () {
+        callbacks.getWidget().cutSelection();
+    }, callbacks);
+    registerWriteDrakonShortcut('mod+v', function () {
+        callbacks.getWidget().showPaste();
+    }, callbacks);
+    registerWriteDrakonShortcut('mod+z', function () {
+        callbacks.getWidget().undo();
+    }, callbacks);
+    registerWriteDrakonShortcut('mod+y', function () {
+        callbacks.getWidget().redo();
+    }, callbacks);
+    registerReadDrakonShortcut('mod+c', function () {
+        callbacks.getWidget().copySelection();
+    }, callbacks);
+    registerReadDrakonShortcut('up', function () {
+        callbacks.getWidget().arrowUp();
+    }, callbacks);
+    registerReadDrakonShortcut('down', function () {
+        callbacks.getWidget().arrowDown();
+    }, callbacks);
+    registerReadDrakonShortcut('left', function () {
+        callbacks.getWidget().arrowLeft();
+    }, callbacks);
+    registerReadDrakonShortcut('right', function () {
+        callbacks.getWidget().arrowRight();
+    }, callbacks);
+}
+function registerInsertShortcut(keys, type, callbacks) {
+    var action;
+    action = function () {
+        var drakon;
+        drakon = callbacks.getWidget();
+        drakon.showInsertionSockets(type);
+    };
+    registerWriteDrakonShortcut(keys, action, callbacks);
+}
+function registerReadDrakonShortcut(keys, action, callbacks) {
+    var callback;
+    callback = function () {
+        runReadDrakonAction(action, callbacks);
+    };
+    Mousetrap.bind(keys, callback, 'keydown');
+}
+function registerWriteDrakonShortcut(keys, action, callbacks) {
+    var callback;
+    callback = function () {
+        runWriteDrakonAction(action, callbacks);
+    };
+    Mousetrap.bind(keys, callback, 'keydown');
+}
+function runReadDrakonAction(action, callbacks) {
+    if (!hasDialog() && callbacks.isDrakon()) {
+        action();
     }
-    function getLabelsByCode(code) {
-        return unit.globals.labelsByCode[code];
+}
+function runWriteDrakonAction(action, callbacks) {
+    if (!hasDialog() && (callbacks.isDrakon() && !callbacks.isReadonly())) {
+        action();
     }
-    function setLabelsForLanguage(settings, language) {
-        var bucket;
-        bucket = getLabelsByCode(language);
-        settings.language = language;
-        settings.yes = bucket.yes;
-        settings.no = bucket.no;
-        settings.end = bucket.end;
-        settings.branch = bucket.branch;
-        settings.exit = bucket.exit;
-        return;
-    }
-    function loadStringsForLanguage_create(language) {
-        var strings;
-        var me = {
-            state: '2',
-            type: 'loadStringsForLanguage'
+}
+function createSpecialStyles() {
+    html.addClass('*', '-webkit-tap-highlight-color: transparent');
+    html.addClass('.top-bar', 'position: relative', 'white-space: nowrap', 'height:50px', 'border-bottom: solid 1px #a0a0a0');
+    html.addClass('.top-bar-padding', 'height:2px', 'background:red');
+    html.addClass('.top-bar-logo', 'display: inline-block');
+    html.addClass('.top-bar-logo img', 'height:40px', 'width:40px', 'display:inline-block');
+    html.addClass('.top-bar-stripe', 'display:inline-block', 'width:calc(100% - 40px)', 'height:40px', 'vertical-align: top');
+    html.addClass('.top-bar-below', 'display:inline-block', 'position:relative', 'width:100%', 'height:calc(100% - 50px)');
+    html.addClass('.top-text', 'display: inline-block', 'line-height: 50px', 'padding-left: 5px', 'padding-right: 5px', 'vertical-align: top');
+    html.addClass('.top-right', 'display: inline-block', 'line-height: 50px', 'padding-left: 5px', 'padding-right: 5px', 'vertical-align: top', 'position: absolute', 'right: 0px', 'top: 0px');
+    html.addClass('.generic-button', 'display:inline-block', 'vertical-align: top', 'padding-left: 10px', 'padding-right: 10px', 'cursor: pointer', 'border-radius: 3px', 'margin-right: 5px', 'line-height:34px', 'user-select: none');
+    html.addClass('.generic-button:active', 'transform: translateY(2px)');
+    html.addClass('.simple-button', 'background: white', 'border: solid 1px #a0a0a0');
+    html.addClass('.simple-button:hover', 'background: #9fd694');
+    html.addClass('.default-button', 'border: solid 1px #038009', 'background: #038009', 'color: white');
+    html.addClass('.default-button:hover', 'border: solid 1px #004a04', 'background: #004a04');
+    html.addClass('.bad-button', 'border: solid 1px darkred', 'background: darkred', 'color: white');
+    html.addClass('.bad-button:hover', 'border: solid 1px red', 'background: red');
+    html.addClass('.icon-button', 'height: 34px', 'width: 34px');
+    html.addClass('img.icon-button', 'display: inline-block', 'vertical-align: top', 'padding:0px', 'margin:0px');
+    html.addClass('.question-back', 'display: inline-block', 'position: fixed', 'left: 0px', 'top: 0px', 'width: 100vw', 'height: 100vh', 'background: rgba(0, 0, 0, 0.2)', 'z-index: 2000');
+    html.addClass('.question-body', 'display: inline-block', 'position: fixed', 'left: 50%', 'transform: translateX(-50%)', 'top: 0px', 'max-width: 100vw', 'width: 400px', 'background: white', 'z-index: 2001');
+    html.addClass('.context-menu', 'display: inline-block', 'position: absolute', 'background: white', 'max-width: 100vw', 'min-width: 200px', 'border: solid 1px #a0a0a0', 'padding: 10px');
+    html.addClass('.context-menu-separator', 'background: #a0a0a0', 'height: 1px', 'margin-top:5px', 'margin-bottom:5px');
+    html.addClass('.snack-container', 'display: inline-block', 'position: fixed', 'left: 20px', 'top: 20px', 'width: 400px', 'max-width: calc(100vw - 20px)', 'height: 80px', 'background: white', 'z-index: 500', 'border: solid 1px #a0a0a0', 'transition: opacity 500ms');
+    html.addClass('.snack-field-back', 'display: inline-block', 'position: absolute', 'left: 0px', 'top: 0px', 'width: 30px', 'height: 80px', 'background: darkred');
+    html.addClass('.snack-field-text', 'display: inline-block', 'position: absolute', 'left: 30px', 'top: 0px', 'width: 370px', 'height: 80px');
+    html.addClass('.main-menu', 'display: inline-block', 'background: white', 'border: solid 1px #a0a0a0', 'min-width: 300px', 'max-width: 100vw', 'max-height: calc(100vh - 10px)', 'overflow: auto', 'opacity: 0', 'transform: translateY(-30px)', 'transition: transform 300ms, opacity 300ms');
+    html.addClass('.main-menu-title', 'display: inline-block', 'vertical-align: top', 'font-weight: bold', 'font-size: 20px', 'line-height: 49px', 'padding-left: 10px', 'padding-right: 10px');
+    html.addClass('.main-menu-top', 'position: relative', 'background: white');
+    html.addClass('.main-menu-bottom', 'white-space: nowrap', 'padding-right: 5px');
+    html.addClass('.main-menu-section', 'display: inline-block', 'margin: 5px', 'margin-right: 0px', 'vertical-align: top', 'white-space: normal');
+    html.addClass('.main-menu-section-header', 'color: green', 'font-weight: bold', 'font-size: ' + getHeader2Size(), 'text-align: center', 'border-bottom: solid 2px green');
+    html.addClass('.active-border', 'background: white', 'border: solid 2px #d0d0d0', 'margin-bottom: 5px', 'border-radius: 5px');
+    html.addClass('.active-border:hover, .active-border:active', 'background: white', 'border: solid 2px green', 'cursor: pointer', 'user-select: none');
+    html.addClass('.common-table th', 'padding: 5px', 'font-weight: bold', 'text-align: center');
+    html.addClass('.common-table td', 'padding: 5px');
+    html.addClass('table.common-table, table.common-table th, table.common-table td', 'padding: 5px', 'border: solid 1px #e0e0e0');
+}
+function getLargeObj() {
+    return unit.largeObj;
+}
+function getTraces() {
+    return unit.traces;
+}
+function registerEvent(element, eventName, action, options) {
+    var callback;
+    callback = action;
+    element.addEventListener(eventName, callback, options);
+}
+function setTimeout(action, delay, notrace) {
+    var callback, id, start, timeoutId;
+    if (notrace) {
+        callback = action;
+    } else {
+        id = utils.random(1000, 10000);
+        start = 'timeout-' + id;
+        callback = function (evt) {
+            trace(start, delay);
+            action(evt);
         };
-        function _main_loadStringsForLanguage(__resolve, __reject) {
-            try {
-                strings = getLocalizedStrings(language);
-                setStrings(strings);
-                me.state = undefined;
-                __resolve({ ok: true });
-                return;
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
+    }
+    timeoutId = window.setTimeout(callback, delay);
+    return timeoutId;
+}
+function trace(name, value, largeObj) {
+    try {
+        traceCore(name, value, largeObj);
+    } catch (ex) {
+        console.error('Error in tracing', ex);
+    }
+}
+function traceCore(name, value, largeObj) {
+    var bucket, maxTrace;
+    console.log('trace', name, value);
+    maxTrace = 40;
+    if (name) {
+        if (largeObj) {
+            unit.largeObj = largeObj;
         }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                _main_loadStringsForLanguage(__resolve, __reject);
-            });
+        bucket = {
+            name: name,
+            value: value
         };
-        return me;
-    }
-    function loadStringsForLanguage(language) {
-        var __obj = loadStringsForLanguage_create(language);
-        return __obj.run();
-    }
-    function translate(text) {
-        var strings;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                strings = unit.globals.strings;
-                if (strings) {
-                    if (text in strings) {
-                        return strings[text];
-                    } else {
-                        __state = '7';
-                    }
-                } else {
-                    __state = '7';
-                }
-                break;
-            case '7':
-                return text;
-            default:
-                return;
-            }
+        unit.traces.push(bucket);
+        if (unit.traces.length > 40) {
+            unit.traces.shift();
         }
     }
-    function setStrings(strings) {
-        unit.globals.strings = strings;
-        return;
+}
+async function loadStringsForLanguage(language) {
+    var strings;
+    strings = getLocalizedStrings(language);
+    setStrings(strings);
+}
+function setStrings(strings) {
+    unit.globals.strings = strings;
+}
+function translate(text) {
+    var strings;
+    strings = unit.globals.strings;
+    if (strings && text in strings) {
+        return strings[text];
+    } else {
+        return text;
     }
-    function initResize() {
-        unit.resizables = {};
-        unit.resizeDebounce = utils.debounce_create(invokeWindowResize, 400);
-        unit.resizeDebounce.run();
-        window.onresize = onWindowResize;
-        setTimeout(onWindowResize, 500);
-        return;
-    }
-    function subscribeOnResize(action) {
-        var id;
-        id = generateRandomString();
-        unit.resizables[id] = action;
-        return id;
-    }
-    function invokeWindowResize() {
-        var _var3, _var2, _var4, id, action;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                setRootStyle();
-                _var3 = unit.resizables;
-                _var2 = Object.keys(_var3);
-                _var4 = 0;
-                __state = '5';
-                break;
-            case '5':
-                if (_var4 < _var2.length) {
-                    id = _var2[_var4];
-                    action = _var3[id];
-                    action();
-                    _var4++;
-                    __state = '5';
-                } else {
-                    return;
-                }
-                break;
-            default:
-                return;
-            }
+}
+function checkDrakonIntegrity(diagram) {
+    var canvas, config, fakeSender, ok, tmpContainer, tmpDrakon;
+    tmpContainer = div({ display: 'none' });
+    html.add(document.body, tmpContainer);
+    config = {};
+    tmpDrakon = createWidget(drakon_canvas.DrakonCanvas());
+    canvas = tmpDrakon.render(100, 100, config);
+    html.add(tmpContainer, canvas);
+    fakeSender = {
+        pushEdit: function () {
+        },
+        stop: function () {
         }
+    };
+    ok = false;
+    try {
+        tmpDrakon.setDiagram('hello', diagram, fakeSender);
+        ok = true;
+    } catch (ex) {
+        console.error(ex);
     }
-    function unsubscribeFromResize(id) {
-        delete unit.resizables[id];
-        return;
+    html.remove(tmpContainer);
+    if (ok) {
+        return undefined;
+    } else {
+        return translate('Error in diagram structure');
     }
-    function onWindowResize() {
-        unit.resizeDebounce.onInput();
-        return;
+}
+function checkJsonContent(jsonString) {
+    var _collection_150, diagram, error, id, item, limit, limitBytes, obj;
+    if (gconfig.maxImageSizeMb) {
+        limitBytes = gconfig.maxImageSizeMb * 1024 * 1014;
+        limit = limitBytes * 3;
+    } else {
+        limit = 1000000;
     }
-    function div() {
-        var args, properties, _var2;
-        args = Array.prototype.slice.call(arguments);
-        properties = {};
-        _var2 = html.createElement('div', properties, args);
-        return _var2;
-    }
-    function checkProjectName(name, maxLength) {
-        var length, first, last, ch, code, i, _var2, _var3, _var4, _var5, _var6;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                maxLength = maxLength || 50;
-                if (name) {
-                    name = name.trim();
-                    if (name) {
-                        length = name.length;
-                        first = name[0];
-                        last = name[length - 1];
-                        if (first === '.') {
-                            __state = '_item4';
-                        } else {
-                            if (first === '-') {
-                                __state = '_item4';
-                            } else {
-                                if (last === '.') {
-                                    __state = '_item4';
-                                } else {
-                                    if (last === '-') {
-                                        __state = '_item4';
-                                    } else {
-                                        if (name.length < 2) {
-                                            _var4 = translate('Name is too short');
-                                            return _var4;
-                                        } else {
-                                            if (name.length > maxLength) {
-                                                _var5 = translate('Name is too long');
-                                                return _var5;
+    error = '';
+    diagram = undefined;
+    if (jsonString.length > limit) {
+        error = translate('File is too large');
+        return {
+            diagram: diagram,
+            error: error
+        };
+    } else {
+        diagram = { items: {} };
+        try {
+            obj = JSON.parse(jsonString);
+        } catch (ex) {
+            error = translate('Error in JSON') + ': ' + ex.message;
+        }
+        if (obj) {
+            if (obj.access) {
+                diagram.access = obj.access;
+            }
+            if (ensureOptionalString(obj, 'name')) {
+                if (typeof obj.items === 'object') {
+                    if (ensureOptionalJsonString(obj, 'style')) {
+                        if (ensureOptionalString(obj, 'params')) {
+                            if (ensureOptionalString(obj, 'type')) {
+                                if (ensureOptionalString(obj, 'description')) {
+                                    utils.copyFieldsWithValue(diagram, obj, [
+                                        'name',
+                                        'params',
+                                        'type',
+                                        'style',
+                                        'description'
+                                    ]);
+                                    _collection_150 = obj.items;
+                                    for (id in _collection_150) {
+                                        item = _collection_150[id];
+                                        if (id) {
+                                            if (item && typeof item === 'object') {
+                                                if (ensureOptionalString(item, 'content')) {
+                                                    if (ensureOptionalString(item, 'secondary')) {
+                                                        if (ensureOptionalJsonString(item, 'style')) {
+                                                            diagram.items[id] = item;
+                                                        } else {
+                                                            error = translate('"style" must be a JSON string') + ', id=' + id;
+                                                            break;
+                                                        }
+                                                    } else {
+                                                        error = translate('"secondary" must be a string') + ', id=' + id;
+                                                        break;
+                                                    }
+                                                } else {
+                                                    error = translate('"content" must be a string') + ', id=' + id;
+                                                    break;
+                                                }
                                             } else {
-                                                __state = '11';
+                                                error = translate('Item is not an object') + ', id=' + id;
+                                                break;
                                             }
+                                        } else {
+                                            error = translate('Item id must not be empty string');
+                                            break;
                                         }
                                     }
-                                }
-                            }
-                        }
-                    } else {
-                        __state = '_item3';
-                    }
-                } else {
-                    __state = '_item3';
-                }
-                break;
-            case '11':
-                i = 0;
-                __state = '20';
-                break;
-            case '20':
-                if (i < length) {
-                    ch = name[i];
-                    if (unit.forbiddenCharacters[ch]) {
-                        __state = '_item7';
-                    } else {
-                        code = ch.codePointAt(0);
-                        if (code < 32) {
-                            __state = '_item7';
-                        } else {
-                            i++;
-                            __state = '20';
-                        }
-                    }
-                } else {
-                    return undefined;
-                }
-                break;
-            case '_item4':
-                _var3 = translate('Name must start and end with a digit or letter');
-                return _var3;
-            case '_item7':
-                _var6 = translate('Unsupported characters');
-                return _var6;
-            case '_item3':
-                _var2 = translate('Name cannot be empty');
-                return _var2;
-            default:
-                return;
-            }
-        }
-    }
-    function copyIfMissing(target, source, name) {
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                if (target[name]) {
-                    __state = '1';
-                } else {
-                    target[name] = source[name];
-                    __state = '1';
-                }
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function isMobile() {
-        var ua, isAndroid, isIOS;
-        ua = navigator.userAgent || '';
-        isAndroid = /Android/i.test(ua);
-        isIOS = /iPhone|iPad|iPod/i.test(ua);
-        return isAndroid || isIOS;
-    }
-    function buildUrlForFolder(id) {
-        var parsed, root;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                root = gconfig.appRoot;
-                parsed = parseId(id);
-                if (parsed.spaceId) {
-                    if (parsed.folderId) {
-                        return root + '?proj=' + parsed.spaceId + '&doc=' + parsed.folderId;
-                    } else {
-                        __state = '7';
-                    }
-                } else {
-                    __state = '7';
-                }
-                break;
-            case '7':
-                throw new Error('Incorrect folder id: ' + id);
-            default:
-                return;
-            }
-        }
-    }
-    function removeTagsFromRedirect(item) {
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                if (item.hint === 'redirect') {
-                    item.text = stripTags(item.text);
-                    __state = '1';
-                } else {
-                    __state = '1';
-                }
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function callHook(widget, name) {
-        var hook;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                hook = widget[name];
-                if (hook) {
-                    hook();
-                    __state = '1';
-                } else {
-                    __state = '1';
-                }
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function importDiagram_create(jsonString, filename, parentId, tr) {
-        var internal, parsedFilename, folder, payload, id, url, parsed, _var2, _var3, _var4, _var5;
-        var me = {
-            state: '20',
-            type: 'importDiagram'
-        };
-        function _main_importDiagram(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '6':
-                        internal = drakonToInternal(parsed.diagram);
-                        parsedFilename = stripExtension(filename);
-                        internal.name = parsedFilename.name;
-                        internal.type = parsedFilename.extension;
-                        _var2 = internal.type;
-                        if (_var2 === 'drakon') {
-                            me.state = '14';
-                        } else {
-                            if (_var2 === 'free') {
-                                me.state = '14';
-                            } else {
-                                if (_var2 === 'graf') {
-                                    me.state = '14';
+                                    return {
+                                        diagram: diagram,
+                                        error: error
+                                    };
                                 } else {
-                                    _var3 = translate('Unknown document type');
-                                    widgets.showErrorSnack(_var3);
-                                    me.state = undefined;
-                                    __resolve(undefined);
-                                    return;
+                                    error = translate('"description" must by a string');
+                                    return {
+                                        diagram: diagram,
+                                        error: error
+                                    };
                                 }
+                            } else {
+                                error = translate('"type" must by a string');
+                                return {
+                                    diagram: diagram,
+                                    error: error
+                                };
                             }
-                        }
-                        break;
-                    case '14':
-                        me.state = '27';
-                        sendCreateFolder(parentId, internal.type, internal.name).then(function (__returnee) {
-                            folder = __returnee;
-                            _main_importDiagram(__resolve, __reject);
-                        }, function (error) {
-                            me.state = undefined;
-                            __reject(error);
-                        });
-                        return;
-                    case '20':
-                        parsed = checkDiagram(jsonString);
-                        if (parsed.error) {
-                            widgets.showErrorSnack(parsed.error);
-                            me.state = undefined;
-                            __resolve(undefined);
-                            return;
                         } else {
-                            me.state = '6';
+                            error = translate('"params" must by a string');
+                            return {
+                                diagram: diagram,
+                                error: error
+                            };
                         }
-                        break;
-                    case '27':
-                        id = folder.id;
-                        payload = {
-                            editType: 'edit',
-                            oldTag: '',
-                            added: internal.items,
-                            removed: [],
-                            updated: []
+                    } else {
+                        error = translate('"style" must by a JSON string');
+                        return {
+                            diagram: diagram,
+                            error: error
                         };
-                        utils.copyFieldsWithValue(payload, internal, [
-                            'params',
-                            'style',
-                            'description'
-                        ]);
-                        _var5 = id.split(' ');
-                        _var4 = _var5.join('/');
-                        url = '/api/edit/' + _var4;
-                        me.state = '38';
-                        sendRequestRaw('POST', url, payload).then(function () {
-                            _main_importDiagram(__resolve, __reject);
-                        }, function (error) {
-                            me.state = undefined;
-                            __reject(error);
-                        });
-                        return;
-                    case '38':
-                        me.state = undefined;
-                        __resolve(id);
-                        return;
-                    default:
-                        return;
-                    }
-                }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
-        }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                _main_importDiagram(__resolve, __reject);
-            });
-        };
-        return me;
-    }
-    function importDiagram(jsonString, filename, parentId, tr) {
-        var __obj = importDiagram_create(jsonString, filename, parentId, tr);
-        return __obj.run();
-    }
-    function ensureOptionalString(obj, prop) {
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                if (prop in obj) {
-                    if (typeof obj[prop] === 'string') {
-                        __state = '3';
-                    } else {
-                        return false;
                     }
                 } else {
-                    __state = '3';
+                    error = translate('Missing "items" property');
+                    return {
+                        diagram: diagram,
+                        error: error
+                    };
                 }
-                break;
-            case '3':
-                return true;
-            default:
-                return;
-            }
-        }
-    }
-    function drakonToInternal(diagram) {
-        var diagram2, _var3, _var2, _var4, id, item;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                diagram2 = {
-                    items: [],
-                    type: diagram.type
-                };
-                utils.copyFieldsWithValue(diagram2, diagram, [
-                    'name',
-                    'params',
-                    'style',
-                    'description'
-                ]);
-                _var3 = diagram.items;
-                _var2 = Object.keys(_var3);
-                _var4 = 0;
-                __state = '7';
-                break;
-            case '7':
-                if (_var4 < _var2.length) {
-                    id = _var2[_var4];
-                    item = _var3[id];
-                    item.id = id;
-                    if (item.content) {
-                        item.text = item.content;
-                        __state = '11';
-                    } else {
-                        __state = '11';
-                    }
-                } else {
-                    return diagram2;
-                }
-                break;
-            case '11':
-                delete item.content;
-                diagram2.items.push(item);
-                _var4++;
-                __state = '7';
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function parseId(id) {
-        var parts;
-        parts = id.split(' ');
-        return {
-            spaceId: parts[0],
-            folderId: parts[1]
-        };
-    }
-    function makeId(spaceId, folderId) {
-        return spaceId + ' ' + folderId;
-    }
-    function checkJsonContent(jsonString) {
-        var error, diagram, obj, limitBytes, limit, _var3, _var2, _var4, id, item, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12, _var13, _var14, _var15, _var16, _var17;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                if (gconfig.maxImageSizeMb) {
-                    limitBytes = gconfig.maxImageSizeMb * 1024 * 1014;
-                    limit = limitBytes * 3;
-                    __state = '3';
-                } else {
-                    limit = 1000000;
-                    __state = '3';
-                }
-                break;
-            case '3':
-                error = '';
-                diagram = undefined;
-                if (jsonString.length > limit) {
-                    error = translate('File is too large');
-                    __state = '40';
-                } else {
-                    diagram = { items: {} };
-                    try {
-                        obj = JSON.parse(jsonString);
-                    } catch (ex) {
-                        _var5 = translate('Error in JSON');
-                        error = _var5 + ': ' + ex.message;
-                    }
-                    if (obj) {
-                        if (obj.access) {
-                            diagram.access = obj.access;
-                            __state = '42';
-                        } else {
-                            __state = '42';
-                        }
-                    } else {
-                        __state = '40';
-                    }
-                }
-                break;
-            case '40':
+            } else {
+                error = translate('"name" must be a string');
                 return {
                     diagram: diagram,
                     error: error
                 };
-            case '41':
-                _var3 = obj.items;
-                _var2 = Object.keys(_var3);
-                _var4 = 0;
-                __state = '53';
-                break;
-            case '42':
-                _var13 = ensureOptionalString(obj, 'name');
-                if (_var13) {
-                    if (typeof obj.items === 'object') {
-                        _var14 = ensureOptionalJsonString(obj, 'style');
-                        if (_var14) {
-                            _var15 = ensureOptionalString(obj, 'params');
-                            if (_var15) {
-                                _var16 = ensureOptionalString(obj, 'type');
-                                if (_var16) {
-                                    _var17 = ensureOptionalString(obj, 'description');
-                                    if (_var17) {
-                                        utils.copyFieldsWithValue(diagram, obj, [
-                                            'name',
-                                            'params',
-                                            'type',
-                                            'style',
-                                            'description'
-                                        ]);
-                                        __state = '41';
-                                    } else {
-                                        error = translate('"description" must by a string');
-                                        __state = '40';
-                                    }
-                                } else {
-                                    error = translate('"type" must by a string');
-                                    __state = '40';
-                                }
-                            } else {
-                                error = translate('"params" must by a string');
-                                __state = '40';
-                            }
-                        } else {
-                            error = translate('"style" must by a JSON string');
-                            __state = '40';
-                        }
-                    } else {
-                        error = translate('Missing "items" property');
-                        __state = '40';
-                    }
-                } else {
-                    error = translate('"name" must be a string');
-                    __state = '40';
-                }
-                break;
-            case '53':
-                if (_var4 < _var2.length) {
-                    id = _var2[_var4];
-                    item = _var3[id];
-                    if (id) {
-                        if (item) {
-                            if (typeof item === 'object') {
-                                _var7 = ensureOptionalString(item, 'content');
-                                if (_var7) {
-                                    _var9 = ensureOptionalString(item, 'secondary');
-                                    if (_var9) {
-                                        _var11 = ensureOptionalJsonString(item, 'style');
-                                        if (_var11) {
-                                            diagram.items[id] = item;
-                                            _var4++;
-                                            __state = '53';
-                                        } else {
-                                            _var12 = translate('"style" must be a JSON string');
-                                            error = _var12 + ', id=' + id;
-                                            __state = '40';
-                                        }
-                                    } else {
-                                        _var10 = translate('"secondary" must be a string');
-                                        error = _var10 + ', id=' + id;
-                                        __state = '40';
-                                    }
-                                } else {
-                                    _var8 = translate('"content" must be a string');
-                                    error = _var8 + ', id=' + id;
-                                    __state = '40';
-                                }
-                            } else {
-                                __state = '_item4';
-                            }
-                        } else {
-                            __state = '_item4';
-                        }
-                    } else {
-                        error = translate('Item id must not be empty string');
-                        __state = '40';
-                    }
-                } else {
-                    __state = '40';
-                }
-                break;
-            case '_item4':
-                _var6 = translate('Item is not an object');
-                error = _var6 + ', id=' + id;
-                __state = '40';
-                break;
-            default:
-                return;
             }
-        }
-    }
-    function ensureOptionalJsonString(obj, prop) {
-        var parsed;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                if (prop in obj) {
-                    if (typeof obj[prop] === 'string') {
-                        if (obj[prop] === '') {
-                            __state = '3';
-                        } else {
-                            try {
-                                parsed = JSON.parse(obj[prop]);
-                            } catch (ex) {
-                            }
-                            if (parsed) {
-                                __state = '3';
-                            } else {
-                                __state = '7';
-                            }
-                        }
-                    } else {
-                        __state = '7';
-                    }
-                } else {
-                    __state = '3';
-                }
-                break;
-            case '3':
-                return true;
-            case '7':
-                return false;
-            default:
-                return;
-            }
-        }
-    }
-    function stripExtension(filename) {
-        var ch, ext, result, i, _var2, _var3;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                ext = [];
-                i = filename.length - 1;
-                __state = '5';
-                break;
-            case '5':
-                if (i >= 0) {
-                    ch = filename[i];
-                    if (ch === '.') {
-                        __state = '11';
-                    } else {
-                        ext.push(ch);
-                        i--;
-                        __state = '5';
-                    }
-                } else {
-                    __state = '11';
-                }
-                break;
-            case '10':
-                return result;
-            case '11':
-                ext.reverse();
-                _var2 = filename.substring(0, i);
-                _var3 = ext.join('');
-                result = {
-                    name: _var2,
-                    extension: _var3
-                };
-                __state = '10';
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function saveAsPng_create(widget, res) {
-        var exported, filename, _var2, _var3;
-        var me = {
-            state: '2',
-            type: 'saveAsPng'
-        };
-        function _main_saveAsPng(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '1':
-                        me.state = undefined;
-                        __resolve({ ok: true });
-                        return;
-                    case '2':
-                        exported = widget.exportImage(res, '');
-                        _var2 = utils.sanitizeFilename(exported.name);
-                        filename = _var2 + '.png';
-                        if (window.padBridge) {
-                            if (window.padBridge.exportPng) {
-                                me.state = '_item3';
-                                window.padBridge.exportPng(filename, exported.image).then(function () {
-                                    _main_saveAsPng(__resolve, __reject);
-                                }, function (error) {
-                                    me.state = undefined;
-                                    __reject(error);
-                                });
-                                return;
-                            } else {
-                                me.state = '32';
-                            }
-                        } else {
-                            me.state = '32';
-                        }
-                        break;
-                    case '32':
-                        downloadImageDataAsFile(filename, exported.image);
-                        me.state = '1';
-                        break;
-                    case '_item3':
-                        _var3 = translate('Saved');
-                        widgets.showGoodSnack(_var3 + ': ' + filename);
-                        me.state = '1';
-                        break;
-                    default:
-                        return;
-                    }
-                }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
-        }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                _main_saveAsPng(__resolve, __reject);
-            });
-        };
-        return me;
-    }
-    function saveAsPng(widget, res) {
-        var __obj = saveAsPng_create(widget, res);
-        return __obj.run();
-    }
-    function saveAsSvg(widget) {
-        var filename, width, height, ctx, box, zoom100, json, obj, image, mime, _var2;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                trace('saveAsSvg');
-                zoom100 = 10000;
-                box = widget.drakon.getDiagramBox();
-                width = box.right - box.left;
-                height = box.bottom - box.top;
-                ctx = new C2S(width, height);
-                widget.drakon.exportToContext(box, zoom100, ctx);
-                json = widget.drakon.exportJson();
-                obj = JSON.parse(json);
-                _var2 = utils.sanitizeFilename(obj.name);
-                filename = _var2 + '.svg';
-                image = ctx.getSerializedSvg(true);
-                mime = 'image/svg+xml';
-                if (window.padBridge) {
-                    if (window.padBridge.exportSvg) {
-                        window.padBridge.exportSvg(filename, image, mime);
-                        __state = '1';
-                    } else {
-                        __state = '32';
-                    }
-                } else {
-                    __state = '32';
-                }
-                break;
-            case '32':
-                downloadTextDataAsFile(filename, image, mime);
-                __state = '1';
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function getHeader1Size() {
-        return gconfig.fontSize + 4 + 'px';
-    }
-    function generateRandomString() {
-        var number, _var2, _var3;
-        _var2 = Math.random();
-        number = Math.floor(_var2 * 10000000);
-        _var3 = number.toString();
-        return _var3;
-    }
-    function isNetworkError(ex) {
-        var str, _var2, _var3;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                if (ex) {
-                    str = ex.toString();
-                    _var2 = str.indexOf('NetworkError');
-                    if (_var2 === -1) {
-                        _var3 = str.indexOf('HTTP error');
-                        if (_var3 === -1) {
-                            __state = '8';
-                        } else {
-                            __state = '9';
-                        }
-                    } else {
-                        __state = '9';
-                    }
-                } else {
-                    __state = '8';
-                }
-                break;
-            case '8':
-                return false;
-            case '9':
-                return true;
-            default:
-                return;
-            }
-        }
-    }
-    function img(src, className) {
-        var _var2;
-        className = className || '';
-        _var2 = html.createElement('img', {
-            src: src,
-            draggable: false
-        }, [className]);
-        return _var2;
-    }
-    function checkDiagram(jsonString) {
-        var parsed, error;
-        parsed = checkJsonContent(jsonString);
-        if (parsed.error) {
-            return parsed;
         } else {
-            error = checkDrakonIntegrity(parsed.diagram);
-            if (error) {
-                return { error: error };
+            return {
+                diagram: diagram,
+                error: error
+            };
+        }
+    }
+}
+function drakonToInternal(diagram) {
+    var _collection_153, diagram2, id, item;
+    diagram2 = {
+        items: [],
+        type: diagram.type
+    };
+    utils.copyFieldsWithValue(diagram2, diagram, [
+        'name',
+        'params',
+        'style',
+        'description'
+    ]);
+    _collection_153 = diagram.items;
+    for (id in _collection_153) {
+        item = _collection_153[id];
+        item.id = id;
+        if (item.content) {
+            item.text = item.content;
+        }
+        delete item.content;
+        diagram2.items.push(item);
+    }
+    return diagram2;
+}
+function ensureOptionalJsonString(obj, prop) {
+    var parsed;
+    if (prop in obj) {
+        if (typeof obj[prop] === 'string') {
+            if (obj[prop] === '') {
+                return true;
             } else {
-                return parsed;
-            }
-        }
-    }
-    function isSuccess(response) {
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                if (response.status === 200) {
-                    __state = '3';
+                try {
+                    parsed = JSON.parse(obj[prop]);
+                } catch (ex) {
+                }
+                if (parsed) {
+                    return true;
                 } else {
-                    if (response.status === 204) {
-                        __state = '3';
-                    } else {
-                        return false;
-                    }
+                    return false;
                 }
-                break;
-            case '3':
-                return true;
-            default:
-                return;
             }
-        }
-    }
-    function getQuery() {
-        var query, result, noQuestion, steps, parts, _var2, _var3, step;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                query = window.location.search;
-                result = {};
-                if (query) {
-                    noQuestion = query.substring(1);
-                    steps = noQuestion.split('&');
-                    _var2 = steps;
-                    _var3 = 0;
-                    __state = '11';
-                } else {
-                    __state = '6';
-                }
-                break;
-            case '6':
-                return result;
-            case '11':
-                if (_var3 < _var2.length) {
-                    step = _var2[_var3];
-                    parts = step.split('=');
-                    result[parts[0]] = parts[1];
-                    _var3++;
-                    __state = '11';
-                } else {
-                    __state = '6';
-                }
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function stripTags(html) {
-        var text, state, tag, space, ch, code, _var2, i, _var3, _var4;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                html = html || '';
-                if (html.length >= 3) {
-                    if (html[0] === '<') {
-                        if (html[html.length - 1] === '>') {
-                            text = '';
-                            state = 'content';
-                            tag = '';
-                            space = false;
-                            i = 0;
-                            __state = '13';
-                        } else {
-                            __state = '10';
-                        }
-                    } else {
-                        __state = '10';
-                    }
-                } else {
-                    __state = '10';
-                }
-                break;
-            case '10':
-                text = html;
-                __state = '_item7';
-                break;
-            case '12':
-                i++;
-                __state = '13';
-                break;
-            case '13':
-                if (i < html.length) {
-                    ch = html[i];
-                    code = html.charCodeAt(i);
-                    _var2 = state;
-                    if (_var2 === 'content') {
-                        if (ch === '<') {
-                            tag = ch;
-                            state = 'tag';
-                            __state = '12';
-                        } else {
-                            _var4 = utils.isSpace(code);
-                            if (_var4) {
-                                if (space) {
-                                    space = true;
-                                    __state = '12';
-                                } else {
-                                    space = true;
-                                    text += ' ';
-                                    __state = '12';
-                                }
-                            } else {
-                                space = false;
-                                text += ch;
-                                __state = '12';
-                            }
-                        }
-                    } else {
-                        if (_var2 === 'tag') {
-                            tag += ch;
-                            if (ch === '>') {
-                                if (tag === '</p>') {
-                                    __state = '52';
-                                } else {
-                                    if (tag === '</li>') {
-                                        __state = '52';
-                                    } else {
-                                        if (tag === '<br>') {
-                                            __state = '52';
-                                        } else {
-                                            if (tag === '<br/>') {
-                                                __state = '52';
-                                            } else {
-                                                __state = '51';
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                __state = '12';
-                            }
-                        } else {
-                            throw new Error('Unexpected case value: ' + _var2);
-                        }
-                    }
-                } else {
-                    __state = '_item7';
-                }
-                break;
-            case '51':
-                state = 'content';
-                __state = '12';
-                break;
-            case '52':
-                if (space) {
-                    __state = '51';
-                } else {
-                    space = true;
-                    text += '\n';
-                    __state = '51';
-                }
-                break;
-            case '_item7':
-                _var3 = text.trim();
-                return _var3;
-            default:
-                return;
-            }
-        }
-    }
-    function td() {
-        var args, properties, _var2;
-        args = Array.prototype.slice.call(arguments);
-        properties = {};
-        _var2 = html.createElement('td', properties, args);
-        return _var2;
-    }
-    function saveAsJson(widget) {
-        var dia;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                dia = saveAsJsonCore(widget);
-                if (window.padBridge) {
-                    if (window.padBridge.exportJson) {
-                        window.padBridge.exportJson(dia.filename, dia.exported, dia.mime);
-                        __state = '1';
-                    } else {
-                        __state = '35';
-                    }
-                } else {
-                    __state = '35';
-                }
-                break;
-            case '35':
-                downloadTextDataAsFile(dia.filename, dia.exported, dia.mime);
-                __state = '1';
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function buildBaseUrl() {
-        return window.location.origin + window.location.pathname;
-    }
-    function saveAsJsonCore(widget) {
-        var exported, filename, obj, extension, type, mime, _var2;
-        exported = widget.exportJson();
-        obj = JSON.parse(exported);
-        type = widget.getDiagramType();
-        extension = '.' + type;
-        _var2 = utils.sanitizeFilename(obj.name);
-        filename = _var2 + extension;
-        mime = 'application/x-' + type;
-        return {
-            filename: filename,
-            exported: exported,
-            mime: mime
-        };
-    }
-    function downloadTextDataAsFile(filename, data, mime) {
-        var file, link, url;
-        file = new File([data], filename, { type: mime });
-        link = document.createElement('a');
-        url = window.URL.createObjectURL(file);
-        link.href = url;
-        link.download = file.name;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-        return;
-    }
-    function getHeader2Size() {
-        return gconfig.fontSize + 2 + 'px';
-    }
-    function downloadImageDataAsFile(filename, data) {
-        var link;
-        link = document.createElement('a');
-        link.href = data;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        return;
-    }
-    function display(element, value) {
-        element.style.display = value;
-        return;
-    }
-    function setTitle(title) {
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                if (title) {
-                    html.setTitle(title + ' | ' + gconfig.appName);
-                    __state = '1';
-                } else {
-                    html.setTitle(gconfig.appName);
-                    __state = '1';
-                }
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function copyAllFieldsWithValue(dst, src) {
-        var _var3, _var2, _var4, field, value, _var5;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                _var3 = src;
-                _var2 = Object.keys(_var3);
-                _var4 = 0;
-                __state = '5';
-                break;
-            case '4':
-                _var4++;
-                __state = '5';
-                break;
-            case '5':
-                if (_var4 < _var2.length) {
-                    field = _var2[_var4];
-                    value = _var3[field];
-                    _var5 = utils.hasValue(value);
-                    if (_var5) {
-                        dst[field] = value;
-                        __state = '4';
-                    } else {
-                        __state = '4';
-                    }
-                } else {
-                    return;
-                }
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function getAppRoot() {
-        return gconfig.appRoot;
-    }
-    function registerReadDrakonShortcut(keys, action, callbacks) {
-        var callback;
-        callback = function () {
-            runReadDrakonAction(action, callbacks);
-        };
-        Mousetrap.bind(keys, callback, 'keydown');
-        return;
-    }
-    function initShortcuts(callbacks) {
-        var _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12, _var13;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                registerInsertShortcut('a', 'action', callbacks);
-                registerInsertShortcut('q', 'question', callbacks);
-                registerInsertShortcut('s', 'select', callbacks);
-                registerInsertShortcut('c', 'case', callbacks);
-                registerInsertShortcut('b', 'branch', callbacks);
-                registerInsertShortcut('n', 'insertion', callbacks);
-                registerInsertShortcut('l', 'foreach', callbacks);
-                registerInsertShortcut('t', 'text', callbacks);
-                registerInsertShortcut('r', 'rounded', callbacks);
-                registerInsertShortcut('w', 'arrow', callbacks);
-                registerInsertShortcut('e', 'f_circle', callbacks);
-                registerWriteDrakonShortcut('enter', function () {
-                    _var2 = callbacks.getWidget();
-                    _var2.editContent();
-                }, callbacks);
-                registerWriteDrakonShortcut('del', function () {
-                    _var3 = callbacks.getWidget();
-                    _var3.deleteSelection();
-                }, callbacks);
-                registerWriteDrakonShortcut('backspace', function () {
-                    _var4 = callbacks.getWidget();
-                    _var4.deleteSelection();
-                }, callbacks);
-                registerWriteDrakonShortcut('mod+x', function () {
-                    _var5 = callbacks.getWidget();
-                    _var5.cutSelection();
-                }, callbacks);
-                registerWriteDrakonShortcut('mod+v', function () {
-                    _var6 = callbacks.getWidget();
-                    _var6.showPaste();
-                }, callbacks);
-                registerWriteDrakonShortcut('mod+z', function () {
-                    _var12 = callbacks.getWidget();
-                    _var12.undo();
-                }, callbacks);
-                registerWriteDrakonShortcut('mod+y', function () {
-                    _var13 = callbacks.getWidget();
-                    _var13.redo();
-                }, callbacks);
-                __state = '11';
-                break;
-            case '10':
-                return;
-            case '11':
-                registerReadDrakonShortcut('mod+c', function () {
-                    _var7 = callbacks.getWidget();
-                    _var7.copySelection();
-                }, callbacks);
-                registerReadDrakonShortcut('up', function () {
-                    _var8 = callbacks.getWidget();
-                    _var8.arrowUp();
-                }, callbacks);
-                registerReadDrakonShortcut('down', function () {
-                    _var9 = callbacks.getWidget();
-                    _var9.arrowDown();
-                }, callbacks);
-                registerReadDrakonShortcut('left', function () {
-                    _var10 = callbacks.getWidget();
-                    _var10.arrowLeft();
-                }, callbacks);
-                registerReadDrakonShortcut('right', function () {
-                    _var11 = callbacks.getWidget();
-                    _var11.arrowRight();
-                }, callbacks);
-                __state = '10';
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function registerInsertShortcut(keys, type, callbacks) {
-        var action, drakon;
-        action = function () {
-            drakon = callbacks.getWidget();
-            drakon.showInsertionSockets(type);
-        };
-        registerWriteDrakonShortcut(keys, action, callbacks);
-        return;
-    }
-    function runReadDrakonAction(action, callbacks) {
-        var _var2, _var3;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                _var3 = hasDialog();
-                if (_var3) {
-                    __state = '1';
-                } else {
-                    _var2 = callbacks.isDrakon();
-                    if (_var2) {
-                        action();
-                        __state = '1';
-                    } else {
-                        __state = '1';
-                    }
-                }
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function hasDialog() {
-        var _var2;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                if (widgets.questionVisible) {
-                    __state = '3';
-                } else {
-                    _var2 = widgets.hasPopup();
-                    if (_var2) {
-                        __state = '3';
-                    } else {
-                        return false;
-                    }
-                }
-                break;
-            case '3':
-                return true;
-            default:
-                return;
-            }
-        }
-    }
-    function main() {
-        unit.traces = [];
-        unit.globals = {};
-        unit.forbiddenCharacters = {
-            '<': true,
-            '>': true,
-            ':': true,
-            '"': true,
-            '/': true,
-            '\\': true,
-            '|': true,
-            '?': true,
-            '*': true
-        };
-        initDiagramLabels();
-        initResize();
-        return;
-    }
-    function sendRequestWithCheck_create(method, url, payload) {
-        var response, error, _var2, _var3, _var4;
-        var me = {
-            state: '2',
-            type: 'sendRequestWithCheck'
-        };
-        function _main_sendRequestWithCheck(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '2':
-                        me.state = '_item3';
-                        sendRequestRaw(method, url, payload).then(function (__returnee) {
-                            response = __returnee;
-                            _main_sendRequestWithCheck(__resolve, __reject);
-                        }, function (error) {
-                            me.state = undefined;
-                            __reject(error);
-                        });
-                        return;
-                    case '_item3':
-                        _var3 = isSuccess(response);
-                        if (_var3) {
-                            if (response.responseText) {
-                                _var2 = JSON.parse(response.responseText);
-                                me.state = undefined;
-                                __resolve(_var2);
-                                return;
-                            } else {
-                                me.state = undefined;
-                                __resolve(undefined);
-                                return;
-                            }
-                        } else {
-                            console.error(response);
-                            error = new Error('HTTP error. Status=' + response.status + ' url=' + url);
-                            error.status = response.status;
-                            _var4 = error;
-                            me.state = undefined;
-                            __reject(_var4);
-                            return;
-                        }
-                    default:
-                        return;
-                    }
-                }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
-        }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                _main_sendRequestWithCheck(__resolve, __reject);
-            });
-        };
-        return me;
-    }
-    function sendRequestWithCheck(method, url, payload) {
-        var __obj = sendRequestWithCheck_create(method, url, payload);
-        return __obj.run();
-    }
-    function getSettingsFromLocalStorage() {
-        var settingsStr, settings;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                settingsStr = localStorage.getItem('userSetting');
-                if (settingsStr) {
-                    settings = JSON.parse(settingsStr);
-                    __state = '3';
-                } else {
-                    settings = {};
-                    __state = '3';
-                }
-                break;
-            case '3':
-                return settings;
-            default:
-                return;
-            }
-        }
-    }
-    function getHeaders() {
-        var csrf;
-        csrf = document.body.dataset.csrf;
-        if (csrf) {
-            return { 'csrf-token': csrf };
         } else {
+            return false;
+        }
+    } else {
+        return true;
+    }
+}
+function ensureOptionalString(obj, prop) {
+    if (!(prop in obj) || typeof obj[prop] === 'string') {
+        return true;
+    } else {
+        return false;
+    }
+}
+async function importDiagram(jsonString, filename, parentId, tr) {
+    var _selectValue_156, folder, id, internal, parsed, parsedFilename, payload, url;
+    parsed = checkDiagram(jsonString);
+    if (parsed.error) {
+        widgets.showErrorSnack(parsed.error);
+        return undefined;
+    } else {
+        internal = drakonToInternal(parsed.diagram);
+        parsedFilename = stripExtension(filename);
+        internal.name = parsedFilename.name;
+        internal.type = parsedFilename.extension;
+        _selectValue_156 = internal.type;
+        if (_selectValue_156 === 'drakon' || (_selectValue_156 === 'free' || _selectValue_156 === 'graf')) {
+            folder = await sendCreateFolder(parentId, internal.type, internal.name);
+            id = folder.id;
+            payload = {
+                editType: 'edit',
+                oldTag: '',
+                added: internal.items,
+                removed: [],
+                updated: []
+            };
+            utils.copyFieldsWithValue(payload, internal, [
+                'params',
+                'style',
+                'description'
+            ]);
+            url = '/api/edit/' + id.split(' ').join('/');
+            await sendRequestRaw('POST', url, payload);
+            return id;
+        } else {
+            widgets.showErrorSnack(translate('Unknown document type'));
             return undefined;
         }
     }
-    function getAccountObj() {
-        return unit.globals.account;
+}
+function makeId(spaceId, folderId) {
+    return spaceId + ' ' + folderId;
+}
+function parseId(id) {
+    var parts;
+    parts = id.split(' ');
+    return {
+        spaceId: parts[0],
+        folderId: parts[1]
+    };
+}
+async function sendCreateFolder(parentId, type, name) {
+    var id, parsed, payload, response, responseRaw, url;
+    parsed = parseId(parentId);
+    payload = {
+        name: name,
+        parent: parsed.folderId,
+        type: type
+    };
+    url = '/api/folder/' + parsed.spaceId;
+    responseRaw = await sendRequestRaw('POST', url, payload);
+    response = JSON.parse(responseRaw.responseText);
+    id = makeId(parsed.spaceId, response.folder_id);
+    return {
+        id: id,
+        name: name,
+        type: type,
+        parent: parentId
+    };
+}
+function stripExtension(filename) {
+    var ch, ext, i, result;
+    ext = [];
+    for (i = filename.length - 1; i >= 0; i--) {
+        ch = filename[i];
+        if (ch === '.') {
+            break;
+        } else {
+            ext.push(ch);
+        }
     }
-    function isLoggedOn() {
-        var account;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                account = getAccountObj();
-                if (account) {
-                    if (account.user_id) {
-                        return true;
+    ext.reverse();
+    result = {
+        name: filename.substring(0, i),
+        extension: ext.join('')
+    };
+    return result;
+}
+function addLabelsToSettings(settings) {
+    var bucket, language;
+    language = settings.language || 'en-us';
+    bucket = getLabelsByCode(language);
+    copyIfMissing(settings, bucket, 'yes');
+    copyIfMissing(settings, bucket, 'no');
+    copyIfMissing(settings, bucket, 'end');
+    copyIfMissing(settings, bucket, 'branch');
+    copyIfMissing(settings, bucket, 'exit');
+}
+function buildBaseUrl() {
+    return window.location.origin + window.location.pathname;
+}
+function buildUrlForFolder(id) {
+    var parsed, root;
+    root = gconfig.appRoot;
+    parsed = parseId(id);
+    if (parsed.spaceId && parsed.folderId) {
+        return root + '?proj=' + parsed.spaceId + '&doc=' + parsed.folderId;
+    } else {
+        throw new Error('Incorrect folder id: ' + id);
+    }
+}
+function callHook(widget, name) {
+    var hook;
+    hook = widget[name];
+    if (hook) {
+        hook();
+    }
+}
+function checkDiagram(jsonString) {
+    var error, parsed;
+    parsed = checkJsonContent(jsonString);
+    if (parsed.error) {
+        return parsed;
+    } else {
+        error = checkDrakonIntegrity(parsed.diagram);
+        if (error) {
+            return { error: error };
+        } else {
+            return parsed;
+        }
+    }
+}
+function checkProjectName(name, maxLength) {
+    var ch, code, first, i, last, length;
+    maxLength = maxLength || 50;
+    if (name) {
+        name = name.trim();
+        if (name) {
+            length = name.length;
+            first = name[0];
+            last = name[length - 1];
+            if (first === '.' || first === '-' || last === '.' || last === '-') {
+                return translate('Name must start and end with a digit or letter');
+            } else {
+                if (name.length < 2) {
+                    return translate('Name is too short');
+                } else {
+                    if (name.length > maxLength) {
+                        return translate('Name is too long');
                     } else {
-                        __state = '6';
+                        for (i = 0; i < length; i++) {
+                            ch = name[i];
+                            if (unit.forbiddenCharacters[ch]) {
+                                return translate('Unsupported characters');
+                            } else {
+                                code = ch.codePointAt(0);
+                                if (code < 32) {
+                                    return translate('Unsupported characters');
+                                }
+                            }
+                        }
+                        return undefined;
                     }
+                }
+            }
+        } else {
+            return translate('Name cannot be empty');
+        }
+    } else {
+        return translate('Name cannot be empty');
+    }
+}
+function copyAllFieldsWithValue(dst, src) {
+    var field, value;
+    for (field in src) {
+        value = src[field];
+        if (utils.hasValue(value)) {
+            dst[field] = value;
+        }
+    }
+}
+function copyIfMissing(target, source, name) {
+    if (!target[name]) {
+        target[name] = source[name];
+    }
+}
+function display(element, value) {
+    element.style.display = value;
+}
+function div() {
+    var args, properties;
+    args = Array.prototype.slice.call(arguments);
+    properties = {};
+    return html.createElement('div', properties, args);
+}
+function downloadImageDataAsFile(filename, data) {
+    var link;
+    link = document.createElement('a');
+    link.href = data;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+function downloadTextDataAsFile(filename, data, mime) {
+    var file, link, url;
+    file = new File([data], filename, { type: mime });
+    link = document.createElement('a');
+    url = window.URL.createObjectURL(file);
+    link.href = url;
+    link.download = file.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+}
+function generateRandomString() {
+    var number;
+    number = Math.floor(Math.random() * 10000000);
+    return number.toString();
+}
+function getAppRoot() {
+    return gconfig.appRoot;
+}
+function getHeader1Size() {
+    return gconfig.fontSize + 4 + 'px';
+}
+function getHeader2Size() {
+    return gconfig.fontSize + 2 + 'px';
+}
+function getQuery() {
+    var noQuestion, parts, query, result, step, steps;
+    query = window.location.search;
+    result = {};
+    if (query) {
+        noQuestion = query.substring(1);
+        steps = noQuestion.split('&');
+        for (step of steps) {
+            parts = step.split('=');
+            result[parts[0]] = parts[1];
+        }
+    }
+    return result;
+}
+function img(src, className) {
+    className = className || '';
+    return html.createElement('img', {
+        src: src,
+        draggable: false
+    }, [className]);
+}
+function ipath(image) {
+    return gconfig.imagePath + image;
+}
+function isMobile() {
+    var isAndroid, isIOS, ua;
+    ua = navigator.userAgent || '';
+    isAndroid = /Android/i.test(ua);
+    isIOS = /iPhone|iPad|iPod/i.test(ua);
+    return isAndroid || isIOS;
+}
+function isNetworkError(ex) {
+    var str;
+    if (ex) {
+        str = ex.toString();
+        if (str.indexOf('NetworkError') === -1 && str.indexOf('HTTP error') === -1) {
+            return false;
+        } else {
+            return true;
+        }
+    } else {
+        return false;
+    }
+}
+function isSuccess(response) {
+    if (response.status === 200 || response.status === 204) {
+        return true;
+    } else {
+        return false;
+    }
+}
+function removeTagsFromRedirect(item) {
+    if (item.hint === 'redirect') {
+        item.text = stripTags(item.text);
+    }
+}
+function saveAsJson(widget) {
+    var dia;
+    dia = saveAsJsonCore(widget);
+    if (window.padBridge && window.padBridge.exportJson) {
+        window.padBridge.exportJson(dia.filename, dia.exported, dia.mime);
+    } else {
+        downloadTextDataAsFile(dia.filename, dia.exported, dia.mime);
+    }
+}
+function saveAsJsonCore(widget) {
+    var exported, extension, filename, mime, obj, type;
+    exported = widget.exportJson();
+    obj = JSON.parse(exported);
+    type = widget.getDiagramType();
+    extension = '.' + type;
+    filename = utils.sanitizeFilename(obj.name) + extension;
+    mime = 'application/x-' + type;
+    return {
+        filename: filename,
+        exported: exported,
+        mime: mime
+    };
+}
+async function saveAsPng(widget, res) {
+    var exported, filename;
+    exported = widget.exportImage(res, '');
+    filename = utils.sanitizeFilename(exported.name) + '.png';
+    if (window.padBridge && window.padBridge.exportPng) {
+        await window.padBridge.exportPng(filename, exported.image);
+        widgets.showGoodSnack(translate('Saved') + ': ' + filename);
+    } else {
+        downloadImageDataAsFile(filename, exported.image);
+    }
+}
+function saveAsSvg(widget) {
+    var box, ctx, filename, height, image, json, mime, obj, width, zoom100;
+    trace('saveAsSvg');
+    zoom100 = 10000;
+    box = widget.drakon.getDiagramBox();
+    width = box.right - box.left;
+    height = box.bottom - box.top;
+    ctx = new C2S(width, height);
+    widget.drakon.exportToContext(box, zoom100, ctx);
+    json = widget.drakon.exportJson();
+    obj = JSON.parse(json);
+    filename = utils.sanitizeFilename(obj.name) + '.svg';
+    image = ctx.getSerializedSvg(true);
+    mime = 'image/svg+xml';
+    if (window.padBridge && window.padBridge.exportSvg) {
+        window.padBridge.exportSvg(filename, image, mime);
+    } else {
+        downloadTextDataAsFile(filename, image, mime);
+    }
+}
+function setTitle(title) {
+    if (title) {
+        html.setTitle(title + ' | ' + gconfig.appName);
+    } else {
+        html.setTitle(gconfig.appName);
+    }
+}
+function stripTags(html) {
+    var ch, code, i, space, state, tag, text;
+    html = html || '';
+    if (html.length >= 3 && html[0] === '<' && html[html.length - 1] === '>') {
+        text = '';
+        state = 'content';
+        tag = '';
+        space = false;
+        for (i = 0; i < html.length; i++) {
+            ch = html[i];
+            code = html.charCodeAt(i);
+            if (state === 'content') {
+                if (ch === '<') {
+                    tag = ch;
+                    state = 'tag';
                 } else {
-                    __state = '6';
-                }
-                break;
-            case '6':
-                return false;
-            default:
-                return;
-            }
-        }
-    }
-    function sendRequestRaw_create(method, url, payload) {
-        var response, fullUrl, body, error, headers, _var2, _var3;
-        var me = {
-            state: '2',
-            type: 'sendRequestRaw'
-        };
-        function _main_sendRequestRaw(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '2':
-                        if (payload) {
-                            body = JSON.stringify(payload);
-                            me.state = '_item2';
+                    if (utils.isSpace(code)) {
+                        if (space) {
+                            space = true;
                         } else {
-                            body = '';
-                            me.state = '_item2';
+                            space = true;
+                            text += ' ';
                         }
-                        break;
-                    case '29':
-                        if (response.status === 0) {
-                            error = new Error('No connection');
-                            error.disconnected = true;
-                            _var3 = error;
-                            me.state = undefined;
-                            __reject(_var3);
-                            return;
-                        } else {
-                            me.state = undefined;
-                            __resolve(response);
-                            return;
-                        }
-                    case '_item2':
-                        _var2 = getBaseUrl();
-                        fullUrl = _var2 + url;
-                        headers = getHeaders();
-                        trace('sendRequestRaw', method + ' ' + fullUrl);
-                        me.state = '29';
-                        http.sendRequest(method, fullUrl, body, headers).then(function (__returnee) {
-                            response = __returnee;
-                            _main_sendRequestRaw(__resolve, __reject);
-                        }, function (error) {
-                            me.state = undefined;
-                            __reject(error);
-                        });
-                        return;
-                    default:
-                        return;
-                    }
-                }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
-        }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                _main_sendRequestRaw(__resolve, __reject);
-            });
-        };
-        return me;
-    }
-    function sendRequestRaw(method, url, payload) {
-        var __obj = sendRequestRaw_create(method, url, payload);
-        return __obj.run();
-    }
-    function fetchAccount_create() {
-        var account;
-        var me = {
-            state: '2',
-            type: 'fetchAccount'
-        };
-        function _main_fetchAccount(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '2':
-                        me.state = '5';
-                        sendRequestRaw('GET', '/api/account').then(function (__returnee) {
-                            account = __returnee;
-                            _main_fetchAccount(__resolve, __reject);
-                        }, function (error) {
-                            me.state = undefined;
-                            __reject(error);
-                        });
-                        return;
-                    case '5':
-                        if (account.status === 401) {
-                            account = {};
-                            me.state = '7';
-                        } else {
-                            account = JSON.parse(account.responseText);
-                            me.state = '7';
-                        }
-                        break;
-                    case '7':
-                        unit.globals.account = account;
-                        me.state = undefined;
-                        __resolve(account);
-                        return;
-                    default:
-                        return;
-                    }
-                }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
-        }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                _main_fetchAccount(__resolve, __reject);
-            });
-        };
-        return me;
-    }
-    function fetchAccount() {
-        var __obj = fetchAccount_create();
-        return __obj.run();
-    }
-    function getSettingsObj() {
-        var settings;
-        settings = unit.globals.userSettings;
-        addLabelsToSettings(settings);
-        return settings;
-    }
-    function getBaseUrl() {
-        return gconfig.baseUrl;
-    }
-    function saveUserSettings(userSettings) {
-        var existingSettings, _var2, _var3, _var4;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                existingSettings = getSettingsObj();
-                copyAllFieldsWithValue(existingSettings, userSettings);
-                _var3 = isLoggedOn();
-                if (_var3) {
-                    _var2 = sendRequestRaw('POST', '/api/theme', existingSettings);
-                    return _var2;
-                } else {
-                    _var4 = JSON.stringify(existingSettings);
-                    localStorage.setItem('userSetting', _var4);
-                    __state = '1';
-                }
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function guessLanguage() {
-        return gconfig.defaultLanguage;
-    }
-    function fetchUserSettings_create() {
-        var settings, response, _var2;
-        var me = {
-            state: '2',
-            type: 'fetchUserSettings'
-        };
-        function _main_fetchUserSettings(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '2':
-                        _var2 = isLoggedOn();
-                        if (_var2) {
-                            me.state = '6';
-                            sendRequestRaw('GET', '/api/theme').then(function (__returnee) {
-                                response = __returnee;
-                                _main_fetchUserSettings(__resolve, __reject);
-                            }, function (error) {
-                                me.state = undefined;
-                                __reject(error);
-                            });
-                            return;
-                        } else {
-                            settings = getSettingsFromLocalStorage();
-                            me.state = '10';
-                        }
-                        break;
-                    case '6':
-                        if (response.status === 401) {
-                            settings = {};
-                            me.state = '10';
-                        } else {
-                            settings = JSON.parse(response.responseText);
-                            me.state = '10';
-                        }
-                        break;
-                    case '8':
-                        unit.globals.userSettings = settings;
-                        me.state = undefined;
-                        __resolve(settings);
-                        return;
-                    case '10':
-                        if (settings.language) {
-                            me.state = '8';
-                        } else {
-                            settings.language = guessLanguage();
-                            me.state = '8';
-                        }
-                        break;
-                    default:
-                        return;
-                    }
-                }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
-        }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                _main_fetchUserSettings(__resolve, __reject);
-            });
-        };
-        return me;
-    }
-    function fetchUserSettings() {
-        var __obj = fetchUserSettings_create();
-        return __obj.run();
-    }
-    function getAppVersion() {
-        return '2026.03.10';
-    }
-    function removeLoading() {
-        var loading;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                loading = document.getElementById('loading');
-                if (loading) {
-                    html.remove(loading);
-                    __state = '1';
-                } else {
-                    __state = '1';
-                }
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function chooseDocumentType_create() {
-        var dialog, result, cancel, buttons, evt, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12, _var13, _var14;
-        var me = {
-            state: '2',
-            type: 'chooseDocumentType'
-        };
-        function _main_chooseDocumentType(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '2':
-                        dialog = widgets.createMiddleWindow();
-                        _var3 = translate('Choose diagram type');
-                        _var4 = getHeader1Size();
-                        _var2 = div({
-                            text: _var3,
-                            'font-size': _var4,
-                            'font-weight': 'bold',
-                            'padding-bottom': '10px'
-                        });
-                        html.add(dialog, _var2);
-                        me.state = '23';
-                        break;
-                    case '9':
-                        me.state = undefined;
-                        __resolve(result);
-                        return;
-                    case '10':
-                        me.state = '14';
-                        return;
-                    case '18':
-                        widgets.removeQuestions();
-                        me.state = '9';
-                        break;
-                    case '19':
-                        result = {
-                            type: 'drakon',
-                            evt: evt
-                        };
-                        me.state = '18';
-                        break;
-                    case '20':
-                        result = {
-                            type: 'free',
-                            evt: evt
-                        };
-                        me.state = '18';
-                        break;
-                    case '21':
-                        result = undefined;
-                        me.state = '18';
-                        break;
-                    case '22':
-                        _var5 = translate('Cancel');
-                        cancel = widgets.createSimpleButton(_var5, me.cancel);
-                        cancel.style.marginRight = '0px';
-                        buttons = div({
-                            'text-align': 'right',
-                            'padding-top': '20px'
-                        }, cancel);
-                        html.add(dialog, buttons);
-                        me.state = '10';
-                        break;
-                    case '23':
-                        _var6 = ipath('logo-drakon.png');
-                        _var7 = translate('Drakon flowchart');
-                        _var8 = translate('A process, procedure, algorithm, behavior, HOW the system works');
-                        addDiagramType(dialog, _var6, _var7, _var8, me.drakon);
-                        _var12 = ipath('logo-graf.png');
-                        _var13 = translate('Mind map');
-                        _var14 = translate('Structure, composition, hierarchy, ' + 'ordered notes, what the system CONSISTS OF');
-                        addDiagramType(dialog, _var12, _var13, _var14, me.graf);
-                        _var9 = ipath('logo-free.png');
-                        _var10 = translate('Free-form diagram');
-                        _var11 = translate('Boxes and arrows, network diagrams, GUI sketches, GNOME diagrams, no limits');
-                        addDiagramType(dialog, _var9, _var10, _var11, me.free);
-                        me.state = '22';
-                        break;
-                    case '32':
-                        result = {
-                            type: 'graf',
-                            evt: evt
-                        };
-                        me.state = '18';
-                        break;
-                    default:
-                        return;
-                    }
-                }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
-        }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                me.drakon = function (_evt_) {
-                    evt = _evt_;
-                    switch (me.state) {
-                    case '14':
-                        me.state = '19';
-                        _main_chooseDocumentType(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                me.free = function (_evt_) {
-                    evt = _evt_;
-                    switch (me.state) {
-                    case '14':
-                        me.state = '20';
-                        _main_chooseDocumentType(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                me.graf = function (_evt_) {
-                    evt = _evt_;
-                    switch (me.state) {
-                    case '14':
-                        me.state = '32';
-                        _main_chooseDocumentType(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                me.cancel = function () {
-                    switch (me.state) {
-                    case '14':
-                        me.state = '21';
-                        _main_chooseDocumentType(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                _main_chooseDocumentType(__resolve, __reject);
-            });
-        };
-        return me;
-    }
-    function chooseDocumentType() {
-        var __obj = chooseDocumentType_create();
-        return __obj.run();
-    }
-    function addDiagramType(parent, imageSrc, header, description, action) {
-        var container, icon, textBlock, containerStyle, headerDiv, descDiv, _var2, _var3, _var4;
-        icon = img(imageSrc);
-        icon.style.display = 'inline-block';
-        icon.style.width = '80px';
-        icon.style.verticalAlign = 'middle';
-        _var2 = getHeader2Size();
-        _var3 = translate(header);
-        headerDiv = div({
-            'font-weight': 'bold',
-            'font-size': _var2,
-            'text-align': 'center',
-            'padding-bottom': '5px',
-            text: _var3
-        });
-        _var4 = translate(description);
-        descDiv = div({
-            'text-align': 'center',
-            'white-space': 'normal',
-            text: _var4,
-            'font-size': gconfig.fontSize + 'px'
-        });
-        textBlock = div({
-            display: 'inline-block',
-            'vertical-align': 'middle',
-            'padding-left': '10px',
-            width: '240px'
-        }, headerDiv, descDiv);
-        containerStyle = {
-            'white-space': 'nowrap',
-            'height': '120px',
-            'padding': '10px'
-        };
-        container = div('active-border', containerStyle, icon, textBlock);
-        html.add(parent, container);
-        registerEvent(container, 'click', action);
-        return;
-    }
-    function createRegisterScreen(widget, signupSource, onSuccessCallback, goToLogonCallback, onCancel, hideCheckbox) {
-        var form, formClass, formStyle, user, email, inputStyle, title, userLab, emailLab, spacer, signupButt, spacer2, error, logon, hasAccount, buttons, cancel, label, check, checkDiv, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12;
-        var __state = '10';
-        while (true) {
-            switch (__state) {
-            case '2':
-                widget.form = form;
-                user.focus();
-                __state = '7';
-                break;
-            case '7':
-                return form;
-            case '10':
-                inputStyle = {
-                    width: 'calc(100% - 20px)',
-                    'margin-bottom': '10px'
-                };
-                inputStyle = { 'margin-bottom': '10px' };
-                user = html.createElement('input', { type: 'text' }, [inputStyle]);
-                user.id = 'user-reg';
-                email = html.createElement('input', { type: 'email' }, [inputStyle]);
-                email.id = 'email-reg';
-                widget.user = user;
-                widget.email = email;
-                __state = '22';
-                break;
-            case '14':
-                formClass = 'middle-h';
-                formStyle = {
-                    position: 'relative',
-                    padding: '10px',
-                    width: '300px',
-                    'max-width': '100vw'
-                };
-                form = html.createElement('form', {}, [
-                    formClass,
-                    formStyle,
-                    title,
-                    userLab,
-                    user,
-                    emailLab,
-                    email,
-                    checkDiv,
-                    spacer2,
-                    buttons,
-                    error,
-                    spacer
-                ]);
-                __state = '45';
-                break;
-            case '22':
-                _var2 = translate('Create account in');
-                _var3 = getHeader1Size();
-                title = div({
-                    text: _var2 + ' ' + gconfig.appName,
-                    'font-weight': 'bold',
-                    'font-size': _var3,
-                    'text-align': 'center',
-                    'margin': '10px'
-                });
-                _var4 = translate('User name');
-                userLab = div({ text: _var4 });
-                _var5 = translate('Email');
-                emailLab = div({ text: _var5 });
-                spacer = div({ height: '20px' });
-                spacer2 = div({ height: '10px' });
-                error = div({
-                    color: 'darkred',
-                    'margin-top': '10px'
-                });
-                widget.error = error;
-                __state = '59';
-                break;
-            case '28':
-                buttons = div();
-                _var6 = translate('Create account');
-                signupButt = widgets.createDefaultButton(_var6, function () {
-                    doRegister(widget, signupSource, onSuccessCallback);
-                });
-                html.add(buttons, signupButt);
-                if (onCancel) {
-                    _var9 = translate('Cancel');
-                    cancel = widgets.createSimpleButton(_var9, onCancel);
-                    html.add(buttons, cancel);
-                    __state = '14';
-                } else {
-                    signupButt.style.width = '100%';
-                    signupButt.style.textAlign = 'center';
-                    __state = '14';
-                }
-                break;
-            case '45':
-                if (goToLogonCallback) {
-                    _var8 = translate('Already have an account?');
-                    hasAccount = div({ text: _var8 });
-                    _var7 = translate('Login');
-                    logon = widgets.createSimpleButton(_var7, goToLogonCallback);
-                    html.add(form, hasAccount);
-                    html.add(form, logon);
-                    __state = '76';
-                } else {
-                    __state = '76';
-                }
-                break;
-            case '59':
-                checkDiv = div();
-                if (gconfig.privacy) {
-                    if (hideCheckbox) {
-                        __state = '28';
                     } else {
-                        label = html.createElement('label', {}, [{
-                                'line-height': '30px',
-                                'margin-left': '5px',
-                                'display': 'inline-block',
-                                'white-space': 'normal'
-                            }]);
-                        html.add(checkDiv, label);
-                        check = html.createElement('input', { type: 'checkbox' }, [{
-                                width: '20px',
-                                height: '20px',
-                                'margin-right': '5px',
-                                'vertical-align': 'middle'
-                            }]);
-                        check.checked = false;
-                        html.add(label, check);
-                        _var10 = translate('I agree to');
-                        html.addText(label, _var10 + ' ');
-                        _var12 = translate('the privacy policy');
-                        _var11 = widgets.makeLink(gconfig.privacy, _var12, true);
-                        html.add(label, _var11);
-                        widget.privacyCheck = check;
-                        __state = '28';
+                        space = false;
+                        text += ch;
                     }
-                } else {
-                    __state = '28';
                 }
-                break;
-            case '76':
-                addChangeLanguageBlock(form);
-                __state = '2';
-                break;
-            default:
-                return;
+            } else {
+                if (state !== 'tag') {
+                    throw new Error('Unexpected case value: ' + state);
+                }
+                tag += ch;
+                if (ch === '>') {
+                    if ((tag === '</p>' || tag === '</li>' || tag === '<br>' || tag === '<br/>') && !space) {
+                        space = true;
+                        text += '\n';
+                    }
+                    state = 'content';
+                }
             }
         }
+    } else {
+        text = html;
     }
-    function doRegister_create(widget, signupSource, onSuccessCallback) {
-        var user, email, payload, response, settings, error, _var2, _var3, _var4, _var5, _var6, _var7;
-        var me = {
-            state: '8',
-            type: 'doRegister'
-        };
-        function _main_doRegister(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '2':
+    return text.trim();
+}
+function td() {
+    var args, properties;
+    args = Array.prototype.slice.call(arguments);
+    properties = {};
+    return html.createElement('td', properties, args);
+}
+function buildShowConfirmUi(email, allowResend, allowCancel, target) {
+    var buttons, buttons2, cancel, change, client, input, resend, send;
+    client = widgets.createMiddleWindow();
+    html.add(client, div({
+        text: translate('Enter the PIN code sent by email to'),
+        padding: '10px'
+    }));
+    html.add(client, div({
+        text: email,
+        padding: '10px',
+        'padding-top': '0px',
+        'font-weight': 'bold'
+    }));
+    html.add(client, div({
+        text: translate('If the email with the PIN is not ' + 'in your inbox, check the "Spam" folder'),
+        padding: '10px'
+    }));
+    input = html.createElement('input', {
+        type: 'text',
+        placeholder: translate('PIN-code, 6 digits')
+    }, [{
+            margin: '10px',
+            width: 'calc(100% - 20px)'
+        }]);
+    html.add(client, input);
+    buttons = div({
+        'position': 'relative',
+        'text-align': 'right',
+        'padding-bottom': '5px',
+        'padding-right': '10px',
+        'height': '42px'
+    });
+    html.add(client, buttons);
+    send = widgets.createDefaultButton(translate('Confirm email'), function () {
+        target.sendPin(input.value.trim());
+    });
+    send.style.marginRight = '0px';
+    send.style.display = 'none';
+    html.add(buttons, send);
+    registerEvent(input, 'input', function () {
+        onShowConfirmInputChange(input, send);
+    });
+    if (allowResend) {
+        resend = widgets.createSimpleButton(translate('Resend email'), target.resendPin);
+        resend.style.position = 'absolute';
+        resend.style.left = '10px';
+        resend.style.top = '0px';
+        html.add(buttons, resend);
+    }
+    buttons2 = div({
+        'position': 'relative',
+        'text-align': 'left',
+        'padding': '10px'
+    });
+    html.add(client, buttons2);
+    if (allowCancel) {
+        cancel = widgets.createSimpleButton(translate('Cancel'), target.cancel);
+        html.add(buttons2, cancel);
+    } else {
+        html.add(buttons2, div({ text: translate('Wrong email?') }));
+        change = widgets.createSimpleButton(translate('Change email'), target.changeEmail);
+        html.add(buttons2, change);
+    }
+    input.focus();
+}
+function onShowConfirmInputChange(input, send) {
+    var pin;
+    pin = input.value.trim();
+    if (pin.length === 6) {
+        send.style.display = 'inline-block';
+    } else {
+        send.style.display = 'none';
+    }
+}
+function showConfirmEmail(email, allowCancel, changeEmail) {
+    var _obj_;
+    _obj_ = showConfirmEmail_create(email, allowCancel, changeEmail);
+    return _obj_.run();
+}
+async function doLogon(widget, onSuccessCallback) {
+    var password, payload, response, user;
+    html.clear(widget.error);
+    user = widget.user.value.trim();
+    password = widget.password.value;
+    if (user) {
+        if (password) {
+            showWaitBlock();
+            payload = {
+                user: user,
+                password: password
+            };
+            response = await sendRequestRaw('POST', '/api/logon', payload);
+            hideWaitBlock();
+            if (response.status === 200) {
+                if (widget.remain) {
+                    html.reload();
+                } else {
+                    onSuccessCallback();
+                }
+            } else {
+                html.addText(widget.error, translate('Wrong user name or password'));
+            }
+        } else {
+            html.addText(widget.error, translate('Password is empty'));
+            widget.password.focus();
+        }
+    } else {
+        html.addText(widget.error, translate('User name is empty'));
+        widget.user.focus();
+    }
+}
+async function doRegister(widget, signupSource, onSuccessCallback) {
+    var email, error, payload, response, settings, user;
+    html.clear(widget.error);
+    user = widget.user.value.trim();
+    email = widget.email.value.trim();
+    if (user) {
+        if (email) {
+            error = checkProjectName(user);
+            if (error) {
+                html.addText(widget.error, error);
+                widget.user.focus();
+            } else {
+                if (checkEmail(email)) {
+                    if (!widget.privacyCheck || widget.privacyCheck.checked) {
                         settings = getSettingsObj();
                         showWaitBlock();
                         payload = {
@@ -2612,1934 +1388,1437 @@ function dh2common() {
                             signup_url: window.location.href,
                             signup_source: signupSource
                         };
-                        me.state = '20';
-                        sendRequestRaw('POST', '/api/create_user_email', payload).then(function (__returnee) {
-                            response = __returnee;
-                            _main_doRegister(__resolve, __reject);
-                        }, function (error) {
-                            me.state = undefined;
-                            __reject(error);
-                        });
-                        return;
-                    case '6':
-                        me.state = undefined;
-                        __resolve({ ok: true });
-                        return;
-                    case '8':
-                        html.clear(widget.error);
-                        user = widget.user.value.trim();
-                        email = widget.email.value.trim();
-                        if (user) {
-                            if (email) {
-                                error = checkProjectName(user);
-                                if (error) {
-                                    html.addText(widget.error, error);
-                                    widget.user.focus();
-                                    me.state = '6';
-                                } else {
-                                    _var5 = checkEmail(email);
-                                    if (_var5) {
-                                        me.state = '45';
-                                    } else {
-                                        _var6 = translate('Wrong email format');
-                                        html.addText(widget.error, _var6);
-                                        widget.email.focus();
-                                        me.state = '6';
-                                    }
-                                }
-                            } else {
-                                _var3 = translate('Email cannot be empty');
-                                html.addText(widget.error, _var3);
-                                widget.email.focus();
-                                me.state = '6';
-                            }
-                        } else {
-                            _var2 = translate('User name cannot be empty');
-                            html.addText(widget.error, _var2);
-                            widget.user.focus();
-                            me.state = '6';
-                        }
-                        break;
-                    case '20':
+                        response = await sendRequestRaw('POST', '/api/create_user_email', payload);
                         hideWaitBlock();
                         if (response.status === 200) {
                             onSuccessCallback();
-                            me.state = '6';
                         } else {
-                            _var4 = translate('Could not create account. ' + 'This user name or email are already in use.');
-                            html.addText(widget.error, _var4);
-                            me.state = '6';
+                            html.addText(widget.error, translate('Could not create account. ' + 'This user name or email are already in use.'));
                         }
-                        break;
-                    case '45':
-                        if (widget.privacyCheck) {
-                            if (widget.privacyCheck.checked) {
-                                me.state = '2';
-                            } else {
-                                _var7 = translate('Please agree to the privacy policy');
-                                html.addText(widget.error, _var7);
-                                me.state = '6';
-                            }
-                        } else {
-                            me.state = '2';
-                        }
-                        break;
-                    default:
-                        return;
-                    }
-                }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
-        }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                _main_doRegister(__resolve, __reject);
-            });
-        };
-        return me;
-    }
-    function doRegister(widget, signupSource, onSuccessCallback) {
-        var __obj = doRegister_create(widget, signupSource, onSuccessCallback);
-        return __obj.run();
-    }
-    function logonOnEnter(widget, evt, onSuccessCallback) {
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                if (evt.key === 'Enter') {
-                    doLogon(widget, onSuccessCallback);
-                    __state = '1';
-                } else {
-                    __state = '1';
-                }
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function doLogon_create(widget, onSuccessCallback) {
-        var user, password, payload, response, _var2, _var3, _var4;
-        var me = {
-            state: '8',
-            type: 'doLogon'
-        };
-        function _main_doLogon(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '2':
-                        showWaitBlock();
-                        payload = {
-                            user: user,
-                            password: password
-                        };
-                        me.state = '20';
-                        sendRequestRaw('POST', '/api/logon', payload).then(function (__returnee) {
-                            response = __returnee;
-                            _main_doLogon(__resolve, __reject);
-                        }, function (error) {
-                            me.state = undefined;
-                            __reject(error);
-                        });
-                        return;
-                    case '6':
-                        me.state = undefined;
-                        __resolve({ ok: true });
-                        return;
-                    case '8':
-                        html.clear(widget.error);
-                        user = widget.user.value.trim();
-                        password = widget.password.value;
-                        if (user) {
-                            if (password) {
-                                me.state = '2';
-                            } else {
-                                _var3 = translate('Password is empty');
-                                html.addText(widget.error, _var3);
-                                widget.password.focus();
-                                me.state = '6';
-                            }
-                        } else {
-                            _var2 = translate('User name is empty');
-                            html.addText(widget.error, _var2);
-                            widget.user.focus();
-                            me.state = '6';
-                        }
-                        break;
-                    case '20':
-                        hideWaitBlock();
-                        if (response.status === 200) {
-                            if (widget.remain) {
-                                html.reload();
-                                me.state = '6';
-                            } else {
-                                onSuccessCallback();
-                                me.state = '6';
-                            }
-                        } else {
-                            _var4 = translate('Wrong user name or password');
-                            html.addText(widget.error, _var4);
-                            me.state = '6';
-                        }
-                        break;
-                    default:
-                        return;
-                    }
-                }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
-        }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                _main_doLogon(__resolve, __reject);
-            });
-        };
-        return me;
-    }
-    function doLogon(widget, onSuccessCallback) {
-        var __obj = doLogon_create(widget, onSuccessCallback);
-        return __obj.run();
-    }
-    function checkUserName(name) {
-        var code, aCode, zCode, zeroCode, nineCode, dot, under, minus, first, last, prev, _var2, i;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                if (name) {
-                    aCode = 'a'.charCodeAt(0);
-                    zCode = 'z'.charCodeAt(0);
-                    zeroCode = '0'.charCodeAt(0);
-                    nineCode = '9'.charCodeAt(0);
-                    dot = '.'.charCodeAt(0);
-                    under = '_'.charCodeAt(0);
-                    minus = '-'.charCodeAt(0);
-                    name = name.toLowerCase();
-                    prev = 0;
-                    i = 0;
-                    __state = '5';
-                } else {
-                    __state = '17';
-                }
-                break;
-            case '5':
-                if (i < name.length) {
-                    code = name.charCodeAt(i);
-                    _var2 = code;
-                    if (_var2 === dot) {
-                        __state = '30';
                     } else {
-                        if (_var2 === under) {
-                            __state = '30';
-                        } else {
-                            if (_var2 === minus) {
-                                __state = '30';
-                            } else {
-                                if (code >= aCode) {
-                                    if (code <= zCode) {
-                                        __state = '29';
-                                    } else {
-                                        __state = '15';
-                                    }
-                                } else {
-                                    __state = '15';
-                                }
-                            }
-                        }
+                        html.addText(widget.error, translate('Please agree to the privacy policy'));
                     }
                 } else {
-                    __state = '20';
+                    html.addText(widget.error, translate('Wrong email format'));
+                    widget.email.focus();
                 }
-                break;
-            case '15':
-                if (code >= zeroCode) {
-                    if (code <= nineCode) {
-                        __state = '29';
-                    } else {
-                        __state = '17';
-                    }
-                } else {
-                    __state = '17';
-                }
-                break;
-            case '17':
-                return false;
-            case '20':
-                first = name.charCodeAt(0);
-                last = name.charCodeAt(name.length - 1);
-                if (first === dot) {
-                    __state = '27';
-                } else {
-                    if (last === dot) {
-                        __state = '27';
-                    } else {
-                        if (first === under) {
-                            __state = '27';
-                        } else {
-                            if (last === under) {
-                                __state = '27';
-                            } else {
-                                if (first === minus) {
-                                    __state = '27';
-                                } else {
-                                    if (last === minus) {
-                                        __state = '27';
-                                    } else {
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                break;
-            case '27':
-                return false;
-            case '29':
-                prev = code;
-                i++;
-                __state = '5';
-                break;
-            case '30':
+            }
+        } else {
+            html.addText(widget.error, translate('Email cannot be empty'));
+            widget.email.focus();
+        }
+    } else {
+        html.addText(widget.error, translate('User name cannot be empty'));
+        widget.user.focus();
+    }
+}
+function logonOnEnter(widget, evt, onSuccessCallback) {
+    if (evt.key === 'Enter') {
+        doLogon(widget, onSuccessCallback);
+    }
+}
+function checkEmail(email) {
+    var parts;
+    if (email && !(email.length > 100)) {
+        parts = email.split('@');
+        if (parts.length === 2 && checkUserName(parts[0]) && checkUserName(parts[1])) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
+function checkUserName(name) {
+    var aCode, code, dot, first, i, last, minus, nineCode, prev, under, zCode, zeroCode;
+    if (name) {
+        aCode = 'a'.charCodeAt(0);
+        zCode = 'z'.charCodeAt(0);
+        zeroCode = '0'.charCodeAt(0);
+        nineCode = '9'.charCodeAt(0);
+        dot = '.'.charCodeAt(0);
+        under = '_'.charCodeAt(0);
+        minus = '-'.charCodeAt(0);
+        name = name.toLowerCase();
+        prev = 0;
+        for (i = 0; i < name.length; i++) {
+            code = name.charCodeAt(i);
+            if (code === dot || (code === under || code === minus)) {
                 if (prev === code) {
                     return false;
-                } else {
-                    __state = '29';
                 }
-                break;
-            default:
-                return;
+            } else {
+                if (!(code >= aCode && code <= zCode || code >= zeroCode && code <= nineCode)) {
+                    return false;
+                }
             }
+            prev = code;
+        }
+        first = name.charCodeAt(0);
+        last = name.charCodeAt(name.length - 1);
+        if (first === dot || last === dot || first === under || last === under || first === minus || last === minus) {
+            return false;
+        } else {
+            return true;
+        }
+    } else {
+        return false;
+    }
+}
+function createLogonScreen(widget, onSuccessCallback, goToRegisterCallback, onCancel, accountUrl) {
+    var createAccountButton, error, forgotLab, form, formClass, formStyle, inputStyle, logonButt, noAccountLab, passLab, password, reset, spacer, spacer2, title, user, userLab;
+    inputStyle = {
+        width: 'calc(100% - 20px)',
+        'margin-bottom': '10px'
+    };
+    inputStyle = { 'margin-bottom': '10px' };
+    user = html.createElement('input', {
+        type: 'text',
+        autocomplete: 'username'
+    }, [inputStyle]);
+    user.id = 'user';
+    password = html.createElement('input', {
+        type: 'password',
+        autocomplete: 'current-password'
+    }, [inputStyle]);
+    password.id = 'password';
+    widget.user = user;
+    widget.password = password;
+    title = div({
+        text: translate('Login to') + ' ' + gconfig.appName,
+        'font-weight': 'bold',
+        'font-size': getHeader1Size(),
+        'text-align': 'center',
+        'margin': '10px'
+    });
+    userLab = div({ text: translate('User name') });
+    noAccountLab = div({ text: translate('No account?') });
+    forgotLab = div({ text: translate('Forgot password?') });
+    passLab = div({ text: translate('Password') });
+    spacer = div({ height: '20px' });
+    spacer2 = div({ height: '10px' });
+    error = div({
+        color: 'darkred',
+        'margin-top': '10px'
+    });
+    widget.error = error;
+    logonButt = widgets.createDefaultButton(translate('Login'), function () {
+        doLogon(widget, onSuccessCallback);
+    });
+    logonButt.style.width = '100%';
+    logonButt.style.textAlign = 'center';
+    createAccountButton = widgets.createSimpleButton(translate('Create account'), goToRegisterCallback);
+    reset = div({ 'margin-top': '20px' }, html.createElement('a', { href: accountUrl }, [{ text: translate('Forgot password?') }]));
+    registerEvent(password, 'keydown', function (evt) {
+        logonOnEnter(widget, evt, onSuccessCallback);
+    });
+    formClass = 'middle-h';
+    formStyle = {
+        position: 'relative',
+        padding: '10px',
+        width: '300px',
+        'max-width': '100vw'
+    };
+    form = html.createElement('form', {}, [
+        formClass,
+        formStyle,
+        title,
+        userLab,
+        user,
+        passLab,
+        password,
+        spacer2,
+        logonButt,
+        error,
+        spacer,
+        noAccountLab,
+        createAccountButton,
+        reset
+    ]);
+    addChangeLanguageBlock(form);
+    widget.form = form;
+    user.focus();
+    return form;
+}
+function createRegisterScreen(widget, signupSource, onSuccessCallback, goToLogonCallback, onCancel, hideCheckbox) {
+    var buttons, cancel, check, checkDiv, email, emailLab, error, form, formClass, formStyle, hasAccount, inputStyle, label, logon, signupButt, spacer, spacer2, title, user, userLab;
+    inputStyle = {
+        width: 'calc(100% - 20px)',
+        'margin-bottom': '10px'
+    };
+    inputStyle = { 'margin-bottom': '10px' };
+    user = html.createElement('input', { type: 'text' }, [inputStyle]);
+    user.id = 'user-reg';
+    email = html.createElement('input', { type: 'email' }, [inputStyle]);
+    email.id = 'email-reg';
+    widget.user = user;
+    widget.email = email;
+    title = div({
+        text: translate('Create account in') + ' ' + gconfig.appName,
+        'font-weight': 'bold',
+        'font-size': getHeader1Size(),
+        'text-align': 'center',
+        'margin': '10px'
+    });
+    userLab = div({ text: translate('User name') });
+    emailLab = div({ text: translate('Email') });
+    spacer = div({ height: '20px' });
+    spacer2 = div({ height: '10px' });
+    error = div({
+        color: 'darkred',
+        'margin-top': '10px'
+    });
+    widget.error = error;
+    checkDiv = div();
+    if (gconfig.privacy && !hideCheckbox) {
+        label = html.createElement('label', {}, [{
+                'line-height': '30px',
+                'margin-left': '5px',
+                'display': 'inline-block',
+                'white-space': 'normal'
+            }]);
+        html.add(checkDiv, label);
+        check = html.createElement('input', { type: 'checkbox' }, [{
+                width: '20px',
+                height: '20px',
+                'margin-right': '5px',
+                'vertical-align': 'middle'
+            }]);
+        check.checked = false;
+        html.add(label, check);
+        html.addText(label, translate('I agree to') + ' ');
+        html.add(label, widgets.makeLink(gconfig.privacy, translate('the privacy policy'), true));
+        widget.privacyCheck = check;
+    }
+    buttons = div();
+    signupButt = widgets.createDefaultButton(translate('Create account'), function () {
+        doRegister(widget, signupSource, onSuccessCallback);
+    });
+    html.add(buttons, signupButt);
+    if (onCancel) {
+        cancel = widgets.createSimpleButton(translate('Cancel'), onCancel);
+        html.add(buttons, cancel);
+    } else {
+        signupButt.style.width = '100%';
+        signupButt.style.textAlign = 'center';
+    }
+    formClass = 'middle-h';
+    formStyle = {
+        position: 'relative',
+        padding: '10px',
+        width: '300px',
+        'max-width': '100vw'
+    };
+    form = html.createElement('form', {}, [
+        formClass,
+        formStyle,
+        title,
+        userLab,
+        user,
+        emailLab,
+        email,
+        checkDiv,
+        spacer2,
+        buttons,
+        error,
+        spacer
+    ]);
+    if (goToLogonCallback) {
+        hasAccount = div({ text: translate('Already have an account?') });
+        logon = widgets.createSimpleButton(translate('Login'), goToLogonCallback);
+        html.add(form, hasAccount);
+        html.add(form, logon);
+    }
+    addChangeLanguageBlock(form);
+    widget.form = form;
+    user.focus();
+    return form;
+}
+function addDiagramType(parent, imageSrc, header, description, action) {
+    var container, containerStyle, descDiv, headerDiv, icon, textBlock;
+    icon = img(imageSrc);
+    icon.style.display = 'inline-block';
+    icon.style.width = '80px';
+    icon.style.verticalAlign = 'middle';
+    headerDiv = div({
+        'font-weight': 'bold',
+        'font-size': getHeader2Size(),
+        'text-align': 'center',
+        'padding-bottom': '5px',
+        text: translate(header)
+    });
+    descDiv = div({
+        'text-align': 'center',
+        'white-space': 'normal',
+        text: translate(description),
+        'font-size': gconfig.fontSize + 'px'
+    });
+    textBlock = div({
+        display: 'inline-block',
+        'vertical-align': 'middle',
+        'padding-left': '10px',
+        width: '240px'
+    }, headerDiv, descDiv);
+    containerStyle = {
+        'white-space': 'nowrap',
+        'height': '120px',
+        'padding': '10px'
+    };
+    container = div('active-border', containerStyle, icon, textBlock);
+    html.add(parent, container);
+    registerEvent(container, 'click', action);
+}
+function chooseDocumentType() {
+    var _obj_;
+    _obj_ = chooseDocumentType_create();
+    return _obj_.run();
+}
+function addMainMenuItem(parent, text, action) {
+    var callback, contClass, line;
+    contClass = 'grid-item';
+    line = div(contClass, {
+        text: text,
+        padding: '5px',
+        cursor: 'pointer'
+    });
+    callback = function (evt) {
+        widgets.removePopups();
+        action(evt);
+    };
+    registerEvent(line, 'click', callback);
+    html.add(parent, line);
+}
+function createMenuSection(name, lines, forceNarrow) {
+    var body, container, header, line, sep;
+    name = name || '';
+    header = div('main-menu-section-header', { text: name });
+    body = div();
+    for (line of lines) {
+        if (line === 'separator') {
+            sep = div({ 'border-bottom': 'solid 1px green' });
+            html.add(body, sep);
+        } else {
+            addMainMenuItem(body, line[0], line[1]);
         }
     }
-    function checkEmail(email) {
-        var parts, _var2, _var3;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                if (email) {
-                    if (email.length > 100) {
-                        __state = '5';
-                    } else {
-                        parts = email.split('@');
-                        if (parts.length === 2) {
-                            _var2 = checkUserName(parts[0]);
-                            if (_var2) {
-                                _var3 = checkUserName(parts[1]);
-                                if (_var3) {
-                                    return true;
-                                } else {
-                                    __state = '5';
-                                }
-                            } else {
-                                __state = '5';
-                            }
-                        } else {
-                            __state = '5';
-                        }
-                    }
-                } else {
-                    __state = '5';
-                }
-                break;
-            case '5':
-                return false;
-            default:
-                return;
+    container = div('main-menu-section', header, body);
+    if (widgets.isNarrowScreen() || forceNarrow) {
+        container.style.display = 'block';
+        container.style.marginRight = '5px';
+    }
+    return container;
+}
+function showMainMenu(client) {
+    var area, close, container, image;
+    image = img(ipath(gconfig.wideLogo));
+    image.style.height = '49px';
+    close = widgets.createIconButton(ipath('delete.png'), widgets.removePopups);
+    close.style.position = 'absolute';
+    close.style.right = '5px';
+    close.style.top = '5px';
+    close.style.margin = '0px';
+    container = div('shadow main-menu', div('main-menu-top', image, close), div('main-menu-bottom', client));
+    area = widgets.getSafeArea();
+    container.style.left = area.left + 'px';
+    container.style.top = area.top + 'px';
+    container.style.maxHeight = area.height + 'px';
+    widgets.pushSemiModalPopup(container, area.left, area.top);
+    container.style.transform = 'translateY(0px)';
+    container.style.opacity = 1;
+}
+function makeLogo(onClick) {
+    var image;
+    image = img(ipath(gconfig.logo));
+    image.style.width = '49px';
+    image.style.height = '49px';
+    image.style.cursor = 'pointer';
+    registerEvent(image, 'click', onClick);
+    return image;
+}
+function makeTopBar(top, bottom) {
+    top.className = 'top-bar';
+    bottom.className = 'top-bar-below';
+}
+function addChangeLanguageBlock(form) {
+    var changeLanguage;
+    if (getSettingsObj().language === 'en-us') {
+        changeLanguage = widgets.createSimpleButton('Русский', function () {
+            saveLanguage('ru');
+        });
+    } else {
+        changeLanguage = widgets.createSimpleButton('English', function () {
+            saveLanguage('en-us');
+        });
+    }
+    html.add(form, div({ height: '30px' }));
+    html.add(form, changeLanguage);
+}
+function saveLanguage(language) {
+    var settings;
+    settings = getSettingsFromLocalStorage();
+    setLabelsForLanguage(settings, language);
+    saveUserSettings(settings);
+    location.reload();
+}
+function hideWaitBlock() {
+    if (unit.wait) {
+        html.remove(unit.wait);
+        unit.wait = undefined;
+    }
+}
+function showWaitBlock() {
+    var messageStyle, root, wait;
+    hideWaitBlock();
+    root = html.get('popup-root');
+    messageStyle = {
+        text: translate('Wait a minute'),
+        background: 'white',
+        padding: '20px',
+        'user-select': 'none'
+    };
+    wait = div('full-screen', { 'z-index': 1000 }, div('middle', messageStyle));
+    html.add(root, wait);
+    unit.wait = wait;
+}
+function buildWidgetDom(parentElement, widget) {
+    var container;
+    container = div();
+    widget.container = container;
+    html.add(parentElement, container);
+    widget.redraw(widget.container);
+    return container;
+}
+function MultiWidget() {
+    var self = { _type: 'MultiWidget' };
+    function getCurrent() {
+        var _collection_169, child, id;
+        _collection_169 = self.children;
+        for (id in _collection_169) {
+            child = _collection_169[id];
+            if (id === self.current) {
+                return child.widget;
             }
         }
+        throw new Error('getCurrent: current not found');
     }
-    function onShowConfirmInputChange(input, send) {
-        var pin;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                pin = input.value.trim();
-                if (pin.length === 6) {
-                    send.style.display = 'inline-block';
-                    __state = '1';
-                } else {
-                    send.style.display = 'none';
-                    __state = '1';
-                }
-                break;
-            default:
-                return;
-            }
+    function init(content) {
+        var _collection_172, child, id;
+        self.children = {};
+        self.current = content.current;
+        _collection_172 = content.children;
+        for (id in _collection_172) {
+            child = _collection_172[id];
+            self.children[id] = {
+                widget: child,
+                container: undefined,
+                visible: false
+            };
         }
     }
-    function buildShowConfirmUi(email, allowResend, allowCancel, target) {
-        var client, input, buttons, send, resend, buttons2, cancel, change, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12, _var13, _var14;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                client = widgets.createMiddleWindow();
-                _var4 = translate('Enter the PIN code sent by email to');
-                _var3 = div({
-                    text: _var4,
-                    padding: '10px'
-                });
-                html.add(client, _var3);
-                _var2 = div({
-                    text: email,
-                    padding: '10px',
-                    'padding-top': '0px',
-                    'font-weight': 'bold'
-                });
-                html.add(client, _var2);
-                _var14 = translate('If the email with the PIN is not ' + 'in your inbox, check the "Spam" folder');
-                _var13 = div({
-                    text: _var14,
-                    padding: '10px'
-                });
-                html.add(client, _var13);
-                __state = '20';
-                break;
-            case '19':
-                input.focus();
-                return;
-            case '20':
-                _var5 = translate('PIN-code, 6 digits');
-                input = html.createElement('input', {
-                    type: 'text',
-                    placeholder: _var5
-                }, [{
-                        margin: '10px',
-                        width: 'calc(100% - 20px)'
-                    }]);
-                html.add(client, input);
-                __state = '24';
-                break;
-            case '24':
-                buttons = div({
-                    'position': 'relative',
-                    'text-align': 'right',
-                    'padding-bottom': '5px',
-                    'padding-right': '10px',
-                    'height': '42px'
-                });
-                html.add(client, buttons);
-                _var6 = translate('Confirm email');
-                send = widgets.createDefaultButton(_var6, function () {
-                    _var7 = input.value.trim();
-                    target.sendPin(_var7);
-                });
-                send.style.marginRight = '0px';
-                send.style.display = 'none';
-                html.add(buttons, send);
-                registerEvent(input, 'input', function () {
-                    onShowConfirmInputChange(input, send);
-                });
-                __state = '35';
-                break;
-            case '35':
-                if (allowResend) {
-                    _var8 = translate('Resend email');
-                    resend = widgets.createSimpleButton(_var8, target.resendPin);
-                    resend.style.position = 'absolute';
-                    resend.style.left = '10px';
-                    resend.style.top = '0px';
-                    html.add(buttons, resend);
-                    __state = '40';
-                } else {
-                    __state = '40';
-                }
-                break;
-            case '40':
-                buttons2 = div({
-                    'position': 'relative',
-                    'text-align': 'left',
-                    'padding': '10px'
-                });
-                html.add(client, buttons2);
-                if (allowCancel) {
-                    _var9 = translate('Cancel');
-                    cancel = widgets.createSimpleButton(_var9, target.cancel);
-                    html.add(buttons2, cancel);
-                    __state = '19';
-                } else {
-                    _var11 = translate('Wrong email?');
-                    _var10 = div({ text: _var11 });
-                    html.add(buttons2, _var10);
-                    _var12 = translate('Change email');
-                    change = widgets.createSimpleButton(_var12, target.changeEmail);
-                    html.add(buttons2, change);
-                    __state = '19';
-                }
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function showConfirmEmail_create(email, allowCancel, changeEmail) {
-        var response, confirmPayload, allowResend, pin, _var2, _var3, _var4, _var5, _var6, _var7;
-        var me = {
-            state: '28',
-            type: 'showConfirmEmail'
-        };
-        function _main_showConfirmEmail(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '2':
-                        buildShowConfirmUi(email, allowResend, allowCancel, me);
-                        me.state = '10';
-                        return;
-                    case '18':
-                        confirmPayload = { pin: pin };
-                        showWaitBlock();
-                        me.state = '26';
-                        sendRequestRaw('POST', '/api/confirm_email', confirmPayload).then(function (__returnee) {
-                            response = __returnee;
-                            _main_showConfirmEmail(__resolve, __reject);
-                        }, function (error) {
-                            me.state = undefined;
-                            __reject(error);
-                        });
-                        return;
-                    case '20':
-                        allowResend = false;
-                        showWaitBlock();
-                        me.state = '31';
-                        setTimeout(function () {
-                            _main_showConfirmEmail(__resolve, __reject);
-                        }, 2000);
-                        return;
-                    case '26':
-                        hideWaitBlock();
-                        _var2 = isSuccess(response);
-                        if (_var2) {
-                            widgets.removeQuestions();
-                            _var7 = translate('Email confirmed');
-                            widgets.showGoodSnack(_var7);
-                            me.state = undefined;
-                            __resolve(true);
-                            return;
-                        } else {
-                            _var3 = translate('Bad PIN');
-                            widgets.showErrorSnack(_var3);
-                            me.state = '2';
-                        }
-                        break;
-                    case '28':
-                        allowResend = true;
-                        me.state = '2';
-                        break;
-                    case '31':
-                        me.state = '34';
-                        sendRequestRaw('POST', '/api/resend_confirm_email', {}).then(function (__returnee) {
-                            response = __returnee;
-                            _main_showConfirmEmail(__resolve, __reject);
-                        }, function (error) {
-                            me.state = undefined;
-                            __reject(error);
-                        });
-                        return;
-                    case '34':
-                        hideWaitBlock();
-                        _var4 = isSuccess(response);
-                        if (_var4) {
-                            _var6 = translate('A new PIN has been sent');
-                            widgets.showGoodSnack(_var6);
-                            me.state = '2';
-                        } else {
-                            _var5 = translate('Could not resend PIN');
-                            widgets.showErrorSnack(_var5);
-                            me.state = '2';
-                        }
-                        break;
-                    case '39':
-                        widgets.removeQuestions();
-                        me.state = '46';
-                        break;
-                    case '41':
-                        widgets.removeQuestions();
-                        me.state = '20';
-                        break;
-                    case '42':
-                        widgets.removeQuestions();
-                        me.state = '18';
-                        break;
-                    case '44':
-                        widgets.removeQuestions();
-                        changeEmail();
-                        me.state = '46';
-                        break;
-                    case '46':
-                        me.state = undefined;
-                        __resolve(false);
-                        return;
-                    default:
-                        return;
-                    }
-                }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
-        }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                me.sendPin = function (_pin_) {
-                    pin = _pin_;
-                    switch (me.state) {
-                    case '10':
-                        me.state = '42';
-                        _main_showConfirmEmail(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                me.resendPin = function () {
-                    switch (me.state) {
-                    case '10':
-                        me.state = '41';
-                        _main_showConfirmEmail(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                me.cancel = function () {
-                    switch (me.state) {
-                    case '10':
-                        me.state = '39';
-                        _main_showConfirmEmail(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                me.changeEmail = function () {
-                    switch (me.state) {
-                    case '10':
-                        me.state = '44';
-                        _main_showConfirmEmail(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                _main_showConfirmEmail(__resolve, __reject);
-            });
-        };
-        return me;
-    }
-    function showConfirmEmail(email, allowCancel, changeEmail) {
-        var __obj = showConfirmEmail_create(email, allowCancel, changeEmail);
-        return __obj.run();
-    }
-    function createWidget(widget, data) {
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                if (widget.createStyles) {
-                    widget.createStyles();
-                    __state = '6';
-                } else {
-                    __state = '6';
-                }
-                break;
-            case '5':
-                return widget;
-            case '6':
-                if (widget.init) {
-                    widget.init(data);
-                    __state = '5';
-                } else {
-                    __state = '5';
-                }
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function hideWaitBlock() {
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                if (unit.wait) {
-                    html.remove(unit.wait);
-                    unit.wait = undefined;
-                    __state = '1';
-                } else {
-                    __state = '1';
-                }
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function showWaitBlock() {
-        var root, wait, messageStyle, _var2, _var3;
-        hideWaitBlock();
-        root = html.get('popup-root');
-        _var3 = translate('Wait a minute');
-        messageStyle = {
-            text: _var3,
-            background: 'white',
-            padding: '20px',
-            'user-select': 'none'
-        };
-        _var2 = div('middle', messageStyle);
-        wait = div('full-screen', { 'z-index': 1000 }, _var2);
-        html.add(root, wait);
-        unit.wait = wait;
-        return;
-    }
-    function createRootElement() {
-        var main, rootElement;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                if (unit.rootElement) {
-                    html.remove(unit.rootElement);
-                    unit.rootElement = undefined;
-                    __state = '5';
-                } else {
-                    __state = '5';
-                }
-                break;
-            case '5':
-                rootElement = div();
-                main = html.get('main');
-                html.add(main, rootElement);
-                unit.rootElement = rootElement;
-                setRootStyle();
-                return rootElement;
-            default:
-                return;
-            }
-        }
-    }
-    function PanicScreen_redraw(self, container) {
-        return;
-    }
-    function PanicScreen_showPanicMessage(self, message) {
-        var central, home, _var2, _var3, _var4, _var5, _var6, _var7, _var8, _var9, _var10, _var11, _var12;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                if (gconfig.pad) {
-                    _var9 = div('header1', { text: message });
-                    _var12 = translate('Restart app');
-                    _var11 = widgets.createDefaultButton(_var12, html.reload);
-                    _var10 = div({
-                        'padding-top': '20px',
-                        'text-align': 'center'
-                    }, _var11);
-                    central = div('middle', _var9, _var10);
-                    __state = '3';
-                } else {
-                    home = function () {
-                        _var8 = getAppRoot();
-                        html.goTo(_var8);
-                    };
-                    _var2 = div('header1', { text: message });
-                    _var5 = translate('Reload');
-                    _var4 = widgets.createDefaultButton(_var5, html.reload);
-                    _var7 = translate('Home');
-                    _var6 = widgets.createSimpleButton(_var7, home);
-                    _var3 = div({
-                        'padding-top': '20px',
-                        'text-align': 'center'
-                    }, _var4, _var6);
-                    central = div('middle', _var2, _var3);
-                    __state = '3';
-                }
-                break;
-            case '3':
-                html.clear(self.container);
-                html.add(self.container, central);
-                return;
-            default:
-                return;
-            }
-        }
-    }
-    function buildWidgetDom(parentElement, widget) {
-        var container;
-        container = div();
-        widget.container = container;
-        html.add(parentElement, container);
-        widget.redraw(widget.container);
-        return container;
-    }
-    function MultiWidget_init(self, content) {
-        var _var3, _var2, _var4, id, child;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                self.children = {};
-                self.current = content.current;
-                _var3 = content.children;
-                _var2 = Object.keys(_var3);
-                _var4 = 0;
-                __state = '9';
-                break;
-            case '9':
-                if (_var4 < _var2.length) {
-                    id = _var2[_var4];
-                    child = _var3[id];
-                    self.children[id] = {
-                        widget: child,
-                        container: undefined,
-                        visible: false
-                    };
-                    _var4++;
-                    __state = '9';
-                } else {
-                    return;
-                }
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function MultiWidget_onShow(self) {
-        var current;
-        current = self.children[self.current];
-        onShowChildWidget(current);
-        return;
-    }
-    function MultiWidget_onHide(self) {
+    function onHide() {
         var current;
         current = self.children[self.current];
         onHideChildWidget(current);
-        return;
     }
-    function MultiWidget_getCurrent(self) {
-        var _var3, _var2, _var4, id, child;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                _var3 = self.children;
-                _var2 = Object.keys(_var3);
-                _var4 = 0;
-                __state = '6';
-                break;
-            case '6':
-                if (_var4 < _var2.length) {
-                    id = _var2[_var4];
-                    child = _var3[id];
-                    if (id === self.current) {
-                        return child.widget;
-                    } else {
-                        _var4++;
-                        __state = '6';
-                    }
-                } else {
-                    throw new Error('getCurrent: current not found');
+    function onShow() {
+        var current;
+        current = self.children[self.current];
+        onShowChildWidget(current);
+    }
+    function redraw(container) {
+        var _collection_175, child, id;
+        _collection_175 = self.children;
+        for (id in _collection_175) {
+            child = _collection_175[id];
+            child.container = buildWidgetDom(container, child.widget);
+            stretchElement(child.container);
+        }
+        self.setCurrent(self.current);
+    }
+    function setCurrent(childId) {
+        var _collection_178, child, id;
+        self.current = childId;
+        _collection_178 = self.children;
+        for (id in _collection_178) {
+            child = _collection_178[id];
+            if (id === self.current) {
+                if (!child.visible) {
+                    display(child.container, 'inline-block');
+                    onShowChildWidget(child);
+                    child.visible = true;
                 }
-                break;
-            default:
-                return;
+            } else {
+                display(child.container, 'none');
+                if (child.visible) {
+                    onHideChildWidget(child);
+                    child.visible = false;
+                }
             }
         }
     }
-    function MultiWidget_setCurrent(self, childId) {
-        var _var3, _var2, _var4, id, child;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                self.current = childId;
-                _var3 = self.children;
-                _var2 = Object.keys(_var3);
-                _var4 = 0;
-                __state = '6';
-                break;
-            case '5':
-                _var4++;
-                __state = '6';
-                break;
-            case '6':
-                if (_var4 < _var2.length) {
-                    id = _var2[_var4];
-                    child = _var3[id];
-                    if (id === self.current) {
-                        if (child.visible) {
-                            __state = '5';
-                        } else {
-                            display(child.container, 'inline-block');
-                            onShowChildWidget(child);
-                            child.visible = true;
-                            __state = '5';
-                        }
-                    } else {
-                        display(child.container, 'none');
-                        if (child.visible) {
-                            onHideChildWidget(child);
-                            child.visible = false;
-                            __state = '5';
-                        } else {
-                            __state = '5';
-                        }
-                    }
-                } else {
-                    return;
-                }
-                break;
-            default:
-                return;
+    self.getCurrent = getCurrent;
+    self.init = init;
+    self.onHide = onHide;
+    self.onShow = onShow;
+    self.redraw = redraw;
+    self.setCurrent = setCurrent;
+    return self;
+}
+function onHideChildWidget(bucket) {
+    callHook(bucket.widget, 'onHide');
+    if (bucket.resizeId) {
+        unsubscribeFromResize(bucket.resizeId);
+    }
+}
+function onShowChildWidget(bucket) {
+    var onResize;
+    callHook(bucket.widget, 'onShow');
+    onResize = bucket.widget.onResize;
+    if (onResize) {
+        bucket.resizeId = subscribeOnResize(onResize);
+    }
+}
+function PanicScreen() {
+    var self = { _type: 'PanicScreen' };
+    function redraw(container) {
+    }
+    function showPanicMessage(message, ex) {
+        var central, details, exDetails, home;
+        if (gconfig.debug) {
+            if (ex) {
+                exDetails = ex.message + ' stack: ' + ex.stack;
+            } else {
+                exDetails = '';
             }
+            details = div({ text: exDetails });
+        } else {
+            details = div();
         }
-    }
-    function MultiWidget_redraw(self, container) {
-        var _var3, _var2, _var4, id, child;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                _var3 = self.children;
-                _var2 = Object.keys(_var3);
-                _var4 = 0;
-                __state = '13';
-                break;
-            case '13':
-                if (_var4 < _var2.length) {
-                    id = _var2[_var4];
-                    child = _var3[id];
-                    child.container = buildWidgetDom(container, child.widget);
-                    stretchElement(child.container);
-                    _var4++;
-                    __state = '13';
-                } else {
-                    self.setCurrent(self.current);
-                    return;
-                }
-                break;
-            default:
-                return;
-            }
+        if (gconfig.pad) {
+            central = div('middle', div('header1', { text: message }), details, div({
+                'padding-top': '20px',
+                'text-align': 'center'
+            }, widgets.createDefaultButton(translate('Restart app'), html.reload)));
+        } else {
+            home = function () {
+                html.goTo(getAppRoot());
+            };
+            central = div('middle', div('header1', { text: message }), details, div({
+                'padding-top': '20px',
+                'text-align': 'center'
+            }, widgets.createDefaultButton(translate('Reload'), html.reload), widgets.createSimpleButton(translate('Home'), home)));
         }
+        html.clear(self.container);
+        html.add(self.container, central);
     }
-    function onShowChildWidget(bucket) {
-        var onResize;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                callHook(bucket.widget, 'onShow');
-                onResize = bucket.widget.onResize;
-                if (onResize) {
-                    bucket.resizeId = subscribeOnResize(onResize);
-                    __state = '1';
-                } else {
-                    __state = '1';
-                }
-                break;
-            default:
-                return;
-            }
-        }
+    self.redraw = redraw;
+    self.showPanicMessage = showPanicMessage;
+    return self;
+}
+function createRootElement() {
+    var main, rootElement;
+    if (unit.rootElement) {
+        html.remove(unit.rootElement);
+        unit.rootElement = undefined;
     }
-    function onHideChildWidget(bucket) {
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                callHook(bucket.widget, 'onHide');
-                if (bucket.resizeId) {
-                    unsubscribeFromResize(bucket.resizeId);
-                    __state = '1';
-                } else {
-                    __state = '1';
-                }
-                break;
-            default:
-                return;
-            }
-        }
+    rootElement = div();
+    main = html.get('main');
+    html.add(main, rootElement);
+    unit.rootElement = rootElement;
+    setRootStyle();
+    return rootElement;
+}
+function createWidget(widget, data) {
+    if (widget.createStyles) {
+        widget.createStyles();
     }
-    function makeLogo(onClick) {
-        var image, _var2;
-        _var2 = ipath(gconfig.logo);
-        image = img(_var2);
-        image.style.width = '49px';
-        image.style.height = '49px';
-        image.style.cursor = 'pointer';
-        registerEvent(image, 'click', onClick);
-        return image;
+    if (widget.init) {
+        widget.init(data);
     }
-    function makeTopBar(top, bottom) {
-        top.className = 'top-bar';
-        bottom.className = 'top-bar-below';
-        return;
+    return widget;
+}
+function redrawWidgetDom(widget) {
+    html.clear(widget.container);
+    widget.redraw(widget.container);
+}
+function removeLoading() {
+    var loading;
+    loading = document.getElementById('loading');
+    if (loading) {
+        html.remove(loading);
     }
-    function saveLanguage(language) {
-        var settings;
-        settings = getSettingsFromLocalStorage();
-        setLabelsForLanguage(settings, language);
-        saveUserSettings(settings);
-        location.reload();
-        return;
-    }
-    function addChangeLanguageBlock(form) {
-        var changeLanguage, _var2, _var3;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                _var3 = getSettingsObj();
-                if (_var3.language === 'en-us') {
-                    changeLanguage = widgets.createSimpleButton('Русский', function () {
-                        saveLanguage('ru');
-                    });
-                    __state = '_item2';
-                } else {
-                    changeLanguage = widgets.createSimpleButton('English', function () {
-                        saveLanguage('en-us');
-                    });
-                    __state = '_item2';
-                }
-                break;
-            case '_item2':
-                _var2 = div({ height: '30px' });
-                html.add(form, _var2);
-                html.add(form, changeLanguage);
-                return;
-            default:
-                return;
-            }
-        }
-    }
-    function createMenuSection(name, lines, forceNarrow) {
-        var container, header, body, sep, _var2, _var3, line, _var4;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                name = name || '';
-                header = div('main-menu-section-header', { text: name });
-                body = div();
-                _var2 = lines;
-                _var3 = 0;
-                __state = '7';
-                break;
-            case '4':
-                return container;
-            case '6':
-                _var3++;
-                __state = '7';
-                break;
-            case '7':
-                if (_var3 < _var2.length) {
-                    line = _var2[_var3];
-                    if (line === 'separator') {
-                        sep = div({ 'border-bottom': 'solid 1px green' });
-                        html.add(body, sep);
-                        __state = '6';
-                    } else {
-                        addMainMenuItem(body, line[0], line[1]);
-                        __state = '6';
-                    }
-                } else {
-                    container = div('main-menu-section', header, body);
-                    _var4 = widgets.isNarrowScreen();
-                    if (_var4) {
-                        __state = '13';
-                    } else {
-                        if (forceNarrow) {
-                            __state = '13';
-                        } else {
-                            __state = '4';
-                        }
-                    }
-                }
-                break;
-            case '13':
-                container.style.display = 'block';
-                container.style.marginRight = '5px';
-                __state = '4';
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function addMainMenuItem(parent, text, action) {
-        var line, contClass, callback;
-        contClass = 'grid-item';
-        line = div(contClass, {
-            text: text,
-            padding: '5px',
-            cursor: 'pointer'
-        });
-        callback = function (evt) {
-            widgets.removePopups();
-            action(evt);
-        };
-        registerEvent(line, 'click', callback);
-        html.add(parent, line);
-        return;
-    }
-    function showMainMenu(client) {
-        var container, image, close, area, _var2, _var3, _var4, _var5;
-        _var4 = ipath(gconfig.wideLogo);
-        image = img(_var4);
-        image.style.height = '49px';
-        _var5 = ipath('delete.png');
-        close = widgets.createIconButton(_var5, widgets.removePopups);
-        close.style.position = 'absolute';
-        close.style.right = '5px';
-        close.style.top = '5px';
-        close.style.margin = '0px';
-        _var2 = div('main-menu-top', image, close);
-        _var3 = div('main-menu-bottom', client);
-        container = div('shadow main-menu', _var2, _var3);
+}
+function setRootStyle() {
+    var area, style;
+    widgets.calculateSafeArea();
+    if (unit.rootElement) {
         area = widgets.getSafeArea();
-        container.style.left = area.left + 'px';
-        container.style.top = area.top + 'px';
-        container.style.maxHeight = area.height + 'px';
-        widgets.pushSemiModalPopup(container, area.left, area.top);
-        container.style.transform = 'translateY(0px)';
-        container.style.opacity = 1;
-        return;
+        style = unit.rootElement.style;
+        style.display = 'inline-block';
+        style.position = 'fixed';
+        style.left = area.left + 'px';
+        style.top = area.top + 'px';
+        style.overflow = 'hidden';
+        style.width = area.width + 'px';
+        style.height = area.height + 'px';
+        style.borderBottom = 'solid 1px #a0a0a0';
     }
-    function redrawWidgetDom(widget) {
-        html.clear(widget.container);
-        widget.redraw(widget.container);
-        return;
-    }
-    function setRootStyle() {
-        var style, area;
-        var __state = '2';
+}
+function stretchElement(element) {
+    display(element, 'inline-block');
+    element.style.position = 'absolute';
+    element.style.left = '0px';
+    element.style.top = '0px';
+    element.style.width = '100%';
+    element.style.height = '100%';
+}
+function getAppVersion() {
+    return '2026.04.17';
+}
+function main() {
+    unit.traces = [];
+    unit.globals = {};
+    unit.forbiddenCharacters = {
+        '<': true,
+        '>': true,
+        ':': true,
+        '"': true,
+        '/': true,
+        '\\': true,
+        '|': true,
+        '?': true,
+        '*': true
+    };
+    initDiagramLabels();
+    initResize();
+}
+function ClickerTapper_create() {
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
+    me = {
+        _type: 'ClickerTapper',
+        _busy: true,
+        state: 'created'
+    };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
+    };
+    function* ClickerTapper_main() {
+        var _branch_, _eventType_, _event_, dist, dx, dy, evt, faraway, id, longTimer, startX, startY, tapped;
+        _branch_ = 'Idle';
         while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                widgets.calculateSafeArea();
-                if (unit.rootElement) {
-                    area = widgets.getSafeArea();
-                    style = unit.rootElement.style;
-                    style.display = 'inline-block';
-                    style.position = 'fixed';
-                    style.left = area.left + 'px';
-                    style.top = area.top + 'px';
-                    style.overflow = 'hidden';
-                    style.width = area.width + 'px';
-                    style.height = area.height + 'px';
-                    __state = '1';
+            switch (_branch_) {
+            case 'Idle':
+                me.state = '27';
+                me._busy = false;
+                _event_ = yield;
+                _eventType_ = _event_[0];
+                if (_eventType_ === 'pointerdown') {
+                    evt = _event_[1];
+                    id = _event_[2];
+                    startX = evt.clientX;
+                    startY = evt.clientY;
+                    longTimer = setTimeout(me.timeout, 500);
+                    faraway = false;
+                    tapped = false;
                 } else {
-                    __state = '1';
-                }
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function setTimeout(action, delay, notrace) {
-        var timeoutId, callback, id, start;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                if (notrace) {
-                    callback = action;
-                    __state = '3';
-                } else {
-                    id = utils.random(1000, 10000);
-                    start = 'timeout-' + id;
-                    callback = function (evt) {
-                        trace(start, delay);
-                        action(evt);
-                    };
-                    __state = '3';
-                }
-                break;
-            case '3':
-                timeoutId = window.setTimeout(callback, delay);
-                return timeoutId;
-            default:
-                return;
-            }
-        }
-    }
-    function getTraces() {
-        return unit.traces;
-    }
-    function traceCore(name, value, largeObj) {
-        var bucket, maxTrace;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                console.log('trace', name, value);
-                maxTrace = 40;
-                if (name) {
-                    if (largeObj) {
-                        unit.largeObj = largeObj;
-                        __state = '3';
-                    } else {
-                        __state = '3';
+                    if (_eventType_ !== 'pointermove') {
+                        throw new Error('Unexpected case value: ' + _eventType_);
                     }
-                } else {
-                    __state = '1';
-                }
-                break;
-            case '3':
-                bucket = {
-                    name: name,
-                    value: value
-                };
-                unit.traces.push(bucket);
-                if (unit.traces.length > 40) {
-                    unit.traces.shift();
-                    __state = '1';
-                } else {
-                    __state = '1';
-                }
-                break;
-            default:
-                return;
-            }
-        }
-    }
-    function getLargeObj() {
-        return unit.largeObj;
-    }
-    function trace(name, value, largeObj) {
-        try {
-            traceCore(name, value, largeObj);
-        } catch (ex) {
-            console.error('Error in tracing', ex);
-        }
-        return;
-    }
-    function registerEvent(element, eventName, action, options) {
-        var callback;
-        callback = action;
-        element.addEventListener(eventName, callback, options);
-        return;
-    }
-    function initLoadedFonts() {
-        var fonts;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                if (unit.loadedFonts) {
-                    if (unit.fontPaths) {
-                        __state = '11';
-                    } else {
-                        __state = '5';
-                    }
-                } else {
-                    __state = '5';
-                }
-                break;
-            case '5':
-                unit.loadedFonts = {};
-                unit.fontPaths = {};
-                __state = '11';
-                break;
-            case '11':
-                fonts = unit.fontPaths;
-                fonts['Roboto Condensed/normal/normal'] = 'RobotoCondensed-Regular.ttf';
-                fonts['Roboto Condensed/italic/normal'] = 'RobotoCondensed-Italic.ttf';
-                fonts['Roboto Condensed/normal/bold'] = 'RobotoCondensed-Bold.ttf';
-                fonts['Roboto Condensed/italic/bold'] = 'RobotoCondensed-BoldItalic.ttf';
-                fonts['Roboto Mono/normal/normal'] = 'RobotoMono-Regular.ttf';
-                fonts['Roboto Mono/italic/normal'] = 'RobotoMono-Italic.ttf';
-                fonts['Roboto Mono/normal/bold'] = 'RobotoMono-Bold.ttf';
-                fonts['Roboto Mono/italic/bold'] = 'RobotoMono-BoldItalic.ttf';
-                fonts['Ubuntu/normal/normal'] = 'Ubuntu-Regular.ttf';
-                fonts['Ubuntu/italic/normal'] = 'Ubuntu-Italic.ttf';
-                fonts['Ubuntu/normal/bold'] = 'Ubuntu-Bold.ttf';
-                fonts['Ubuntu/italic/bold'] = 'Ubuntu-BoldItalic.ttf';
-                fonts['Ubuntu Mono/normal/normal'] = 'UbuntuMono-Regular.ttf';
-                fonts['Ubuntu Mono/italic/normal'] = 'UbuntuMono-Italic.ttf';
-                fonts['Ubuntu Mono/normal/bold'] = 'UbuntuMono-Bold.ttf';
-                fonts['Ubuntu Mono/italic/bold'] = 'UbuntuMono-BoldItalic.ttf';
-                fonts['Arimo/normal/normal'] = 'Arimo-Regular.ttf';
-                fonts['Arimo/italic/normal'] = 'Arimo-Italic.ttf';
-                fonts['Arimo/normal/bold'] = 'LiberationSans-Bold.ttf';
-                fonts['Arimo/italic/bold'] = 'Arimo-BoldItalic.ttf';
-                fonts['Arimo, Arial/normal/normal'] = 'Arimo-Regular.ttf';
-                fonts['Arimo, Arial/italic/normal'] = 'Arimo-Italic.ttf';
-                fonts['Arimo, Arial/normal/bold'] = 'LiberationSans-Bold.ttf';
-                fonts['Arimo, Arial/italic/bold'] = 'Arimo-BoldItalic.ttf';
-                fonts['PTSans/normal/normal'] = 'PTSans-Regular.ttf';
-                fonts['PTSans/italic/normal'] = 'PTSans-Italic.ttf';
-                fonts['PTSans/normal/bold'] = 'PTSans-Bold.ttf';
-                fonts['PTSans/italic/bold'] = 'PTSans-BoldItalic.ttf';
-                fonts['Tinos/normal/normal'] = 'Tinos-Regular.ttf';
-                fonts['Tinos/italic/normal'] = 'Tinos-Italic.ttf';
-                fonts['Tinos/normal/bold'] = 'Tinos-Bold.ttf';
-                fonts['Tinos/italic/bold'] = 'Tinos-BoldItalic.ttf';
-                fonts['Tinos, Times New Roman, Times/normal/normal'] = 'Tinos-Regular.ttf';
-                fonts['Tinos, Times New Roman, Times/italic/normal'] = 'Tinos-Italic.ttf';
-                fonts['Tinos, Times New Roman, Times/normal/bold'] = 'Tinos-Bold.ttf';
-                fonts['Tinos, Times New Roman, Times/italic/bold'] = 'Tinos-BoldItalic.ttf';
-                fonts['Liberation Sans/normal/normal'] = 'LiberationSans-Regular.ttf';
-                fonts['Liberation Sans/italic/normal'] = 'LiberationSans-Italic.ttf';
-                fonts['Liberation Sans/normal/bold'] = 'LiberationSans-Bold.ttf';
-                fonts['Liberation Sans/italic/bold'] = 'LiberationSans-BoldItalic.ttf';
-                return;
-            default:
-                return;
-            }
-        }
-    }
-    function prepareFonts_create() {
-        var face;
-        var me = {
-            state: '2',
-            type: 'prepareFonts'
-        };
-        function _main_prepareFonts(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '1':
-                        me.state = undefined;
-                        __resolve({ ok: true });
-                        return;
-                    case '2':
-                        face = gconfig.fontFamily;
-                        me.state = '1';
-                        loadFonts([
-                            face + '/normal/normal',
-                            face + '/normal/bold'
-                        ]).then(function () {
-                            _main_prepareFonts(__resolve, __reject);
-                        }, function (error) {
-                            me.state = undefined;
-                            __reject(error);
-                        });
-                        return;
-                    default:
-                        return;
+                    evt = _event_[1];
+                    if (tapped) {
+                        evt.preventDefault();
                     }
                 }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
-        }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                _main_prepareFonts(__resolve, __reject);
-            });
-        };
-        return me;
-    }
-    function prepareFonts() {
-        var __obj = prepareFonts_create();
-        return __obj.run();
-    }
-    function loadFonts_create(fonts) {
-        var path, file, parts, familyParts, style, weight, url, ff, mustRedraw, loaded, family, _var2, _var3, font, _var4;
-        var me = {
-            state: '2',
-            type: 'loadFonts'
-        };
-        function _main_loadFonts(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '2':
-                        mustRedraw = false;
-                        path = gconfig.fontPath;
-                        initLoadedFonts();
-                        showWaitBlock();
-                        _var2 = fonts;
-                        _var3 = 0;
-                        me.state = '7';
-                        break;
-                    case '6':
-                        _var3++;
-                        me.state = '7';
-                        break;
-                    case '7':
-                        if (_var3 < _var2.length) {
-                            font = _var2[_var3];
-                            if (unit.loadedFonts[font]) {
-                                me.state = '6';
-                            } else {
-                                file = unit.fontPaths[font];
-                                if (file) {
-                                    mustRedraw = true;
-                                    parts = font.split('/');
-                                    familyParts = parts[0];
-                                    style = parts[1];
-                                    weight = parts[2];
-                                    _var4 = familyParts.split(',');
-                                    family = _var4[0];
-                                    url = 'url(' + path + file + ')';
-                                    ff = new FontFace(family, url, {
-                                        style: style,
-                                        weight: weight
-                                    });
-                                    trace('Loading font', url);
-                                    me.state = '33';
-                                    ff.load().then(function (__returnee) {
-                                        loaded = __returnee;
-                                        _main_loadFonts(__resolve, __reject);
-                                    }, function (error) {
-                                        me.state = undefined;
-                                        __reject(error);
-                                    });
-                                    return;
-                                } else {
-                                    console.error('Unknown font', font);
-                                    me.state = '6';
-                                }
-                            }
-                        } else {
-                            hideWaitBlock();
-                            me.state = undefined;
-                            __resolve(mustRedraw);
-                            return;
-                        }
-                        break;
-                    case '33':
-                        document.fonts.add(loaded);
-                        unit.loadedFonts[font] = true;
-                        me.state = '6';
-                        break;
-                    default:
-                        return;
-                    }
-                }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
-        }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                _main_loadFonts(__resolve, __reject);
-            });
-        };
-        return me;
-    }
-    function loadFonts(fonts) {
-        var __obj = loadFonts_create(fonts);
-        return __obj.run();
-    }
-    function registerLeftButtonEvent(element, tapper, name, id) {
-        element.addEventListener(name, function (evt) {
-            runLeftButtonEvent(tapper, name, id, evt);
-        });
-        return;
-    }
-    function runLeftButtonEvent(tapper, name, id, evt) {
-        var callback;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '2':
-                if (evt.button === 0) {
-                    callback = tapper[name];
-                    callback(evt, id);
-                    __state = '1';
-                } else {
-                    __state = '1';
-                }
+                _branch_ = 'Drag';
                 break;
-            default:
-                return;
-            }
-        }
-    }
-    function registerClickerEvents(tapper, element, id) {
-        registerLeftButtonEvent(element, tapper, 'pointerdown', id);
-        registerLeftButtonEvent(element, tapper, 'pointermove', id);
-        registerLeftButtonEvent(element, tapper, 'pointerup', id);
-        registerLeftButtonEvent(element, tapper, 'pointercancel', id);
-        return;
-    }
-    function ClickerTapper_create() {
-        var startX, startY, longTimer, dx, dy, dist, faraway, tapped, evt, id;
-        var me = {
-            state: '2',
-            type: 'ClickerTapper'
-        };
-        function _main_ClickerTapper(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '2':
-                        me.state = '27';
-                        return;
-                    case '3':
-                        startX = evt.clientX;
-                        startY = evt.clientY;
-                        longTimer = setTimeout(me.timeout, 500);
-                        faraway = false;
-                        tapped = false;
-                        me.state = '5';
-                        break;
-                    case '5':
-                        me.state = '11';
-                        return;
-                    case '12':
-                        clearTimeout(longTimer);
-                        dx = evt.clientX - startX;
-                        dy = evt.clientY - startY;
-                        dist = Math.hypot(dx, dy);
-                        if (dist > 4) {
-                            faraway = true;
-                            me.state = '5';
-                        } else {
-                            me.state = '5';
-                        }
-                        break;
-                    case '13':
+            case 'Drag':
+                me.state = '11';
+                me._busy = false;
+                _event_ = yield;
+                _eventType_ = _event_[0];
+                if (_eventType_ === 'pointermove') {
+                    evt = _event_[1];
+                    clearTimeout(longTimer);
+                    dx = evt.clientX - startX;
+                    dy = evt.clientY - startY;
+                    dist = Math.hypot(dx, dy);
+                    if (dist > 4) {
+                        faraway = true;
+                    }
+                    _branch_ = 'Drag';
+                } else {
+                    if (_eventType_ === 'pointerup') {
+                        evt = _event_[1];
                         clearTimeout(longTimer);
                         me.target.click(evt, id);
-                        me.state = '2';
-                        break;
-                    case '14':
-                        clearTimeout(longTimer);
-                        me.state = '2';
-                        break;
-                    case '26':
-                        if (faraway) {
-                            me.state = '2';
+                    } else {
+                        if (_eventType_ === 'pointercancel') {
+                            clearTimeout(longTimer);
                         } else {
-                            me.target.longTap(evt, id);
-                            me.state = '2';
+                            if (_eventType_ !== 'timeout') {
+                                throw new Error('Unexpected case value: ' + _eventType_);
+                            }
+                            if (!faraway) {
+                                me.target.longTap(evt, id);
+                            }
                         }
-                        break;
-                    case '33':
-                        if (tapped) {
-                            evt.preventDefault();
-                            me.state = '5';
-                        } else {
-                            me.state = '5';
-                        }
-                        break;
-                    default:
-                        return;
                     }
+                    _branch_ = 'Idle';
                 }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
+                break;
+            default:
+                _topResolve_();
+                return;
             }
         }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                me.pointermove = function (_evt_) {
-                    evt = _evt_;
-                    switch (me.state) {
-                    case '11':
-                        me.state = '12';
-                        _main_ClickerTapper(__resolve, __reject);
-                        break;
-                    case '27':
-                        me.state = '33';
-                        _main_ClickerTapper(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                me.pointerup = function (_evt_) {
-                    evt = _evt_;
-                    switch (me.state) {
-                    case '11':
-                        me.state = '13';
-                        _main_ClickerTapper(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                me.pointercancel = function () {
-                    switch (me.state) {
-                    case '11':
-                        me.state = '14';
-                        _main_ClickerTapper(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                me.timeout = function () {
-                    switch (me.state) {
-                    case '11':
-                        me.state = '26';
-                        _main_ClickerTapper(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                me.pointerdown = function (_evt_, _id_) {
-                    evt = _evt_;
-                    id = _id_;
-                    switch (me.state) {
-                    case '27':
-                        me.state = '3';
-                        _main_ClickerTapper(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                _main_ClickerTapper(__resolve, __reject);
-            });
-        };
-        return me;
+        _topResolve_();
     }
-    function ClickerTapper() {
-        var __obj = ClickerTapper_create();
-        return __obj.run();
-    }
-    function DoubleClick_create() {
-        var doubleTimer, evt, id;
-        var me = {
-            state: '2',
-            type: 'DoubleClick'
-        };
-        function _main_DoubleClick(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '2':
-                        me.state = '9';
-                        return;
-                    case '3':
-                        doubleTimer = setTimeout(me.timeout, 400);
-                        me.state = '5';
-                        break;
-                    case '5':
-                        me.state = '14';
-                        return;
-                    case '10':
-                        me.target.longTap(evt, id);
-                        me.state = '2';
-                        break;
-                    case '11':
-                        if (me.prev === id) {
-                            me.state = '3';
-                        } else {
-                            me.prev = id;
-                            me.target.click(evt, id);
-                            me.state = '3';
-                        }
-                        break;
-                    case '20':
-                        clearTimeout(doubleTimer);
-                        me.target.longTap(evt, id);
-                        me.state = '2';
-                        break;
-                    case '24':
-                        clearTimeout(doubleTimer);
-                        if (me.prev === id) {
-                            setTimeout(function () {
-                                me.target.doubleClick(evt, id);
-                            }, 0);
-                            me.state = '2';
-                        } else {
-                            me.prev = id;
-                            me.target.click(evt, id);
-                            me.state = '2';
-                        }
-                        break;
-                    default:
-                        return;
-                    }
-                }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
+    function ClickerTapper_run() {
+        if (me.state !== 'created') {
+            throw new Error('run() can be called only once');
         }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                me.click = function (_evt_, _id_) {
-                    evt = _evt_;
-                    id = _id_;
-                    switch (me.state) {
-                    case '9':
-                        me.state = '11';
-                        _main_DoubleClick(__resolve, __reject);
-                        break;
-                    case '14':
-                        me.state = '24';
-                        _main_DoubleClick(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                me.longTap = function (_evt_, _id_) {
-                    evt = _evt_;
-                    id = _id_;
-                    switch (me.state) {
-                    case '9':
-                        me.state = '10';
-                        _main_DoubleClick(__resolve, __reject);
-                        break;
-                    case '14':
-                        me.state = '20';
-                        _main_DoubleClick(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                me.timeout = function () {
-                    switch (me.state) {
-                    case '14':
-                        me.state = '2';
-                        _main_DoubleClick(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                _main_DoubleClick(__resolve, __reject);
-            });
-        };
-        return me;
+        me.state = 'started';
+        _topGen_ = ClickerTapper_main();
+        _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
+        return new Promise((resolve, reject) => {
+            _topResolve_ = resolve;
+            _topReject_ = reject;
+        });
     }
-    function DoubleClick() {
-        var __obj = DoubleClick_create();
-        return __obj.run();
-    }
-    function createLongClicker(target) {
-        var tapper, clicker;
-        tapper = ClickerTapper_create();
-        clicker = DoubleClick_create();
-        tapper.target = clicker;
-        clicker.target = target;
-        tapper.run();
-        clicker.run();
-        return {
-            stop: function () {
-                tapper.state = undefined;
-                clicker.state = undefined;
-            },
-            registerEvents: function (element, id) {
-                registerClickerEvents(tapper, element, id);
-            }
-        };
-    }
-    function PanicScreen() {
-        var self = {};
-        self.redraw = function (container) {
-            return PanicScreen_redraw(self, container);
-        };
-        self.showPanicMessage = function (message) {
-            return PanicScreen_showPanicMessage(self, message);
-        };
-        return self;
-    }
-    function MultiWidget() {
-        var self = {};
-        self.init = function (content) {
-            return MultiWidget_init(self, content);
-        };
-        self.onShow = function () {
-            return MultiWidget_onShow(self);
-        };
-        self.onHide = function () {
-            return MultiWidget_onHide(self);
-        };
-        self.getCurrent = function () {
-            return MultiWidget_getCurrent(self);
-        };
-        self.setCurrent = function (childId) {
-            return MultiWidget_setCurrent(self, childId);
-        };
-        self.redraw = function (container) {
-            return MultiWidget_redraw(self, container);
-        };
-        return self;
-    }
-    unit.stretchElement = stretchElement;
-    unit.ipath = ipath;
-    unit.createLogonScreen = createLogonScreen;
-    unit.addLabelsToSettings = addLabelsToSettings;
-    unit.createSpecialStyles = createSpecialStyles;
-    unit.getDiagramLabels = getDiagramLabels;
-    unit.initDiagramLabels = initDiagramLabels;
-    unit.getLabelsByCode = getLabelsByCode;
-    unit.setLabelsForLanguage = setLabelsForLanguage;
-    unit.loadStringsForLanguage_create = loadStringsForLanguage_create;
-    unit.loadStringsForLanguage = loadStringsForLanguage;
-    unit.translate = translate;
-    unit.setStrings = setStrings;
-    unit.subscribeOnResize = subscribeOnResize;
-    unit.invokeWindowResize = invokeWindowResize;
-    unit.unsubscribeFromResize = unsubscribeFromResize;
-    unit.checkProjectName = checkProjectName;
-    unit.copyIfMissing = copyIfMissing;
-    unit.buildUrlForFolder = buildUrlForFolder;
-    unit.removeTagsFromRedirect = removeTagsFromRedirect;
-    unit.importDiagram_create = importDiagram_create;
-    unit.importDiagram = importDiagram;
-    unit.stripExtension = stripExtension;
-    unit.saveAsPng_create = saveAsPng_create;
-    unit.saveAsPng = saveAsPng;
-    unit.saveAsSvg = saveAsSvg;
-    unit.generateRandomString = generateRandomString;
-    unit.isNetworkError = isNetworkError;
-    unit.checkDiagram = checkDiagram;
-    unit.isSuccess = isSuccess;
-    unit.getQuery = getQuery;
-    unit.stripTags = stripTags;
-    unit.saveAsJson = saveAsJson;
-    unit.saveAsJsonCore = saveAsJsonCore;
-    unit.downloadTextDataAsFile = downloadTextDataAsFile;
-    unit.downloadImageDataAsFile = downloadImageDataAsFile;
-    unit.setTitle = setTitle;
-    unit.getAppRoot = getAppRoot;
-    unit.initShortcuts = initShortcuts;
-    unit.main = main;
-    unit.sendRequestWithCheck_create = sendRequestWithCheck_create;
-    unit.sendRequestWithCheck = sendRequestWithCheck;
-    unit.getAccountObj = getAccountObj;
-    unit.isLoggedOn = isLoggedOn;
-    unit.sendRequestRaw_create = sendRequestRaw_create;
-    unit.sendRequestRaw = sendRequestRaw;
-    unit.fetchAccount_create = fetchAccount_create;
-    unit.fetchAccount = fetchAccount;
-    unit.getSettingsObj = getSettingsObj;
-    unit.saveUserSettings = saveUserSettings;
-    unit.fetchUserSettings_create = fetchUserSettings_create;
-    unit.fetchUserSettings = fetchUserSettings;
-    unit.getAppVersion = getAppVersion;
-    unit.removeLoading = removeLoading;
-    unit.chooseDocumentType_create = chooseDocumentType_create;
-    unit.chooseDocumentType = chooseDocumentType;
-    unit.createRegisterScreen = createRegisterScreen;
-    unit.checkEmail = checkEmail;
-    unit.showConfirmEmail_create = showConfirmEmail_create;
-    unit.showConfirmEmail = showConfirmEmail;
-    unit.createWidget = createWidget;
-    unit.hideWaitBlock = hideWaitBlock;
-    unit.showWaitBlock = showWaitBlock;
-    unit.createRootElement = createRootElement;
-    unit.buildWidgetDom = buildWidgetDom;
-    unit.makeLogo = makeLogo;
-    unit.makeTopBar = makeTopBar;
-    unit.createMenuSection = createMenuSection;
-    unit.showMainMenu = showMainMenu;
-    unit.redrawWidgetDom = redrawWidgetDom;
-    unit.setTimeout = setTimeout;
-    unit.getTraces = getTraces;
-    unit.getLargeObj = getLargeObj;
-    unit.trace = trace;
-    unit.registerEvent = registerEvent;
-    unit.prepareFonts_create = prepareFonts_create;
-    unit.prepareFonts = prepareFonts;
-    unit.loadFonts_create = loadFonts_create;
-    unit.loadFonts = loadFonts;
-    unit.createLongClicker = createLongClicker;
-    unit.PanicScreen = PanicScreen;
-    unit.MultiWidget = MultiWidget;
-    Object.defineProperty(unit, 'utils', {
-        get: function () {
-            return utils;
-        },
-        set: function (newValue) {
-            utils = newValue;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(unit, 'html', {
-        get: function () {
-            return html;
-        },
-        set: function (newValue) {
-            html = newValue;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(unit, 'http', {
-        get: function () {
-            return http;
-        },
-        set: function (newValue) {
-            http = newValue;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(unit, 'widgets', {
-        get: function () {
-            return widgets;
-        },
-        set: function (newValue) {
-            widgets = newValue;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(unit, 'gconfig', {
-        get: function () {
-            return gconfig;
-        },
-        set: function (newValue) {
-            gconfig = newValue;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(unit, 'drakon_canvas', {
-        get: function () {
-            return drakon_canvas;
-        },
-        set: function (newValue) {
-            drakon_canvas = newValue;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return unit;
+    me.run = ClickerTapper_run;
+    me.stop = function () {
+        me.state = undefined;
+    };
+    me.pointermove = function (evt) {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '11':
+        case '27':
+            _args_ = [];
+            _args_.push('pointermove');
+            _args_.push(evt);
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    me.pointerup = function (evt) {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '11':
+            _args_ = [];
+            _args_.push('pointerup');
+            _args_.push(evt);
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    me.pointercancel = function () {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '11':
+            _args_ = [];
+            _args_.push('pointercancel');
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    me.timeout = function () {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '11':
+            _args_ = [];
+            _args_.push('timeout');
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    me.pointerdown = function (evt, id) {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '27':
+            _args_ = [];
+            _args_.push('pointerdown');
+            _args_.push(evt);
+            _args_.push(id);
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    return me;
 }
-if (typeof module != 'undefined') {
-    module.exports = dh2common;
+function DoubleClick_create() {
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
+    me = {
+        _type: 'DoubleClick',
+        _busy: true,
+        state: 'created'
+    };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
+    };
+    function* DoubleClick_main() {
+        var _branch_, _eventType_, _event_, doubleTimer, evt, id;
+        _branch_ = 'Idle';
+        while (true) {
+            switch (_branch_) {
+            case 'Idle':
+                me.state = '9';
+                me._busy = false;
+                _event_ = yield;
+                _eventType_ = _event_[0];
+                if (_eventType_ === 'click') {
+                    evt = _event_[1];
+                    id = _event_[2];
+                    me.target.click(evt, id);
+                    doubleTimer = setTimeout(me.timeout, 400);
+                    _branch_ = 'Waiting';
+                } else {
+                    if (_eventType_ !== 'longTap') {
+                        throw new Error('Unexpected case value: ' + _eventType_);
+                    }
+                    evt = _event_[1];
+                    id = _event_[2];
+                    me.target.longTap(evt, id);
+                    _branch_ = 'Idle';
+                }
+                break;
+            case 'Waiting':
+                me.state = '14';
+                me._busy = false;
+                _event_ = yield;
+                _eventType_ = _event_[0];
+                if (_eventType_ === 'click') {
+                    evt = _event_[1];
+                    id = _event_[2];
+                    clearTimeout(doubleTimer);
+                    setTimeout(function () {
+                        me.target.doubleClick(evt, id);
+                    }, 0);
+                } else {
+                    if (_eventType_ !== 'timeout') {
+                        if (_eventType_ !== 'longTap') {
+                            throw new Error('Unexpected case value: ' + _eventType_);
+                        }
+                        evt = _event_[1];
+                        id = _event_[2];
+                        clearTimeout(doubleTimer);
+                        me.target.longTap(evt, id);
+                    }
+                }
+                _branch_ = 'Idle';
+                break;
+            default:
+                _topResolve_();
+                return;
+            }
+        }
+        _topResolve_();
+    }
+    function DoubleClick_run() {
+        if (me.state !== 'created') {
+            throw new Error('run() can be called only once');
+        }
+        me.state = 'started';
+        _topGen_ = DoubleClick_main();
+        _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
+        return new Promise((resolve, reject) => {
+            _topResolve_ = resolve;
+            _topReject_ = reject;
+        });
+    }
+    me.run = DoubleClick_run;
+    me.stop = function () {
+        me.state = undefined;
+    };
+    me.click = function (evt, id) {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '9':
+        case '14':
+            _args_ = [];
+            _args_.push('click');
+            _args_.push(evt);
+            _args_.push(id);
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    me.longTap = function (evt, id) {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '9':
+        case '14':
+            _args_ = [];
+            _args_.push('longTap');
+            _args_.push(evt);
+            _args_.push(id);
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    me.timeout = function () {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '14':
+            _args_ = [];
+            _args_.push('timeout');
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    return me;
+}
+function chooseDocumentType_create() {
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
+    me = {
+        _type: 'chooseDocumentType',
+        _busy: true,
+        state: 'created'
+    };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
+    };
+    function* chooseDocumentType_main() {
+        var _eventType_, _event_, buttons, cancel, dialog, evt, result;
+        dialog = widgets.createMiddleWindow();
+        html.add(dialog, div({
+            text: translate('Choose diagram type'),
+            'font-size': getHeader1Size(),
+            'font-weight': 'bold',
+            'padding-bottom': '10px'
+        }));
+        addDiagramType(dialog, ipath('logo-drakon.png'), translate('Drakon flowchart'), translate('A process, procedure, algorithm, behavior, HOW the system works'), me.drakon);
+        addDiagramType(dialog, ipath('logo-graf.png'), translate('Mind map'), translate('Structure, composition, hierarchy, ' + 'ordered notes, what the system CONSISTS OF'), me.graf);
+        addDiagramType(dialog, ipath('logo-free.png'), translate('Free-form diagram'), translate('Boxes and arrows, network diagrams, GUI sketches, GNOME diagrams, no limits'), me.free);
+        cancel = widgets.createSimpleButton(translate('Cancel'), me.cancel);
+        cancel.style.marginRight = '0px';
+        buttons = div({
+            'text-align': 'right',
+            'padding-top': '20px'
+        }, cancel);
+        html.add(dialog, buttons);
+        me.state = '14';
+        me._busy = false;
+        _event_ = yield;
+        _eventType_ = _event_[0];
+        if (_eventType_ === 'drakon') {
+            evt = _event_[1];
+            result = {
+                type: 'drakon',
+                evt: evt
+            };
+        } else {
+            if (_eventType_ === 'free') {
+                evt = _event_[1];
+                result = {
+                    type: 'free',
+                    evt: evt
+                };
+            } else {
+                if (_eventType_ === 'graf') {
+                    evt = _event_[1];
+                    result = {
+                        type: 'graf',
+                        evt: evt
+                    };
+                } else {
+                    if (_eventType_ !== 'cancel') {
+                        throw new Error('Unexpected case value: ' + _eventType_);
+                    }
+                    result = undefined;
+                }
+            }
+        }
+        widgets.removeQuestions();
+        _topResolve_(result);
+        return;
+    }
+    function chooseDocumentType_run() {
+        if (me.state !== 'created') {
+            throw new Error('run() can be called only once');
+        }
+        me.state = 'started';
+        _topGen_ = chooseDocumentType_main();
+        _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
+        return new Promise((resolve, reject) => {
+            _topResolve_ = resolve;
+            _topReject_ = reject;
+        });
+    }
+    me.run = chooseDocumentType_run;
+    me.stop = function () {
+        me.state = undefined;
+    };
+    me.drakon = function (evt) {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '14':
+            _args_ = [];
+            _args_.push('drakon');
+            _args_.push(evt);
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    me.free = function (evt) {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '14':
+            _args_ = [];
+            _args_.push('free');
+            _args_.push(evt);
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    me.graf = function (evt) {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '14':
+            _args_ = [];
+            _args_.push('graf');
+            _args_.push(evt);
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    me.cancel = function () {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '14':
+            _args_ = [];
+            _args_.push('cancel');
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    return me;
+}
+function showConfirmEmail_create(email, allowCancel, changeEmail) {
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
+    me = {
+        _type: 'showConfirmEmail',
+        _busy: true,
+        state: 'created'
+    };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
+    };
+    function* showConfirmEmail_main() {
+        var _branch_, _eventType_, _event_, allowResend, confirmPayload, pin, response;
+        _branch_ = 'Init';
+        while (true) {
+            switch (_branch_) {
+            case 'Init':
+                allowResend = true;
+                _branch_ = 'Ask for PIN';
+                break;
+            case 'Ask for PIN':
+                buildShowConfirmUi(email, allowResend, allowCancel, me);
+                me.state = '10';
+                me._busy = false;
+                _event_ = yield;
+                _eventType_ = _event_[0];
+                if (_eventType_ === 'sendPin') {
+                    pin = _event_[1];
+                    widgets.removeQuestions();
+                    _branch_ = 'Send pin';
+                } else {
+                    if (_eventType_ === 'resendPin') {
+                        widgets.removeQuestions();
+                        _branch_ = 'Resend email';
+                    } else {
+                        if (_eventType_ === 'cancel') {
+                            widgets.removeQuestions();
+                        } else {
+                            if (_eventType_ !== 'changeEmail') {
+                                throw new Error('Unexpected case value: ' + _eventType_);
+                            }
+                            widgets.removeQuestions();
+                            changeEmail();
+                        }
+                        _topResolve_(false);
+                        return;
+                    }
+                }
+                break;
+            case 'Send pin':
+                confirmPayload = { pin: pin };
+                showWaitBlock();
+                sendRequestRaw('POST', '/api/confirm_email', confirmPayload).then(onResponse);
+                me.state = '48';
+                me._busy = false;
+                _event_ = yield;
+                response = _event_[1];
+                hideWaitBlock();
+                if (isSuccess(response)) {
+                    widgets.removeQuestions();
+                    widgets.showGoodSnack(translate('Email confirmed'));
+                    _topResolve_(true);
+                    return;
+                } else {
+                    widgets.showErrorSnack(translate('Bad PIN'));
+                    _branch_ = 'Ask for PIN';
+                }
+                break;
+            case 'Resend email':
+                allowResend = false;
+                showWaitBlock();
+                setTimeout(me.onTimeout, 2000);
+                onTimeout();
+                sendRequestRaw('POST', '/api/resend_confirm_email', {}).then(onResponse);
+                me.state = '51';
+                me._busy = false;
+                _event_ = yield;
+                response = _event_[1];
+                hideWaitBlock();
+                if (isSuccess(response)) {
+                    widgets.showGoodSnack(translate('A new PIN has been sent'));
+                } else {
+                    widgets.showErrorSnack(translate('Could not resend PIN'));
+                }
+                _branch_ = 'Ask for PIN';
+                break;
+            case 'Exit':
+                _branch_ = undefined;
+                break;
+            default:
+                _topResolve_();
+                return;
+            }
+        }
+        _topResolve_();
+    }
+    function showConfirmEmail_run() {
+        if (me.state !== 'created') {
+            throw new Error('run() can be called only once');
+        }
+        me.state = 'started';
+        _topGen_ = showConfirmEmail_main();
+        _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
+        return new Promise((resolve, reject) => {
+            _topResolve_ = resolve;
+            _topReject_ = reject;
+        });
+    }
+    me.run = showConfirmEmail_run;
+    me.stop = function () {
+        me.state = undefined;
+    };
+    me.sendPin = function (pin) {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '10':
+            _args_ = [];
+            _args_.push('sendPin');
+            _args_.push(pin);
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    me.resendPin = function () {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '10':
+            _args_ = [];
+            _args_.push('resendPin');
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    me.cancel = function () {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '10':
+            _args_ = [];
+            _args_.push('cancel');
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    me.changeEmail = function () {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '10':
+            _args_ = [];
+            _args_.push('changeEmail');
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    me.onResponse = function (response) {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '48':
+        case '51':
+            _args_ = [];
+            _args_.push('onResponse');
+            _args_.push(response);
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    return me;
+}
+unit.createLongClicker = createLongClicker;
+unit.getDiagramLabels = getDiagramLabels;
+unit.getLabelsByCode = getLabelsByCode;
+unit.initDiagramLabels = initDiagramLabels;
+unit.setLabelsForLanguage = setLabelsForLanguage;
+unit.loadFonts = loadFonts;
+unit.prepareFonts = prepareFonts;
+unit.invokeWindowResize = invokeWindowResize;
+unit.subscribeOnResize = subscribeOnResize;
+unit.unsubscribeFromResize = unsubscribeFromResize;
+unit.fetchAccount = fetchAccount;
+unit.fetchUserSettings = fetchUserSettings;
+unit.getAccountObj = getAccountObj;
+unit.getSettingsObj = getSettingsObj;
+unit.isLoggedOn = isLoggedOn;
+unit.saveUserSettings = saveUserSettings;
+unit.sendRequestRaw = sendRequestRaw;
+unit.sendRequestWithCheck = sendRequestWithCheck;
+unit.initShortcuts = initShortcuts;
+unit.createSpecialStyles = createSpecialStyles;
+unit.getLargeObj = getLargeObj;
+unit.getTraces = getTraces;
+unit.registerEvent = registerEvent;
+unit.setTimeout = setTimeout;
+unit.trace = trace;
+unit.loadStringsForLanguage = loadStringsForLanguage;
+unit.setStrings = setStrings;
+unit.translate = translate;
+unit.importDiagram = importDiagram;
+unit.stripExtension = stripExtension;
+unit.addLabelsToSettings = addLabelsToSettings;
+unit.buildUrlForFolder = buildUrlForFolder;
+unit.checkDiagram = checkDiagram;
+unit.checkProjectName = checkProjectName;
+unit.copyIfMissing = copyIfMissing;
+unit.downloadImageDataAsFile = downloadImageDataAsFile;
+unit.downloadTextDataAsFile = downloadTextDataAsFile;
+unit.generateRandomString = generateRandomString;
+unit.getAppRoot = getAppRoot;
+unit.getQuery = getQuery;
+unit.ipath = ipath;
+unit.isNetworkError = isNetworkError;
+unit.isSuccess = isSuccess;
+unit.removeTagsFromRedirect = removeTagsFromRedirect;
+unit.saveAsJson = saveAsJson;
+unit.saveAsJsonCore = saveAsJsonCore;
+unit.saveAsPng = saveAsPng;
+unit.saveAsSvg = saveAsSvg;
+unit.setTitle = setTitle;
+unit.stripTags = stripTags;
+unit.showConfirmEmail = showConfirmEmail;
+unit.checkEmail = checkEmail;
+unit.createLogonScreen = createLogonScreen;
+unit.createRegisterScreen = createRegisterScreen;
+unit.chooseDocumentType = chooseDocumentType;
+unit.createMenuSection = createMenuSection;
+unit.showMainMenu = showMainMenu;
+unit.makeLogo = makeLogo;
+unit.makeTopBar = makeTopBar;
+unit.hideWaitBlock = hideWaitBlock;
+unit.showWaitBlock = showWaitBlock;
+unit.buildWidgetDom = buildWidgetDom;
+unit.MultiWidget = MultiWidget;
+unit.PanicScreen = PanicScreen;
+unit.createRootElement = createRootElement;
+unit.createWidget = createWidget;
+unit.redrawWidgetDom = redrawWidgetDom;
+unit.removeLoading = removeLoading;
+unit.stretchElement = stretchElement;
+unit.getAppVersion = getAppVersion;
+unit.main = main;
+unit.chooseDocumentType_create = chooseDocumentType_create;
+unit.showConfirmEmail_create = showConfirmEmail_create;
+Object.defineProperty(unit, 'drakon_canvas', {
+    get: function () {
+        return drakon_canvas;
+    },
+    set: function (newValue) {
+        drakon_canvas = newValue;
+    },
+    enumerable: true,
+    configurable: true
+});
+Object.defineProperty(unit, 'gconfig', {
+    get: function () {
+        return gconfig;
+    },
+    set: function (newValue) {
+        gconfig = newValue;
+    },
+    enumerable: true,
+    configurable: true
+});
+Object.defineProperty(unit, 'html', {
+    get: function () {
+        return html;
+    },
+    set: function (newValue) {
+        html = newValue;
+    },
+    enumerable: true,
+    configurable: true
+});
+Object.defineProperty(unit, 'http', {
+    get: function () {
+        return http;
+    },
+    set: function (newValue) {
+        http = newValue;
+    },
+    enumerable: true,
+    configurable: true
+});
+Object.defineProperty(unit, 'utils', {
+    get: function () {
+        return utils;
+    },
+    set: function (newValue) {
+        utils = newValue;
+    },
+    enumerable: true,
+    configurable: true
+});
+Object.defineProperty(unit, 'widgets', {
+    get: function () {
+        return widgets;
+    },
+    set: function (newValue) {
+        widgets = newValue;
+    },
+    enumerable: true,
+    configurable: true
+});
+return unit;
 }

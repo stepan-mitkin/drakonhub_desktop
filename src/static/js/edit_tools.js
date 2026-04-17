@@ -1,6 +1,77 @@
 function edit_tools() {
 var unit = {};
 var utils;
+function UndoEdit() {
+    var self = { _type: 'UndoEdit' };
+    function forcedChange(changedFields) {
+        var action, edit, name, value;
+        action = {
+            op: 'update',
+            fields: {}
+        };
+        for (name in changedFields) {
+            value = changedFields[name];
+            if (name !== 'id') {
+                action.fields[name] = value;
+            }
+        }
+        edit = { changes: [action] };
+        applyEdit(self.diagram, edit);
+    }
+    function redoEdit() {
+        var edit;
+        if (self.currentUndo < self.undo.length - 1) {
+            self.currentUndo++;
+            edit = self.undo[self.currentUndo];
+            applyEdit(self.diagram, edit.redo);
+            sendEditToServer(self, edit.redo);
+            return edit.after;
+        } else {
+            return undefined;
+        }
+    }
+    function save(changesToSave) {
+        var change;
+        for (change of changesToSave) {
+            sendEditToServer(self, change);
+        }
+    }
+    function undoEdit() {
+        var edit;
+        if (self.currentUndo >= 0 && self.currentUndo < self.undo.length) {
+            edit = self.undo[self.currentUndo];
+            self.currentUndo--;
+            applyEdit(self.diagram, edit.undo);
+            sendEditToServer(self, edit.undo);
+            return edit.before;
+        } else {
+            return undefined;
+        }
+    }
+    function updateDocument(changes, before, after) {
+        var _collection_20, change, changesToSave, initial, undoRecord;
+        changesToSave = [];
+        initial = createInitialEdit(self.diagram);
+        if (initial) {
+            _collection_20 = initial.changes;
+            for (change of _collection_20) {
+                applyChange(self.diagram, change);
+            }
+            changesToSave.push(initial);
+        }
+        undoRecord = createEdit(self, changes);
+        undoRecord.before = before;
+        undoRecord.after = after;
+        changesToSave.push(undoRecord.redo);
+        return changesToSave;
+    }
+    self.forcedChange = forcedChange;
+    self.redoEdit = redoEdit;
+    self.save = save;
+    self.undoEdit = undoEdit;
+    self.updateDocument = updateDocument;
+    return self;
+}
 function addChangeToEdit(diagram, change, undo, redo) {
     var undoChange;
     undoChange = createUndoChange(diagram, change);
@@ -9,19 +80,19 @@ function addChangeToEdit(diagram, change, undo, redo) {
     applyChange(diagram, change);
 }
 function applyChange(diagram, change) {
-    var _selectValue_2, item;
+    var _selectValue_22, item;
     if (change.id) {
-        _selectValue_2 = change.op;
-        if (_selectValue_2 === 'insert') {
+        _selectValue_22 = change.op;
+        if (_selectValue_22 === 'insert') {
             item = utils.clone(change.fields);
             diagram.items[change.id] = item;
         } else {
-            if (_selectValue_2 === 'update') {
+            if (_selectValue_22 === 'update') {
                 item = diagram.items[change.id];
                 Object.assign(item, change.fields);
             } else {
-                if (_selectValue_2 !== 'delete') {
-                    throw new Error('Unexpected case value: ' + _selectValue_2);
+                if (_selectValue_22 !== 'delete') {
+                    throw new Error('Unexpected case value: ' + _selectValue_22);
                 }
                 delete diagram.items[change.id];
             }
@@ -31,9 +102,9 @@ function applyChange(diagram, change) {
     }
 }
 function applyEdit(diagram, edit) {
-    var _collection_4, changes;
-    _collection_4 = edit.changes;
-    for (changes of _collection_4) {
+    var _collection_24, changes;
+    _collection_24 = edit.changes;
+    for (changes of _collection_24) {
         applyChange(diagram, changes);
     }
 }
@@ -80,16 +151,16 @@ function createInitialEdit(diagram) {
     }
 }
 function createUndoChange(diagram, change) {
-    var _selectValue_6, item, undoChange;
+    var _selectValue_26, item, undoChange;
     if (change.id) {
-        _selectValue_6 = change.op;
-        if (_selectValue_6 === 'insert') {
+        _selectValue_26 = change.op;
+        if (_selectValue_26 === 'insert') {
             undoChange = {
                 id: change.id,
                 op: 'delete'
             };
         } else {
-            if (_selectValue_6 === 'update') {
+            if (_selectValue_26 === 'update') {
                 undoChange = {
                     id: change.id,
                     op: 'update',
@@ -98,8 +169,8 @@ function createUndoChange(diagram, change) {
                 item = diagram.items[change.id];
                 getOldValues(item, change.fields, undoChange.fields);
             } else {
-                if (_selectValue_6 !== 'delete') {
-                    throw new Error('Unexpected case value: ' + _selectValue_6);
+                if (_selectValue_26 !== 'delete') {
+                    throw new Error('Unexpected case value: ' + _selectValue_26);
                 }
                 item = diagram.items[change.id];
                 undoChange = {
@@ -130,77 +201,6 @@ function getOldValues(obj, changedFields, output) {
 }
 function sendEditToServer(obj, edit) {
     obj.edit.pushEdit(edit);
-}
-function UndoEdit() {
-    var self = { _type: 'UndoEdit' };
-    function UndoEdit_forcedChange(changedFields) {
-        var action, edit, name, value;
-        action = {
-            op: 'update',
-            fields: {}
-        };
-        for (name in changedFields) {
-            value = changedFields[name];
-            if (name !== 'id') {
-                action.fields[name] = value;
-            }
-        }
-        edit = { changes: [action] };
-        applyEdit(self.diagram, edit);
-    }
-    function UndoEdit_redoEdit() {
-        var edit;
-        if (self.currentUndo < self.undo.length - 1) {
-            self.currentUndo++;
-            edit = self.undo[self.currentUndo];
-            applyEdit(self.diagram, edit.redo);
-            sendEditToServer(self, edit.redo);
-            return edit.after;
-        } else {
-            return undefined;
-        }
-    }
-    function UndoEdit_save(changesToSave) {
-        var change;
-        for (change of changesToSave) {
-            sendEditToServer(self, change);
-        }
-    }
-    function UndoEdit_undoEdit() {
-        var edit;
-        if (self.currentUndo >= 0 && self.currentUndo < self.undo.length) {
-            edit = self.undo[self.currentUndo];
-            self.currentUndo--;
-            applyEdit(self.diagram, edit.undo);
-            sendEditToServer(self, edit.undo);
-            return edit.before;
-        } else {
-            return undefined;
-        }
-    }
-    function UndoEdit_updateDocument(changes, before, after) {
-        var _collection_10, change, changesToSave, initial, undoRecord;
-        changesToSave = [];
-        initial = createInitialEdit(self.diagram);
-        if (initial) {
-            _collection_10 = initial.changes;
-            for (change of _collection_10) {
-                applyChange(self.diagram, change);
-            }
-            changesToSave.push(initial);
-        }
-        undoRecord = createEdit(self, changes);
-        undoRecord.before = before;
-        undoRecord.after = after;
-        changesToSave.push(undoRecord.redo);
-        return changesToSave;
-    }
-    self.forcedChange = UndoEdit_forcedChange;
-    self.redoEdit = UndoEdit_redoEdit;
-    self.save = UndoEdit_save;
-    self.undoEdit = UndoEdit_undoEdit;
-    self.updateDocument = UndoEdit_updateDocument;
-    return self;
 }
 function createUndoEdit(diagram, sender) {
     var self;

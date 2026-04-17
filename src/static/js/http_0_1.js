@@ -1,253 +1,202 @@
 function http_0_1() {
-    var unit = {};
-    function onDataWhenReady(self, request) {
-        var result;
-        var __state = '25';
-        while (true) {
-            switch (__state) {
-            case '1':
-                return;
-            case '25':
-                if (request.readyState === 4) {
-                    result = {
-                        responseText: request.responseText,
-                        status: request.status
-                    };
-                    self.onDataReady(result);
-                    __state = '1';
-                } else {
-                    __state = '1';
-                }
-                break;
-            default:
-                return;
+var unit = {};
+
+function isNetworkError(ex) {
+    var str;
+    if (ex) {
+        str = ex.toString();
+        if (str.indexOf('NetworkError') === -1 && str.indexOf('HTTP error') === -1) {
+            return false;
+        } else {
+            return true;
+        }
+    } else {
+        return false;
+    }
+}
+function isSuccess(response) {
+    if (response.status === 200 || response.status === 204) {
+        return true;
+    } else {
+        return false;
+    }
+}
+async function main() {
+}
+function onDataWhenReady(self, request) {
+    var result;
+    if (request.readyState === 4) {
+        result = {
+            responseText: request.responseText,
+            status: request.status
+        };
+        self.onDataReady(result);
+    }
+}
+function sendRequest(method, url, body, headers) {
+    var _obj_;
+    _obj_ = sendRequest_create(method, url, body, headers);
+    return _obj_.run();
+}
+function uploadFileToServer(url, name, file) {
+    var _obj_;
+    _obj_ = uploadFileToServer_create(url, name, file);
+    return _obj_.run();
+}
+function sendRequest_create(method, url, body, headers) {
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
+    me = {
+        _type: 'sendRequest',
+        _busy: true,
+        state: 'created'
+    };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
+    };
+    function* sendRequest_main() {
+        var _event_, request, result, value;
+        request = new XMLHttpRequest();
+        request.onreadystatechange = function () {
+            onDataWhenReady(me, request);
+        };
+        request.open(method, url, true);
+        if (headers) {
+            for (header in headers) {
+                value = headers[header];
+                request.setRequestHeader(header, value);
             }
         }
-    }
-    function main() {
+        request.send(body);
+        me.state = '25';
+        me._busy = false;
+        _event_ = yield;
+        result = _event_[1];
+        _topResolve_(result);
         return;
     }
-    function uploadFileToServer_create(url, name, file) {
-        var request, formData, _var2;
-        var me = {
-            state: '2',
-            type: 'uploadFileToServer'
-        };
-        function _main_uploadFileToServer(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '2':
-                        request = new XMLHttpRequest();
-                        formData = new FormData();
-                        request.onreadystatechange = me.handleBasicStatusChange;
-                        formData.append(name, file);
-                        request.open('POST', url);
-                        request.send(formData);
-                        me.state = '9';
-                        break;
-                    case '8':
-                        if (request.readyState === 4) {
-                            if (request.status === 200) {
-                                me.state = '11';
-                            } else {
-                                if (request.status === 204) {
-                                    me.state = '11';
-                                } else {
-                                    _var2 = tr('An error has occurred');
-                                    widgets.showErrorSnack(_var2);
-                                    me.state = undefined;
-                                    __resolve(false);
-                                    return;
-                                }
-                            }
-                        } else {
-                            me.state = '9';
-                        }
-                        break;
-                    case '9':
-                        me.state = '7';
-                        return;
-                    case '11':
-                        me.state = undefined;
-                        __resolve(true);
-                        return;
-                    default:
-                        return;
-                    }
-                }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
+    function sendRequest_run() {
+        if (me.state !== 'created') {
+            throw new Error('run() can be called only once');
         }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                me.handleBasicStatusChange = function () {
-                    switch (me.state) {
-                    case '7':
-                        me.state = '8';
-                        _main_uploadFileToServer(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                _main_uploadFileToServer(__resolve, __reject);
-            });
-        };
-        return me;
-    }
-    function uploadFileToServer(url, name, file) {
-        var __obj = uploadFileToServer_create(url, name, file);
-        return __obj.run();
-    }
-    function isNetworkError(ex) {
-        var str, _var2, _var3;
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                if (ex) {
-                    str = ex.toString();
-                    _var2 = str.indexOf('NetworkError');
-                    if (_var2 === -1) {
-                        _var3 = str.indexOf('HTTP error');
-                        if (_var3 === -1) {
-                            __state = '8';
-                        } else {
-                            __state = '9';
-                        }
-                    } else {
-                        __state = '9';
-                    }
-                } else {
-                    __state = '8';
-                }
-                break;
-            case '8':
-                return false;
-            case '9':
-                return true;
-            default:
-                return;
-            }
+        me.state = 'started';
+        _topGen_ = sendRequest_main();
+        _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
         }
+        return new Promise((resolve, reject) => {
+            _topResolve_ = resolve;
+            _topReject_ = reject;
+        });
     }
-    function isSuccess(response) {
-        var __state = '2';
-        while (true) {
-            switch (__state) {
-            case '2':
-                if (response.status === 200) {
-                    __state = '3';
-                } else {
-                    if (response.status === 204) {
-                        __state = '3';
-                    } else {
-                        return false;
-                    }
-                }
-                break;
-            case '3':
-                return true;
-            default:
-                return;
-            }
+    me.run = sendRequest_run;
+    me.stop = function () {
+        me.state = undefined;
+    };
+    me.onDataReady = function (result) {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
         }
-    }
-    function sendRequest_create(method, url, body, headers) {
-        var request, _var3, _var2, _var4, header, value, result;
-        var me = {
-            state: '2',
-            type: 'sendRequest'
-        };
-        function _main_sendRequest(__resolve, __reject) {
-            try {
-                while (true) {
-                    switch (me.state) {
-                    case '2':
-                        request = new XMLHttpRequest();
-                        request.onreadystatechange = function () {
-                            onDataWhenReady(me, request);
-                        };
-                        request.open(method, url, true);
-                        me.state = '17';
-                        break;
-                    case '16':
-                        me.state = '25';
-                        return;
-                    case '17':
-                        if (headers) {
-                            _var3 = headers;
-                            _var2 = Object.keys(_var3);
-                            _var4 = 0;
-                            me.state = '20';
-                        } else {
-                            me.state = '18';
-                        }
-                        break;
-                    case '18':
-                        request.send(body);
-                        me.state = '16';
-                        break;
-                    case '20':
-                        if (_var4 < _var2.length) {
-                            header = _var2[_var4];
-                            value = _var3[header];
-                            request.setRequestHeader(header, value);
-                            _var4++;
-                            me.state = '20';
-                        } else {
-                            me.state = '18';
-                        }
-                        break;
-                    case '26':
-                        me.state = undefined;
-                        __resolve(result);
-                        return;
-                    default:
-                        return;
-                    }
-                }
-            } catch (ex) {
-                me.state = undefined;
-                __reject(ex);
-            }
+        switch (me.state) {
+        case '25':
+            _args_ = [];
+            _args_.push('onDataReady');
+            _args_.push(result);
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
         }
-        me.run = function () {
-            me.run = undefined;
-            return new Promise(function (__resolve, __reject) {
-                me.onDataReady = function (_result_) {
-                    result = _result_;
-                    switch (me.state) {
-                    case '25':
-                        me.state = '26';
-                        _main_sendRequest(__resolve, __reject);
-                        break;
-                    default:
-                        return;
-                    }
-                };
-                _main_sendRequest(__resolve, __reject);
-            });
-        };
-        return me;
-    }
-    function sendRequest(method, url, body, headers) {
-        var __obj = sendRequest_create(method, url, body, headers);
-        return __obj.run();
-    }
-    unit.main = main;
-    unit.uploadFileToServer_create = uploadFileToServer_create;
-    unit.uploadFileToServer = uploadFileToServer;
-    unit.isNetworkError = isNetworkError;
-    unit.isSuccess = isSuccess;
-    unit.sendRequest_create = sendRequest_create;
-    unit.sendRequest = sendRequest;
-    return unit;
+    };
+    return me;
 }
-if (typeof module != 'undefined') {
-    module.exports = http_0_1;
+function uploadFileToServer_create(url, name, file) {
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
+    me = {
+        _type: 'uploadFileToServer',
+        _busy: true,
+        state: 'created'
+    };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
+    };
+    function* uploadFileToServer_main() {
+        var _event_, formData, request;
+        request = new XMLHttpRequest();
+        formData = new FormData();
+        request.onreadystatechange = me.handleBasicStatusChange;
+        formData.append(name, file);
+        request.open('POST', url);
+        request.send(formData);
+        while (true) {
+            me.state = '7';
+            me._busy = false;
+            _event_ = yield;
+            if (request.readyState === 4) {
+                break;
+            }
+        }
+        if (request.status === 200 || request.status === 204) {
+            _topResolve_(true);
+            return;
+        } else {
+            widgets.showErrorSnack(tr('An error has occurred'));
+            _topResolve_(false);
+            return;
+        }
+        _topResolve_();
+    }
+    function uploadFileToServer_run() {
+        if (me.state !== 'created') {
+            throw new Error('run() can be called only once');
+        }
+        me.state = 'started';
+        _topGen_ = uploadFileToServer_main();
+        _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
+        return new Promise((resolve, reject) => {
+            _topResolve_ = resolve;
+            _topReject_ = reject;
+        });
+    }
+    me.run = uploadFileToServer_run;
+    me.stop = function () {
+        me.state = undefined;
+    };
+    me.handleBasicStatusChange = function () {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '7':
+            _args_ = [];
+            _args_.push('handleBasicStatusChange');
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    return me;
+}
+unit.isNetworkError = isNetworkError;
+unit.isSuccess = isSuccess;
+unit.main = main;
+unit.sendRequest = sendRequest;
+unit.uploadFileToServer = uploadFileToServer;
+unit.sendRequest_create = sendRequest_create;
+unit.uploadFileToServer_create = uploadFileToServer_create;
+return unit;
 }

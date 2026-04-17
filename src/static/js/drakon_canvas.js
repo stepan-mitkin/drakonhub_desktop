@@ -44,22 +44,22 @@ function pushSpace(line) {
     line.tokens.push({ type: 'space' });
 }
 function setFontToToken(token, fontObj) {
-    var _selectValue_59, font, font2;
+    var _selectValue_1445, font, font2;
     font = fontObj.font;
-    _selectValue_59 = token.type;
-    if (_selectValue_59 === 'strong') {
+    _selectValue_1445 = token.type;
+    if (_selectValue_1445 === 'strong') {
         font2 = {};
         Object.assign(font2, fontObj);
         font2.weight = 'bold';
         token.font = cssFontToString(font2);
     } else {
-        if (_selectValue_59 === 'em') {
+        if (_selectValue_1445 === 'em') {
             font2 = {};
             Object.assign(font2, fontObj);
             font2.style = 'italic';
             token.font = cssFontToString(font2);
         } else {
-            if (_selectValue_59 === 'sem') {
+            if (_selectValue_1445 === 'sem') {
                 font2 = {};
                 Object.assign(font2, fontObj);
                 font2.style = 'italic';
@@ -131,7 +131,7 @@ function stringToTokensQuoted(text) {
     return tokens;
 }
 function addNodeToLine(node, line, strong, em) {
-    var _collection_61, child, name, tokens, type;
+    var _collection_1447, child, name, tokens, type;
     if (strong) {
         if (em) {
             type = 'sem';
@@ -145,8 +145,8 @@ function addNodeToLine(node, line, strong, em) {
             type = 'normal';
         }
     }
-    _collection_61 = node.childNodes;
-    for (child of _collection_61) {
+    _collection_1447 = node.childNodes;
+    for (child of _collection_1447) {
         name = getNodeName(child);
         if (name === '#text') {
             if (child.nodeValue.trim() === '') {
@@ -438,7 +438,7 @@ function splitToTokens(text) {
     });
 }
 function splitToTokensHtml(html) {
-    var _collection_63, body, doc, firstNode, lines, name, node, parser;
+    var _collection_1449, body, doc, firstNode, lines, name, node, parser;
     html = html || '';
     lines = [];
     parser = new DOMParser();
@@ -451,8 +451,8 @@ function splitToTokensHtml(html) {
             lines = wrapInLineObjects(splitToTokens(firstNode.nodeValue));
             return lines;
         } else {
-            _collection_63 = body.childNodes;
-            for (node of _collection_63) {
+            _collection_1449 = body.childNodes;
+            for (node of _collection_1449) {
                 name = getNodeName(node);
                 if (name === 'ul') {
                     processUnordered(node.childNodes, lines);
@@ -469,8 +469,8 @@ function splitToTokensHtml(html) {
             return lines;
         }
     } else {
-        _collection_63 = body.childNodes;
-        for (node of _collection_63) {
+        _collection_1449 = body.childNodes;
+        for (node of _collection_1449) {
             name = getNodeName(node);
             if (name === 'ul') {
                 processUnordered(node.childNodes, lines);
@@ -537,7 +537,7 @@ function addFontVariant(fonts, fontObj, prop, value) {
     fonts[font2] = true;
 }
 function addHtmltoDom(html, parentElement, fonts, font, findLinks) {
-    var _branch_, _collection_65, body, cache, doc, firstNode, font2, fontObj, fontObj2, formats, name, node, parser;
+    var _branch_, _collection_1451, body, cache, doc, firstNode, font2, fontObj, fontObj2, formats, name, node, parser;
     _branch_ = 'Parse HTML';
     while (true) {
         switch (_branch_) {
@@ -564,8 +564,8 @@ function addHtmltoDom(html, parentElement, fonts, font, findLinks) {
             }
             break;
         case 'Scan DOM nodes':
-            _collection_65 = body.childNodes;
-            for (node of _collection_65) {
+            _collection_1451 = body.childNodes;
+            for (node of _collection_1451) {
                 addNodeToDom(node, parentElement, false, false, formats, findLinks);
             }
             _branch_ = 'Add to fonts';
@@ -599,7 +599,7 @@ function addHtmltoDom(html, parentElement, fonts, font, findLinks) {
     }
 }
 function addNodeToDom(node, parentElement, bold, italic, formats, findLinks) {
-    var _collection_67, child, copy, name;
+    var _collection_1453, child, copy, name;
     name = getNodeName(node);
     if (name === '#text') {
         if (bold) {
@@ -629,8 +629,8 @@ function addNodeToDom(node, parentElement, bold, italic, formats, findLinks) {
             }
             copy = document.createElement(name);
             parentElement.appendChild(copy);
-            _collection_67 = node.childNodes;
-            for (child of _collection_67) {
+            _collection_1453 = node.childNodes;
+            for (child of _collection_1453) {
                 addNodeToDom(child, copy, bold, italic, formats, findLinks);
             }
         }
@@ -705,16 +705,16 @@ function createLine(flowBlock, left, top, baseLineShift) {
     return line;
 }
 function createTextBlock(ctx, text, options, fonts) {
-    var _collection_69, _selectValue_71, block, fontCache, fontObj, line, lines, size, token;
+    var _collection_1455, _selectValue_1457, block, fontCache, fontObj, line, lines, size, token;
     if (options.singleLine) {
         line = splitLineToTokens(text, '');
         lines = wrapInLineObjects([line]);
     } else {
-        _selectValue_71 = options.textFormat;
-        if (_selectValue_71 === 'html') {
+        _selectValue_1457 = options.textFormat;
+        if (_selectValue_1457 === 'html') {
             lines = splitToTokensHtml(text);
         } else {
-            if (_selectValue_71 === 'markdown') {
+            if (_selectValue_1457 === 'markdown') {
                 lines = splitToTokensMarkdown(text);
             } else {
                 lines = wrapInLineObjects(splitToTokens(text));
@@ -733,8 +733,8 @@ function createTextBlock(ctx, text, options, fonts) {
         lines: lines
     };
     for (line of lines) {
-        _collection_69 = line.tokens;
-        for (token of _collection_69) {
+        _collection_1455 = line.tokens;
+        for (token of _collection_1455) {
             ctx.font = token.font;
             if (token.font) {
                 fonts[token.font] = true;
@@ -802,16 +802,16 @@ function enrichFamily(fontFamily) {
     }
 }
 function flowLine(inputLine, left, top, right, flowBlock) {
-    var _collection_73, _selectValue_75, baseLineShift, line, margin, token;
+    var _collection_1459, _selectValue_1461, baseLineShift, line, margin, token;
     margin = (flowBlock.lineHeight - flowBlock.fontSize) / 2;
     baseLineShift = flowBlock.lineHeight - margin;
     line = createLine(flowBlock, left, top, baseLineShift);
-    _selectValue_75 = inputLine.type;
-    if ((_selectValue_75 === 'ul' || _selectValue_75 === 'ol') && inputLine.tokens.length !== 0) {
+    _selectValue_1461 = inputLine.type;
+    if ((_selectValue_1461 === 'ul' || _selectValue_1461 === 'ol') && inputLine.tokens.length !== 0) {
         left += inputLine.tokens[0].width;
     }
-    _collection_73 = inputLine.tokens;
-    for (token of _collection_73) {
+    _collection_1459 = inputLine.tokens;
+    for (token of _collection_1459) {
         while (true) {
             if (line.right + token.width <= right || line.tokens.length === 0) {
                 break;
@@ -824,7 +824,7 @@ function flowLine(inputLine, left, top, right, flowBlock) {
     return line.bottom;
 }
 function flowTextBlock(block, width) {
-    var _branch_, _collection_77, _collection_81, _collection_83, _collection_85, _collection_87, _selectValue_79, actualWidth, diff, extraPadding, flowBlock, last, left, line, lineWidth, options, right, rightWMargin, size, top;
+    var _branch_, _collection_1463, _collection_1467, _collection_1469, _collection_1471, _collection_1473, _selectValue_1465, actualWidth, diff, extraPadding, flowBlock, last, left, line, lineWidth, options, right, rightWMargin, size, top;
     _branch_ = 'Prepare';
     while (true) {
         switch (_branch_) {
@@ -855,16 +855,16 @@ function flowTextBlock(block, width) {
             break;
         case 'Flow lines':
             rightWMargin = right;
-            _collection_77 = block.lines;
-            for (line of _collection_77) {
+            _collection_1463 = block.lines;
+            for (line of _collection_1463) {
                 top = flowLine(line, left, top, rightWMargin, flowBlock);
             }
             flowBlock.height = top + options.paddingBottom;
             _branch_ = 'Align';
             break;
         case 'Align':
-            _collection_85 = flowBlock.lines;
-            for (line of _collection_85) {
+            _collection_1471 = flowBlock.lines;
+            for (line of _collection_1471) {
                 if (line.tokens.length !== 0) {
                     last = line.tokens[line.tokens.length - 1];
                     if (last.type === 'space') {
@@ -875,11 +875,11 @@ function flowTextBlock(block, width) {
                 line.width = line.right - line.left;
                 lineWidth = Math.max(lineWidth, line.width);
             }
-            _selectValue_79 = options.textAlign;
-            if (_selectValue_79 === 'right') {
+            _selectValue_1465 = options.textAlign;
+            if (_selectValue_1465 === 'right') {
                 _branch_ = 'Right';
             } else {
-                if (_selectValue_79 === 'center') {
+                if (_selectValue_1465 === 'center') {
                     _branch_ = 'Center';
                 } else {
                     _branch_ = 'Left';
@@ -888,23 +888,23 @@ function flowTextBlock(block, width) {
             break;
         case 'Left':
             extraPadding = getExtraPadding(options, width, lineWidth);
-            _collection_87 = flowBlock.lines;
-            for (line of _collection_87) {
+            _collection_1473 = flowBlock.lines;
+            for (line of _collection_1473) {
                 line.left = line.left + extraPadding;
             }
             _branch_ = 'Exit';
             break;
         case 'Right':
             extraPadding = getExtraPadding(options, width, lineWidth);
-            _collection_81 = flowBlock.lines;
-            for (line of _collection_81) {
+            _collection_1467 = flowBlock.lines;
+            for (line of _collection_1467) {
                 line.left = right - line.width - extraPadding;
             }
             _branch_ = 'Exit';
             break;
         case 'Center':
-            _collection_83 = flowBlock.lines;
-            for (line of _collection_83) {
+            _collection_1469 = flowBlock.lines;
+            for (line of _collection_1469) {
                 diff = (right - left - line.width) / 2;
                 line.left = left + diff;
             }
@@ -972,7 +972,7 @@ function prepareTextRender(visuals, ctx, fontSize, top) {
     }
 }
 function renderFlowBlock(visuals, flowBlock, left, top) {
-    var _collection_89, ctx, iconSize, line, x, y;
+    var _collection_1475, ctx, iconSize, line, x, y;
     ctx = visuals.ctx;
     if (flowBlock.options.link) {
         iconSize = 24;
@@ -982,17 +982,17 @@ function renderFlowBlock(visuals, flowBlock, left, top) {
     }
     ctx.fillStyle = flowBlock.options.color;
     top = prepareTextRender(visuals, ctx, flowBlock.fontSize, top);
-    _collection_89 = flowBlock.lines;
-    for (line of _collection_89) {
+    _collection_1475 = flowBlock.lines;
+    for (line of _collection_1475) {
         renderFlowBlockLine(ctx, line, left, top);
     }
 }
 function renderFlowBlockLine(ctx, line, left, top) {
-    var _collection_91, baseLine, token, x;
+    var _collection_1477, baseLine, token, x;
     baseLine = top + line.baseLine + 1;
     x = left + line.left;
-    _collection_91 = line.tokens;
-    for (token of _collection_91) {
+    _collection_1477 = line.tokens;
+    for (token of _collection_1477) {
         if (token.type !== 'space') {
             ctx.font = token.font;
             ctx.fillText(token.text, x, baseLine);
@@ -1296,6 +1296,855 @@ function stopMachine(obj, property) {
         obj[property] = undefined;
     }
 }
+function DrakonCanvas() {
+    var self = { _type: 'DrakonCanvas' };
+    function arrowDown() {
+        var first, node, nodes;
+        tracing.trace('DrakonCanvas.arrowDown');
+        if (self.visuals.config.canSelect) {
+            nodes = getNodesFromSelection(self);
+            if (nodes.length !== 0) {
+                first = nodes[0];
+                node = findNeighbour(first, 'down', 'tail');
+                if (node) {
+                    self.showItem(node.id);
+                } else {
+                    node = findClosestNode(self, function (n) {
+                        return n.y > first.y;
+                    }, first, true);
+                    if (node) {
+                        self.showItem(node.id);
+                    }
+                }
+            }
+        }
+    }
+    function arrowLeft() {
+        var first, node, nodes;
+        tracing.trace('DrakonCanvas.arrowLeft');
+        if (self.visuals.config.canSelect) {
+            nodes = getNodesFromSelection(self);
+            if (nodes.length !== 0) {
+                first = nodes[0];
+                node = findNeighbour(first, 'left', 'head');
+                if (node) {
+                    self.showItem(node.id);
+                } else {
+                    node = findClosestNode(self, function (n) {
+                        return n.x < first.x;
+                    }, first, false);
+                    if (node) {
+                        self.showItem(node.id);
+                    }
+                }
+            }
+        }
+    }
+    function arrowRight() {
+        var first, node, nodes;
+        tracing.trace('DrakonCanvas.arrowRight');
+        if (self.visuals.config.canSelect) {
+            nodes = getNodesFromSelection(self);
+            if (nodes.length !== 0) {
+                first = nodes[0];
+                node = findNeighbour(first, 'right', 'tail');
+                if (node) {
+                    self.showItem(node.id);
+                } else {
+                    node = findClosestNode(self, function (n) {
+                        return n.x > first.x;
+                    }, first, false);
+                    if (node) {
+                        self.showItem(node.id);
+                    }
+                }
+            }
+        }
+    }
+    function arrowUp() {
+        var first, node, nodes;
+        tracing.trace('DrakonCanvas.arrowUp');
+        if (self.visuals.config.canSelect) {
+            nodes = getNodesFromSelection(self);
+            if (nodes.length !== 0) {
+                first = nodes[0];
+                node = findNeighbour(first, 'up', 'head');
+                if (node) {
+                    self.showItem(node.id);
+                } else {
+                    node = findClosestNode(self, function (n) {
+                        return n.y < first.y;
+                    }, first, true);
+                    if (node) {
+                        self.showItem(node.id);
+                    }
+                }
+            }
+        }
+    }
+    function copySelection() {
+        tracing.trace('DrakonCanvas.copySelection');
+        copy(self);
+    }
+    function cutSelection() {
+        tracing.trace('DrakonCanvas.cutSelection');
+        if (!isReadonlyImpl(self)) {
+            cut(self);
+        }
+    }
+    function deleteSelection() {
+        tracing.trace('DrakonCanvas.deleteSelection');
+        if (!isReadonlyImpl(self)) {
+            deleteSelectionImpl(self);
+        }
+    }
+    function editContent() {
+        var element, node, nodes, prim;
+        tracing.trace('DrakonCanvas.editContent');
+        element = getFreeFromSelection(self);
+        if (element) {
+            prim = freeToVisualItem(self, element);
+            startEditContent(self, prim);
+        } else {
+            nodes = getNodesFromSelection(self);
+            if (nodes.length === 1) {
+                node = nodes[0];
+                if (canEditNodeText(self, node)) {
+                    prim = nodeToVisualItem(self, node);
+                    startEditContent(self, prim);
+                }
+            }
+        }
+    }
+    function exportCanvas(zoom100, watermark) {
+        var box, canvas, config, ctx, height, visuals, width, zoom;
+        tracing.trace('DrakonCanvas.exportCanvas', zoom100);
+        zoom = zoom100 / 10000;
+        visuals = self.visuals;
+        config = visuals.config;
+        box = calculateDiagramBox(visuals, false);
+        width = (box.right - box.left) * zoom;
+        height = (box.bottom - box.top) * zoom;
+        canvas = html.createElement('canvas', {
+            width: width,
+            height: height
+        });
+        ctx = canvas.getContext('2d');
+        exportCore(self, box, zoom, ctx, watermark);
+        return canvas;
+    }
+    function exportJson() {
+        var _collection_1480, copy, diagram, id, item, src;
+        tracing.trace('DrakonCanvas.exportJson');
+        diagram = {
+            items: {},
+            type: self.model.type
+        };
+        src = self.edit.diagram;
+        copyFieldsWithValue(diagram, src, [
+            'name',
+            'params',
+            'style',
+            'description'
+        ]);
+        _collection_1480 = src.items;
+        for (id in _collection_1480) {
+            item = _collection_1480[id];
+            copy = utils.clone(item);
+            delete copy.id;
+            diagram.items[id] = copy;
+        }
+        return JSON.stringify(diagram, null, 4);
+    }
+    function exportToContext(box, zoom100, ctx) {
+        var zoom;
+        tracing.trace('DrakonCanvas.exportToContext', zoom100);
+        zoom = zoom100 / 10000;
+        self.visuals.svg = true;
+        exportCore(self, box, zoom, ctx);
+        self.visuals.svg = false;
+    }
+    function getDiagramBox() {
+        return calculateDiagramBox(self.visuals);
+    }
+    function getDiagramProperties() {
+        var result;
+        result = { type: self.model.type };
+        utils.copyFieldsWithValue(result, self.model.doc, [
+            'name',
+            'params',
+            'description'
+        ]);
+        return result;
+    }
+    function getLoadedImages() {
+        var _collection_1483, id, image, result;
+        result = {};
+        _collection_1483 = self.images;
+        for (id in _collection_1483) {
+            image = _collection_1483[id];
+            result[id] = { content: image.content };
+        }
+        return result;
+    }
+    function getVersion() {
+        return '1.5.2';
+    }
+    function getZoom() {
+        if (self.zoom) {
+            return self.zoom;
+        } else {
+            return 10000;
+        }
+    }
+    function goHome() {
+        tracing.trace('DrakonCanvas.goHome');
+        delete self.origins[self.diagramId];
+        calculateDiagramBoxForEdit(self, self.visuals);
+        initScrollPos(self);
+        paint(self);
+    }
+    function init() {
+        tracing.trace('DrakonCanvas.init');
+        unit.noSmooth = {
+            floor: true,
+            parceiling: true,
+            ceil: true,
+            'case': true,
+            parent: true
+        };
+        self.origins = {};
+        self.mindIcons = {
+            idea: true,
+            ridea: true,
+            conclusion: true,
+            header: true,
+            'graf-image': true
+        };
+        self.styleTag = html.createStyle();
+        self.myStyleId = Math.floor(Math.random() * 100000);
+        self.userMemory = { headStyle: 'arrow' };
+        self.zoom = 10000;
+        self.zoomFactor = 1;
+        initInsertFunctions(self);
+        initFreeFunctions(self);
+    }
+    async function insertFree(type, evt, imageData) {
+        var edits, elementActions, images, item, pos;
+        tracing.trace('DrakonCanvas.insertFree', type);
+        elementActions = self.freeIcons[type];
+        if (elementActions) {
+            if (evt) {
+                pos = findFreePos(self, evt);
+            } else {
+                pos = getDiagramCenter(self);
+            }
+            item = elementActions.create(pos, edits);
+            edits = [];
+            insertFreeItem(self, edits, item);
+            images = {};
+            insertImageDataItem(imageData, edits, images);
+            await loadCreatedImages(self, edits, images);
+            resizeElementToImage(self, edits);
+            return doEdit(self, edits);
+        } else {
+            console.error('Unknown free icon type', type);
+        }
+    }
+    function isReadonly() {
+        return isReadonlyImpl(self);
+    }
+    function onChange(change) {
+        tracing.trace('DrakonCanvas.onChange', change);
+        self.edit.forcedChange(change);
+        self.redraw();
+    }
+    function onContextMenu(evt) {
+        evt.preventDefault();
+        return false;
+    }
+    function onMouseDown(evt) {
+        if (evt.pointerType !== 'touch') {
+            evt.target.setPointerCapture(evt.pointerId);
+            evt.preventDefault();
+            evt.stopPropagation();
+            if (self.mouseEvents) {
+                self.mouseEvents.mouseDown(evt);
+            }
+        }
+    }
+    function onMouseLeave(evt) {
+        if (evt.pointerType !== 'touch' && self.mouseEvents) {
+            self.mouseEvents.mouseLeave(evt);
+        }
+    }
+    function onMouseMove(evt) {
+        if (evt.pointerType !== 'touch' && self.mouseEvents) {
+            evt.preventDefault();
+            self.mouseEvents.mouseMove(evt);
+        }
+    }
+    function onMouseUp(evt) {
+        if (evt.pointerType !== 'touch' && self.mouseEvents) {
+            evt.preventDefault();
+            self.mouseEvents.mouseUp(evt);
+        }
+    }
+    function onTouchEnd(evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        if (self.touchEvents) {
+            self.touchEvents.touchEnd(evt);
+        }
+    }
+    function onTouchMove(evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        if (self.touchEvents) {
+            self.touchEvents.touchMove(evt);
+        }
+    }
+    function onTouchStart(evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        if (self.touchEvents) {
+            self.touchEvents.touchStart(evt);
+        }
+    }
+    function patchDiagramStyle(style) {
+        var change, newStyle, oldStyle, styleStr;
+        tracing.trace('DrakonCanvas.patchDiagramStyle', style);
+        if (!style) {
+            style = {};
+        }
+        oldStyle = self.model.doc.style;
+        newStyle = oldStyle || {};
+        Object.assign(newStyle, style);
+        styleStr = JSON.stringify(newStyle);
+        change = {
+            fields: { style: styleStr },
+            op: 'update'
+        };
+        return updateAndKeepSelection(self, [change]);
+    }
+    async function redo() {
+        var selection;
+        tracing.trace('DrakonCanvas.redo');
+        if (!isReadonlyImpl(self) && self.edit) {
+            selection = self.edit.redoEdit();
+            if (selection) {
+                await loadImages(self);
+                onUndoRedo(self, selection);
+            }
+        }
+    }
+    function redraw() {
+        var fonts;
+        buildDiagramModel(self, self.edit.diagram);
+        fonts = buildVisualsForEdit(self);
+        paint(self);
+        return fonts;
+    }
+    function render(width, height, config) {
+        var canvas, container, factor, scrollable;
+        container = div({
+            display: 'inline-block',
+            position: 'relative',
+            left: '0px',
+            top: '0px',
+            width: '100%',
+            height: '100%',
+            overflow: 'hidden'
+        });
+        canvas = html.createElement('canvas');
+        factor = html.getRetinaFactor();
+        canvas.style.position = 'absolute';
+        canvas.style.display = 'inline-block';
+        canvas.style.left = '0px';
+        canvas.style.top = '0px';
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+        canvas.width = width * factor;
+        canvas.height = height * factor;
+        self.width = width;
+        self.height = height;
+        self.canvas = canvas;
+        self.container = container;
+        html.add(container, canvas);
+        self.config = buildConfig(config);
+        createStyles(self);
+        if (!config.canvasIcons) {
+            self.contentContainer = div({
+                display: 'inline-block',
+                position: 'absolute',
+                left: '0px',
+                top: '0px',
+                width: '100vw',
+                height: '100vh',
+                'pointer-events': 'none'
+            });
+            html.add(container, self.contentContainer);
+        }
+        scrollable = 'drakon-scrollable-container' + self.myStyleId;
+        self.scrollableContainer = div(scrollable);
+        html.add(container, self.scrollableContainer);
+        registerEvent(self.scrollableContainer, 'pointerdown', self.onMouseDown);
+        registerEvent(self.scrollableContainer, 'pointermove', self.onMouseMove);
+        registerEvent(self.scrollableContainer, 'pointerup', self.onMouseUp);
+        registerEvent(self.scrollableContainer, 'pointerleave', self.onMouseLeave);
+        registerEvent(self.scrollableContainer, 'contextmenu', self.onContextMenu);
+        registerEvent(self.scrollableContainer, 'wheel', function (evt) {
+            onMouseWheel(self, evt);
+        });
+        registerEvent(self.scrollableContainer, 'touchstart', self.onTouchStart);
+        registerEvent(self.scrollableContainer, 'touchmove', self.onTouchMove);
+        registerEvent(self.scrollableContainer, 'touchcancel', self.onTouchEnd);
+        registerEvent(self.scrollableContainer, 'touchend', self.onTouchEnd);
+        if (self.config.showLog) {
+            unit.logDiv = div('full-screen', {
+                'position': 'fixed',
+                'width': '100vw',
+                'heigh': '100vh',
+                'left': '0px',
+                'top': '0px',
+                background: 'rgba(255, 200, 0, 0.5)',
+                'pointer-events': 'none',
+                'z-index': 5000
+            });
+            unit.debugLog = [];
+            html.add(container, unit.logDiv);
+        }
+        return container;
+    }
+    function setAux2(itemId, aux2) {
+        var change;
+        tracing.trace('DrakonCanvas.setAux2', [
+            itemId,
+            aux2
+        ]);
+        checkNotReadonly(self);
+        change = {
+            id: itemId,
+            fields: { aux2: aux2 },
+            op: 'update'
+        };
+        return updateAndKeepSelection(self, [change]);
+    }
+    function setContent(itemId, content) {
+        var change;
+        tracing.trace('DrakonCanvas.setContent', [
+            itemId,
+            content
+        ]);
+        checkNotReadonly(self);
+        if (itemId === 'header' || itemId === 'root') {
+            change = {
+                fields: { name: content },
+                op: 'update'
+            };
+            doEditNoRender(self, [change]);
+            return [];
+        } else {
+            if (itemId === 'params') {
+                change = {
+                    fields: { params: content },
+                    op: 'update'
+                };
+                if (content) {
+                    return updateAndKeepSelection(self, [change]);
+                } else {
+                    return doEdit(self, [change]);
+                }
+            } else {
+                change = {
+                    id: itemId,
+                    fields: { content: content },
+                    op: 'update'
+                };
+                return updateAndKeepSelection(self, [change]);
+            }
+        }
+    }
+    async function setDiagram(diagramId, diagram, sender) {
+        var fonts;
+        stopMachine(self, 'mouseEvents');
+        self.edit = edit_tools.createUndoEdit(diagram, sender);
+        await loadImages(self);
+        self.diagramId = diagramId;
+        resetSelection(self);
+        fonts = self.redraw();
+        createEventBehavior(self);
+        return fonts;
+    }
+    function setDiagramProperty(name, value) {
+        var change;
+        tracing.trace('DrakonCanvas.setDiagramProperty', [
+            name,
+            value
+        ]);
+        checkNotReadonly(self);
+        change = {
+            fields: {},
+            op: 'update'
+        };
+        change.fields[name] = value;
+        if (name === 'name') {
+            doEditNoRender(self, [change]);
+        } else {
+            if (name === 'params') {
+                return doEdit(self, [change]);
+            } else {
+                updateAndKeepSelection(self, [change]);
+            }
+        }
+    }
+    function setDiagramStyle(style) {
+        var change, styleStr;
+        tracing.trace('DrakonCanvas.setDiagramStyle', style);
+        if (style) {
+            styleStr = JSON.stringify(style);
+        } else {
+            styleStr = '';
+        }
+        change = {
+            fields: { style: styleStr },
+            op: 'update'
+        };
+        return updateAndKeepSelection(self, [change]);
+    }
+    async function setImage(itemId, imageData) {
+        var edits, fields, images, item, tempId;
+        tracing.trace('DrakonCanvas.setImage', itemId);
+        checkNotReadonly(self);
+        fields = {};
+        images = {};
+        if (imageData.id) {
+            item = self.model.items[itemId];
+            if (item.image === imageData.id) {
+                return [];
+            } else {
+                fields.image = imageData.id;
+                edits = [{
+                        id: itemId,
+                        fields: fields,
+                        op: 'update'
+                    }];
+                await loadCreatedImages(self, edits, images);
+                return updateAndKeepSelection(self, edits);
+            }
+        } else {
+            tempId = 'temp-image-id';
+            images[tempId] = { content: imageData.content };
+            fields.image = tempId;
+            edits = [{
+                    id: itemId,
+                    fields: fields,
+                    op: 'update'
+                }];
+            await loadCreatedImages(self, edits, images);
+            return updateAndKeepSelection(self, edits);
+        }
+    }
+    function setLink(itemId, link) {
+        var change;
+        tracing.trace('DrakonCanvas.setLink', [
+            itemId,
+            link
+        ]);
+        checkNotReadonly(self);
+        change = {
+            id: itemId,
+            fields: { link: link },
+            op: 'update'
+        };
+        updateAndKeepSelection(self, [change]);
+    }
+    function setSecondary(itemId, secondary) {
+        var change;
+        tracing.trace('DrakonCanvas.setSecondary', [
+            itemId,
+            secondary
+        ]);
+        checkNotReadonly(self);
+        change = {
+            id: itemId,
+            fields: { secondary: secondary },
+            op: 'update'
+        };
+        return updateAndKeepSelection(self, [change]);
+    }
+    function setStyle(ids, style) {
+        var edit, edits, id, item, styleStr, type;
+        tracing.trace('DrakonCanvas.setStyle', [
+            ids,
+            style
+        ]);
+        if (style) {
+            if ('headStyle' in style) {
+                self.userMemory.headStyle = style.headStyle;
+            }
+            styleStr = JSON.stringify(style);
+        } else {
+            styleStr = '';
+        }
+        edits = [];
+        for (id of ids) {
+            if (id in self.model.items) {
+                updateItem(edits, id, { style: styleStr });
+            } else {
+                if (id === 'header' || id === 'root') {
+                    type = 'header';
+                } else {
+                    if (id !== 'params') {
+                        throw new Error('Unexpected case value: ' + id);
+                    }
+                    type = 'params';
+                }
+                item = {
+                    style: styleStr,
+                    type: type,
+                    id: id
+                };
+                edit = createInsert(item);
+                edits.push(edit);
+            }
+        }
+        return updateAndKeepSelection(self, edits);
+    }
+    function setZoom(zoom) {
+        var clientX, clientY, distX, distX2, distY, distY2, hover, oldScrollX, oldScrollY, oldZoom, scrollX, scrollY;
+        tracing.trace('DrakonCanvas.setZoom', zoom);
+        self.zoom = Math.max(2500, Math.min(40000, zoom));
+        oldZoom = self.zoomFactor;
+        self.zoomFactor = self.zoom / 10000;
+        if (self.edit) {
+            updateExpandedBox(self, self.visuals);
+            oldScrollX = self.visuals.scrollX;
+            oldScrollY = self.visuals.scrollY;
+            hover = getHoverPos(self);
+            clientX = hover.x;
+            clientY = hover.y;
+            distX = clientX / oldZoom;
+            distY = clientY / oldZoom;
+            distX2 = clientX / self.zoomFactor;
+            distY2 = clientY / self.zoomFactor;
+            scrollX = oldScrollX + Math.round(distX - distX2);
+            scrollY = oldScrollY + Math.round(distY - distY2);
+            setScroll(self, scrollX, scrollY);
+            self.visuals.config.zoom = self.zoomFactor;
+            initScrollPos(self);
+            paintLater(self);
+        }
+    }
+    function showInsertionSockets(type, imageData) {
+        var showInsert;
+        tracing.trace('DrakonCanvas.showInsertionSockets', type);
+        if (!isReadonlyImpl(self)) {
+            clearSockets(self.visuals);
+            if (type in self.mindIcons) {
+                showMindInsertSockets(self, 'insert', type, imageData);
+            } else {
+                if (type === 'case') {
+                    showInsert = function (visuals, node) {
+                        showCaseSockets(visuals, node, 'insert');
+                    };
+                    forType(self.visuals, 'case', showInsert);
+                } else {
+                    if (type === 'branch') {
+                        showAllBranchSockets(self.visuals, 'insert');
+                    } else {
+                        if (type === 'par') {
+                            showAllParSockets(self.visuals, 'insert');
+                        } else {
+                            if (type === 'duration') {
+                                showDurationSockets(self.visuals, 'insert');
+                            } else {
+                                showBlockInsertSockets(self.visuals, 'insert', type, imageData);
+                            }
+                        }
+                    }
+                }
+            }
+            paint(self);
+        }
+    }
+    function showItem(itemId) {
+        var box, halfHeight, halfWidth, height, node, nodeBottom, nodeBox, nodeLeft, nodeRight, nodeTop, nodeX, nodeY, scroll, scrollX, scrollY, visuals, width, zoom;
+        tracing.trace('DrakonCanvas.showItem', itemId);
+        visuals = self.visuals;
+        box = visuals.box;
+        zoom = self.zoomFactor;
+        width = self.width / zoom;
+        height = self.height / zoom;
+        node = getFree(visuals, itemId);
+        if (!node) {
+            node = getNode(visuals, itemId);
+        }
+        nodeBox = node.box;
+        nodeLeft = diagramToWidgetX(self, nodeBox.left);
+        nodeTop = diagramToWidgetY(self, nodeBox.top);
+        nodeRight = diagramToWidgetX(self, nodeBox.left + nodeBox.width);
+        nodeBottom = diagramToWidgetY(self, nodeBox.top + nodeBox.height);
+        nodeX = nodeBox.left + nodeBox.width / 2;
+        nodeY = nodeBox.top + nodeBox.height / 2;
+        if (nodeLeft >= 0 && nodeRight < self.width) {
+            scrollX = visuals.scrollX;
+        } else {
+            halfWidth = Math.floor(width / 2);
+            scrollX = nodeX - halfWidth;
+        }
+        if (nodeTop >= 0 && nodeBottom < self.height) {
+            scrollY = visuals.scrollY;
+        } else {
+            halfHeight = Math.floor(height / 2);
+            scrollY = nodeY - halfHeight;
+        }
+        scroll = setScroll(self, scrollX, scrollY);
+        selectPrim(self, itemId);
+        paint(self);
+    }
+    function showPaste() {
+        var _selectValue_1486, clipboard;
+        tracing.trace('DrakonCanvas.showPaste');
+        if (!isReadonlyImpl(self)) {
+            clipboard = getClipboardClone(self);
+            if (clipboard) {
+                _selectValue_1486 = clipboard.type;
+                if (_selectValue_1486 === 'case' || _selectValue_1486 === 'branch' || _selectValue_1486 === 'block' || _selectValue_1486 === 'mind') {
+                    self.showPasteSockets(clipboard.type);
+                } else {
+                    if (_selectValue_1486 === 'free') {
+                        pasteFree(self, clipboard);
+                    }
+                }
+            }
+        }
+    }
+    function showPasteSockets(type) {
+        var showInsert;
+        tracing.trace('DrakonCanvas.showPasteSockets', type);
+        if (!isReadonlyImpl(self)) {
+            clearSockets(self.visuals);
+            if (type) {
+                deselectAll(self);
+                if (type === 'case') {
+                    showInsert = function (visuals, node) {
+                        showCaseSockets(visuals, node, 'paste');
+                    };
+                    forType(self.visuals, 'case', showInsert);
+                } else {
+                    if (type === 'branch') {
+                        showAllBranchSockets(self.visuals, 'paste');
+                    } else {
+                        if (type === 'block') {
+                            showBlockInsertSockets(self.visuals, 'paste', type);
+                        } else {
+                            if (type === 'duration') {
+                                showDurationSockets(self.visuals, 'paste');
+                            } else {
+                                if (type === 'mind' && isMind(self)) {
+                                    showMindInsertSockets(self, 'paste', undefined);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            paint(self);
+        }
+    }
+    function swapYesNo(id) {
+        var change, node;
+        tracing.trace('swapYesNo', id);
+        checkNotReadonly(self);
+        node = getNode(self.visuals, id);
+        change = {
+            id: id,
+            fields: {},
+            op: 'update'
+        };
+        if (node.flag1) {
+            change.fields.flag1 = 0;
+        } else {
+            change.fields.flag1 = 1;
+        }
+        return updateAndKeepSelection(self, [change]);
+    }
+    function toggleSilhouette() {
+        var edits;
+        tracing.trace('DrakonCanvas.toggleSilhouette');
+        if (!isReadonlyImpl(self)) {
+            if (isSilhouette(self.visuals)) {
+                edits = toPrimitive(self);
+            } else {
+                edits = toSilhouette(self);
+            }
+            return doEdit(self, edits);
+        }
+    }
+    async function undo() {
+        var selection;
+        tracing.trace('DrakonCanvas.undo');
+        if (!isReadonlyImpl(self) && self.edit) {
+            selection = self.edit.undoEdit();
+            if (selection) {
+                await loadImages(self);
+                onUndoRedo(self, selection);
+            }
+        }
+    }
+    self.arrowDown = arrowDown;
+    self.arrowLeft = arrowLeft;
+    self.arrowRight = arrowRight;
+    self.arrowUp = arrowUp;
+    self.copySelection = copySelection;
+    self.cutSelection = cutSelection;
+    self.deleteSelection = deleteSelection;
+    self.editContent = editContent;
+    self.exportCanvas = exportCanvas;
+    self.exportJson = exportJson;
+    self.exportToContext = exportToContext;
+    self.getDiagramBox = getDiagramBox;
+    self.getDiagramProperties = getDiagramProperties;
+    self.getLoadedImages = getLoadedImages;
+    self.getVersion = getVersion;
+    self.getZoom = getZoom;
+    self.goHome = goHome;
+    self.init = init;
+    self.insertFree = insertFree;
+    self.isReadonly = isReadonly;
+    self.onChange = onChange;
+    self.onContextMenu = onContextMenu;
+    self.onMouseDown = onMouseDown;
+    self.onMouseLeave = onMouseLeave;
+    self.onMouseMove = onMouseMove;
+    self.onMouseUp = onMouseUp;
+    self.onTouchEnd = onTouchEnd;
+    self.onTouchMove = onTouchMove;
+    self.onTouchStart = onTouchStart;
+    self.patchDiagramStyle = patchDiagramStyle;
+    self.redo = redo;
+    self.redraw = redraw;
+    self.render = render;
+    self.setAux2 = setAux2;
+    self.setContent = setContent;
+    self.setDiagram = setDiagram;
+    self.setDiagramProperty = setDiagramProperty;
+    self.setDiagramStyle = setDiagramStyle;
+    self.setImage = setImage;
+    self.setLink = setLink;
+    self.setSecondary = setSecondary;
+    self.setStyle = setStyle;
+    self.setZoom = setZoom;
+    self.showInsertionSockets = showInsertionSockets;
+    self.showItem = showItem;
+    self.showPaste = showPaste;
+    self.showPasteSockets = showPasteSockets;
+    self.swapYesNo = swapYesNo;
+    self.toggleSilhouette = toggleSilhouette;
+    self.undo = undo;
+    return self;
+}
 function getSourceGuideBox(element) {
     if (element.type === 'line') {
         return calculateLineBox(element, 0);
@@ -1322,66 +2171,66 @@ function completeDrakonResize(handle) {
 }
 function LeftDrakonResizeHandle() {
     var self = { _type: 'LeftDrakonResizeHandle' };
-    function LeftDrakonResizeHandle_complete() {
+    function complete() {
         completeDrakonResize(self);
     }
-    function LeftDrakonResizeHandle_dragTo(x, y) {
+    function dragTo(x, y) {
         self.element.w = self.element.x - x;
     }
-    function LeftDrakonResizeHandle_getCursor() {
+    function getCursor() {
         return 'ew-resize';
     }
-    function LeftDrakonResizeHandle_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function LeftDrakonResizeHandle_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function LeftDrakonResizeHandle_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function LeftDrakonResizeHandle_yEnabled() {
+    function yEnabled() {
         return false;
     }
-    self.complete = LeftDrakonResizeHandle_complete;
-    self.dragTo = LeftDrakonResizeHandle_dragTo;
-    self.getCursor = LeftDrakonResizeHandle_getCursor;
-    self.getMaxX = LeftDrakonResizeHandle_getMaxX;
-    self.getMinX = LeftDrakonResizeHandle_getMinX;
-    self.xEnabled = LeftDrakonResizeHandle_xEnabled;
-    self.yEnabled = LeftDrakonResizeHandle_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMinX = getMinX;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function RightDrakonResizeHandle() {
     var self = { _type: 'RightDrakonResizeHandle' };
-    function RightDrakonResizeHandle_complete() {
+    function complete() {
         completeDrakonResize(self);
     }
-    function RightDrakonResizeHandle_dragTo(x, y) {
+    function dragTo(x, y) {
         self.element.w = x - self.element.x;
     }
-    function RightDrakonResizeHandle_getCursor() {
+    function getCursor() {
         return 'ew-resize';
     }
-    function RightDrakonResizeHandle_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function RightDrakonResizeHandle_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function RightDrakonResizeHandle_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function RightDrakonResizeHandle_yEnabled() {
+    function yEnabled() {
         return false;
     }
-    self.complete = RightDrakonResizeHandle_complete;
-    self.dragTo = RightDrakonResizeHandle_dragTo;
-    self.getCursor = RightDrakonResizeHandle_getCursor;
-    self.getMaxX = RightDrakonResizeHandle_getMaxX;
-    self.getMinX = RightDrakonResizeHandle_getMinX;
-    self.xEnabled = RightDrakonResizeHandle_xEnabled;
-    self.yEnabled = RightDrakonResizeHandle_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMinX = getMinX;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function createLeftDrakonResizeHandle(widget, node, y, ctx) {
@@ -1418,84 +2267,84 @@ function createRightDrakonResizeHandle(widget, node, y, ctx) {
 }
 function GroupBottomHandle() {
     var self = { _type: 'GroupBottomHandle' };
-    function GroupBottomHandle_complete() {
+    function complete() {
         completeSimpleDrag2Prop(self, 'loX', 'loY');
     }
-    function GroupBottomHandle_dragTo(x, y) {
+    function dragTo(x, y) {
         self.element.loX = x - self.element.x;
         self.element.loY = y - self.element.y;
     }
-    function GroupBottomHandle_getCursor() {
+    function getCursor() {
         return 'move';
     }
-    function GroupBottomHandle_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function GroupBottomHandle_getMaxY() {
+    function getMaxY() {
         return self.maxY;
     }
-    function GroupBottomHandle_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function GroupBottomHandle_getMinY() {
+    function getMinY() {
         return self.minY;
     }
-    function GroupBottomHandle_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function GroupBottomHandle_yEnabled() {
+    function yEnabled() {
         return true;
     }
-    self.complete = GroupBottomHandle_complete;
-    self.dragTo = GroupBottomHandle_dragTo;
-    self.getCursor = GroupBottomHandle_getCursor;
-    self.getMaxX = GroupBottomHandle_getMaxX;
-    self.getMaxY = GroupBottomHandle_getMaxY;
-    self.getMinX = GroupBottomHandle_getMinX;
-    self.getMinY = GroupBottomHandle_getMinY;
-    self.xEnabled = GroupBottomHandle_xEnabled;
-    self.yEnabled = GroupBottomHandle_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMaxY = getMaxY;
+    self.getMinX = getMinX;
+    self.getMinY = getMinY;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function GroupTopHandle() {
     var self = { _type: 'GroupTopHandle' };
-    function GroupTopHandle_complete() {
+    function complete() {
         completeSimpleDrag2Prop(self, 'hiX', 'hiY');
     }
-    function GroupTopHandle_dragTo(x, y) {
+    function dragTo(x, y) {
         self.element.hiX = x - self.element.x;
         self.element.hiY = y - self.element.y;
     }
-    function GroupTopHandle_getCursor() {
+    function getCursor() {
         return 'move';
     }
-    function GroupTopHandle_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function GroupTopHandle_getMaxY() {
+    function getMaxY() {
         return self.maxY;
     }
-    function GroupTopHandle_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function GroupTopHandle_getMinY() {
+    function getMinY() {
         return self.minY;
     }
-    function GroupTopHandle_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function GroupTopHandle_yEnabled() {
+    function yEnabled() {
         return true;
     }
-    self.complete = GroupTopHandle_complete;
-    self.dragTo = GroupTopHandle_dragTo;
-    self.getCursor = GroupTopHandle_getCursor;
-    self.getMaxX = GroupTopHandle_getMaxX;
-    self.getMaxY = GroupTopHandle_getMaxY;
-    self.getMinX = GroupTopHandle_getMinX;
-    self.getMinY = GroupTopHandle_getMinY;
-    self.xEnabled = GroupTopHandle_xEnabled;
-    self.yEnabled = GroupTopHandle_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMaxY = getMaxY;
+    self.getMinX = getMinX;
+    self.getMinY = getMinY;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function clearMouseHover(widget) {
@@ -1552,9 +2401,9 @@ function wantedMove(x1, y1, x2, y2) {
 }
 function HScrollDrag() {
     var self = { _type: 'HScrollDrag' };
-    function HScrollDrag_complete() {
+    function complete() {
     }
-    function HScrollDrag_onDrag(evt) {
+    function onDrag(evt) {
         var deltaX, deltaY, x, y, zoom;
         deltaX = (self.startX - evt.clientX) * self.barToBox;
         deltaY = 0;
@@ -1563,15 +2412,15 @@ function HScrollDrag() {
         y = self.startScrollY - deltaY / zoom;
         setScrollFromMouseEvent(self.widget, x, y);
     }
-    self.complete = HScrollDrag_complete;
-    self.onDrag = HScrollDrag_onDrag;
+    self.complete = complete;
+    self.onDrag = onDrag;
     return self;
 }
 function VScrollDrag() {
     var self = { _type: 'VScrollDrag' };
-    function VScrollDrag_complete() {
+    function complete() {
     }
-    function VScrollDrag_onDrag(evt) {
+    function onDrag(evt) {
         var deltaX, deltaY, x, y, zoom;
         deltaX = 0;
         deltaY = (self.startY - evt.clientY) * self.barToBox;
@@ -1580,8 +2429,8 @@ function VScrollDrag() {
         y = self.startScrollY - deltaY / zoom;
         setScrollFromMouseEvent(self.widget, x, y);
     }
-    self.complete = VScrollDrag_complete;
-    self.onDrag = VScrollDrag_onDrag;
+    self.complete = complete;
+    self.onDrag = onDrag;
     return self;
 }
 function createHScrollDrag(widget, evt, scroll) {
@@ -1774,7 +2623,7 @@ function chooseDragTarget(widget, evt) {
             return createVScrollDrag(widget, evt, scroll);
         }
     } else {
-        if (isReadonly(widget)) {
+        if (isReadonlyImpl(widget)) {
             return createFrameDrag(widget, evt);
         } else {
             ear = hitEars(widget.visuals, pos);
@@ -1815,26 +2664,26 @@ function chooseDragTarget(widget, evt) {
 }
 function FrameDrag() {
     var self = { _type: 'FrameDrag' };
-    function FrameDrag_complete() {
+    function complete() {
         self.widget.visuals.selectionFrame = undefined;
         paint(self.widget);
     }
-    function FrameDrag_onDrag(evt) {
+    function onDrag(evt) {
         updateSelectionFrame(self.widget, self.startX, self.startY, evt);
         blockSelect(self.widget);
         paintLater(self.widget);
     }
-    self.complete = FrameDrag_complete;
-    self.onDrag = FrameDrag_onDrag;
+    self.complete = complete;
+    self.onDrag = onDrag;
     return self;
 }
 function FreeMover() {
     var self = { _type: 'FreeMover' };
-    function FreeMover_complete() {
-        var _collection_145, change, changes, coord;
+    function complete() {
+        var _collection_1539, change, changes, coord;
         changes = [];
-        _collection_145 = self.coords;
-        for (coord of _collection_145) {
+        _collection_1539 = self.coords;
+        for (coord of _collection_1539) {
             change = {
                 id: coord.element.id,
                 fields: {},
@@ -1851,8 +2700,8 @@ function FreeMover() {
         }
         updateAndKeepSelection(self.widget, changes);
     }
-    function FreeMover_onDrag(evt) {
-        var _branch_, _collection_147, config, coord, dx, dxDia, dy, dyDia, ebox, element, visuals, x, y, zoom;
+    function onDrag(evt) {
+        var _branch_, _collection_1541, config, coord, dx, dxDia, dy, dyDia, ebox, element, visuals, x, y, zoom;
         _branch_ = 'Calculate move';
         while (true) {
             switch (_branch_) {
@@ -1873,8 +2722,8 @@ function FreeMover() {
                 }
                 break;
             case 'Move elements':
-                _collection_147 = self.coords;
-                for (coord of _collection_147) {
+                _collection_1541 = self.coords;
+                for (coord of _collection_1541) {
                     x = coord.elementX + dx;
                     y = coord.elementY + dy;
                     if (coord.xy) {
@@ -1921,16 +2770,16 @@ function FreeMover() {
             }
         }
     }
-    self.complete = FreeMover_complete;
-    self.onDrag = FreeMover_onDrag;
+    self.complete = complete;
+    self.onDrag = onDrag;
     return self;
 }
 function HandleDrag() {
     var self = { _type: 'HandleDrag' };
-    function HandleDrag_complete() {
+    function complete() {
         self.handle.complete();
     }
-    function HandleDrag_onDrag(evt) {
+    function onDrag(evt) {
         var config, dx, dxDia, dy, dyDia, max, min, x, y, zoom;
         config = self.widget.config;
         zoom = self.widget.zoomFactor;
@@ -1961,8 +2810,8 @@ function HandleDrag() {
             paintLater(self.widget);
         }
     }
-    self.complete = HandleDrag_complete;
-    self.onDrag = HandleDrag_onDrag;
+    self.complete = complete;
+    self.onDrag = onDrag;
     return self;
 }
 function createFrameDrag(widget, evt) {
@@ -2081,7 +2930,7 @@ function caseInsertCore(widget, existing, item) {
     return edits;
 }
 function checkNotReadonly(widget) {
-    if (isReadonly(widget)) {
+    if (isReadonlyImpl(widget)) {
         throw new Error('Cannot modify a read-only diagram');
     }
 }
@@ -2255,9 +3104,9 @@ function foreachInsert(widget, socket) {
     return edits;
 }
 function getBranchById(visuals, branchId) {
-    var _collection_149, branch, itemId;
-    _collection_149 = visuals.branches;
-    for (itemId of _collection_149) {
+    var _collection_1543, branch, itemId;
+    _collection_1543 = visuals.branches;
+    for (itemId of _collection_1543) {
         branch = getNode(visuals, itemId);
         if (branch.branchId === branchId) {
             return branch;
@@ -2365,14 +3214,14 @@ function isDigit(c) {
         return false;
     }
 }
-function isReadonly(widget) {
+function isReadonlyImpl(widget) {
     return widget.model.doc.access === 'read' || !widget.visuals.config.canSelect;
 }
 function moveBranchIdsLeft(visuals, branchId) {
-    var _collection_151, branch, edits, itemId, newId;
+    var _collection_1545, branch, edits, itemId, newId;
     edits = [];
-    _collection_151 = visuals.branches;
-    for (itemId of _collection_151) {
+    _collection_1545 = visuals.branches;
+    for (itemId of _collection_1545) {
         branch = getNode(visuals, itemId);
         if (branch.branchId > branchId) {
             newId = branch.branchId - 1;
@@ -2382,10 +3231,10 @@ function moveBranchIdsLeft(visuals, branchId) {
     return edits;
 }
 function moveBranchIdsRight(visuals, branchId) {
-    var _collection_153, branch, edits, itemId, newId;
+    var _collection_1547, branch, edits, itemId, newId;
     edits = [];
-    _collection_153 = visuals.branches;
-    for (itemId of _collection_153) {
+    _collection_1547 = visuals.branches;
+    for (itemId of _collection_1547) {
         branch = getNode(visuals, itemId);
         if (branch.branchId >= branchId) {
             newId = branch.branchId + 1;
@@ -2395,10 +3244,10 @@ function moveBranchIdsRight(visuals, branchId) {
     return edits;
 }
 function nextBranchName(visuals) {
-    var _collection_155, branch, id, max, number;
+    var _collection_1549, branch, id, max, number;
     max = 0;
-    _collection_155 = visuals.branches;
-    for (id of _collection_155) {
+    _collection_1549 = visuals.branches;
+    for (id of _collection_1549) {
         branch = getNode(visuals, id);
         number = getNumberPart(branch.content);
         max = Math.max(max, number);
@@ -2464,7 +3313,7 @@ function pasteDuration(widget, existing, item) {
     return edits;
 }
 async function pasteFree(widget, clipboard, evt) {
-    var _collection_157, _collection_159, config, create, currentZ, dx, dy, edits, epos, first, images, item, oldPos, payload, pos, x, y;
+    var _collection_1551, _collection_1553, config, create, currentZ, dx, dy, edits, epos, first, images, item, oldPos, payload, pos, x, y;
     payload = clipboard.content;
     images = payload.images;
     config = widget.visuals.config;
@@ -2482,8 +3331,8 @@ async function pasteFree(widget, clipboard, evt) {
         unit.pasteDX = dx;
         unit.pasteDY = dy;
     }
-    _collection_157 = payload.items;
-    for (item of _collection_157) {
+    _collection_1551 = payload.items;
+    for (item of _collection_1551) {
         if (item.type !== 'connection') {
             oldPos = getFreePosition(item);
             x = snapUp(config, oldPos.x + dx);
@@ -2493,8 +3342,8 @@ async function pasteFree(widget, clipboard, evt) {
     }
     utils.sortBy(payload.items, 'zIndex');
     currentZ = getNextZIndex(widget);
-    _collection_159 = payload.items;
-    for (item of _collection_159) {
+    _collection_1553 = payload.items;
+    for (item of _collection_1553) {
         if (item.type !== 'connection') {
             item.zIndex = currentZ;
             currentZ++;
@@ -2530,15 +3379,15 @@ function questionInsert(widget, socket) {
     return edits;
 }
 function redirectPrevItems(edits, node, targetId) {
-    var _collection_161, edit, prev, visited;
+    var _collection_1555, edit, prev, visited;
     visited = {};
     for (edit of edits) {
         if (edit.op === 'delete') {
             visited[edit.id] = true;
         }
     }
-    _collection_161 = node.prev;
-    for (prev of _collection_161) {
+    _collection_1555 = node.prev;
+    for (prev of _collection_1555) {
         if (!(prev.id in visited)) {
             visited[prev.id] = true;
             replaceInUpdate(edits, node.id, prev, targetId);
@@ -2584,33 +3433,33 @@ function resetMargin(widget, id) {
     updateAndKeepSelection(widget, [change]);
 }
 async function runInsertAction(widget, socket) {
-    var _selectValue_163, action, edits, images;
+    var _selectValue_1557, action, edits, images;
     images = {};
-    _selectValue_163 = socket.op;
-    if (_selectValue_163 === 'insert') {
+    _selectValue_1557 = socket.op;
+    if (_selectValue_1557 === 'insert') {
         action = widget.insertActions[socket.type];
         edits = action(widget, socket);
         insertImageDataItem(socket.imageData, edits, images);
         await loadCreatedImages(widget, edits, images);
         return doEdit(widget, edits);
     } else {
-        if (_selectValue_163 === 'paste') {
+        if (_selectValue_1557 === 'paste') {
             edits = pasteInSocket(widget, socket, images);
             await loadCreatedImages(widget, edits, images);
             return doEdit(widget, edits);
         } else {
-            if (_selectValue_163 === 'arrow') {
+            if (_selectValue_1557 === 'arrow') {
                 edits = clickArrowSocket(widget, socket);
                 await loadCreatedImages(widget, edits, images);
                 return doEdit(widget, edits);
             } else {
-                if (_selectValue_163 === 'liana') {
+                if (_selectValue_1557 === 'liana') {
                     edits = clickLianaSocket(widget, socket);
                     await loadCreatedImages(widget, edits, images);
                     return doEdit(widget, edits);
                 } else {
-                    if (_selectValue_163 !== 'params') {
-                        throw new Error('Unexpected case value: ' + _selectValue_163);
+                    if (_selectValue_1557 !== 'params') {
+                        throw new Error('Unexpected case value: ' + _selectValue_1557);
                     }
                 }
             }
@@ -3024,9 +3873,9 @@ function buildConnectionLineCoords(begin, end, role) {
 function buildConnectionMenu(widget, prim) {
     var menu;
     menu = [];
-    if (!isReadonly(widget)) {
+    if (!isReadonlyImpl(widget)) {
         pushMenuItem('delete_connection', menu, tr(widget, 'Delete'), widget.visuals.config.imagePath + 'delete.png', function () {
-            deleteSelection(widget);
+            deleteSelectionImpl(widget);
         });
         menu.push({ type: 'separator' });
         pushMenuItem('format', menu, tr(widget, 'Format'), undefined, function () {
@@ -3091,9 +3940,9 @@ function getConnectionProps() {
     ];
 }
 function hitConnection(connection, pos) {
-    var _collection_165, box;
-    _collection_165 = connection.boxes;
-    for (box of _collection_165) {
+    var _collection_1559, box;
+    _collection_1559 = connection.boxes;
+    for (box of _collection_1559) {
         if (hitBox(box, pos.x, pos.y)) {
             return true;
         }
@@ -3167,7 +4016,7 @@ function drawEar(ctx, key, box, lineWidth, fill, border) {
     ctx.restore();
 }
 function drawEars(visuals, ctx) {
-    var _collection_170, border, box, config, ears, fill, key, radius, selectedBox;
+    var _collection_1564, border, box, config, ears, fill, key, radius, selectedBox;
     fill = '#00ff00';
     border = 'black';
     ears = visuals.ears;
@@ -3181,9 +4030,9 @@ function drawEars(visuals, ctx) {
                 drawCircle(ctx, selectedBox.left + radius, selectedBox.top + radius, radius, 2, fill, border);
             }
         } else {
-            _collection_170 = ears.boxes;
-            for (key in _collection_170) {
-                box = _collection_170[key];
+            _collection_1564 = ears.boxes;
+            for (key in _collection_1564) {
+                box = _collection_1564[key];
                 if (visuals.highlight === key) {
                     fill = '#00ff00';
                     border = config.theme.highlight;
@@ -3209,20 +4058,20 @@ function drawEarsLine(visuals, ears, ctx) {
     }
 }
 function getEarRole(ears) {
-    var _selectValue_173;
-    _selectValue_173 = ears.selected;
-    if (_selectValue_173 === 'up' || _selectValue_173 === 'down') {
+    var _selectValue_1567;
+    _selectValue_1567 = ears.selected;
+    if (_selectValue_1567 === 'up' || _selectValue_1567 === 'down') {
         return 'vertical';
     } else {
         return 'horizontal';
     }
 }
 function hitEars(visuals, pos) {
-    var _collection_175, box, key;
+    var _collection_1569, box, key;
     if (visuals.ears) {
-        _collection_175 = visuals.ears.boxes;
-        for (key in _collection_175) {
-            box = _collection_175[key];
+        _collection_1569 = visuals.ears.boxes;
+        for (key in _collection_1569) {
+            box = _collection_1569[key];
             if (hitBox(box, pos.x, pos.y)) {
                 return key;
             }
@@ -3276,7 +4125,7 @@ function setupEarBoxes(ears, element, radius) {
 }
 function CalloutPointer() {
     var self = { _type: 'CalloutPointer' };
-    function CalloutPointer_complete() {
+    function complete() {
         var change;
         change = {
             id: self.element.id,
@@ -3288,135 +4137,135 @@ function CalloutPointer() {
         };
         updateAndKeepSelection(self.widget, [change]);
     }
-    function CalloutPointer_dragTo(x, y) {
+    function dragTo(x, y) {
         if (!hitBox(self.element, x, y)) {
             self.element.px = x - self.left;
             self.element.py = y - self.top;
         }
     }
-    function CalloutPointer_getCursor() {
+    function getCursor() {
         return 'grab';
     }
-    function CalloutPointer_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function CalloutPointer_getMaxY() {
+    function getMaxY() {
         return self.maxY;
     }
-    function CalloutPointer_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function CalloutPointer_getMinY() {
+    function getMinY() {
         return self.minY;
     }
-    function CalloutPointer_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function CalloutPointer_yEnabled() {
+    function yEnabled() {
         return true;
     }
-    self.complete = CalloutPointer_complete;
-    self.dragTo = CalloutPointer_dragTo;
-    self.getCursor = CalloutPointer_getCursor;
-    self.getMaxX = CalloutPointer_getMaxX;
-    self.getMaxY = CalloutPointer_getMaxY;
-    self.getMinX = CalloutPointer_getMinX;
-    self.getMinY = CalloutPointer_getMinY;
-    self.xEnabled = CalloutPointer_xEnabled;
-    self.yEnabled = CalloutPointer_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMaxY = getMaxY;
+    self.getMinX = getMinX;
+    self.getMinY = getMinY;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function HandleEast() {
     var self = { _type: 'HandleEast' };
-    function HandleEast_complete() {
+    function complete() {
         saveRectangleCoords(self);
     }
-    function HandleEast_dragTo(x, y) {
+    function dragTo(x, y) {
         self.element.width = x - self.left;
         findVerticalForHandle(self, self.element, x);
     }
-    function HandleEast_getCursor() {
+    function getCursor() {
         return 'ew-resize';
     }
-    function HandleEast_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function HandleEast_getMaxY() {
+    function getMaxY() {
         return self.maxY;
     }
-    function HandleEast_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function HandleEast_getMinY() {
+    function getMinY() {
         return self.minY;
     }
-    function HandleEast_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function HandleEast_yEnabled() {
+    function yEnabled() {
         return false;
     }
-    self.complete = HandleEast_complete;
-    self.dragTo = HandleEast_dragTo;
-    self.getCursor = HandleEast_getCursor;
-    self.getMaxX = HandleEast_getMaxX;
-    self.getMaxY = HandleEast_getMaxY;
-    self.getMinX = HandleEast_getMinX;
-    self.getMinY = HandleEast_getMinY;
-    self.xEnabled = HandleEast_xEnabled;
-    self.yEnabled = HandleEast_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMaxY = getMaxY;
+    self.getMinX = getMinX;
+    self.getMinY = getMinY;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function HandleNE() {
     var self = { _type: 'HandleNE' };
-    function HandleNE_complete() {
+    function complete() {
         saveRectangleCoords(self);
     }
-    function HandleNE_dragTo(x, y) {
+    function dragTo(x, y) {
         self.element.top = y;
         self.element.width = x - self.left;
         self.element.height = self.bottom - y;
         findHorizontalForHandle(self, self.element, y);
         findVerticalForHandle(self, self.element, x);
     }
-    function HandleNE_getCursor() {
+    function getCursor() {
         return 'nesw-resize';
     }
-    function HandleNE_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function HandleNE_getMaxY() {
+    function getMaxY() {
         return self.maxY;
     }
-    function HandleNE_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function HandleNE_getMinY() {
+    function getMinY() {
         return self.minY;
     }
-    function HandleNE_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function HandleNE_yEnabled() {
+    function yEnabled() {
         return true;
     }
-    self.complete = HandleNE_complete;
-    self.dragTo = HandleNE_dragTo;
-    self.getCursor = HandleNE_getCursor;
-    self.getMaxX = HandleNE_getMaxX;
-    self.getMaxY = HandleNE_getMaxY;
-    self.getMinX = HandleNE_getMinX;
-    self.getMinY = HandleNE_getMinY;
-    self.xEnabled = HandleNE_xEnabled;
-    self.yEnabled = HandleNE_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMaxY = getMaxY;
+    self.getMinX = getMinX;
+    self.getMinY = getMinY;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function HandleNW() {
     var self = { _type: 'HandleNW' };
-    function HandleNW_complete() {
+    function complete() {
         saveRectangleCoords(self);
     }
-    function HandleNW_dragTo(x, y) {
+    function dragTo(x, y) {
         self.element.left = x;
         self.element.top = y;
         self.element.width = self.right - x;
@@ -3424,131 +4273,131 @@ function HandleNW() {
         findHorizontalForHandle(self, self.element, y);
         findVerticalForHandle(self, self.element, x);
     }
-    function HandleNW_getCursor() {
+    function getCursor() {
         return 'nwse-resize';
     }
-    function HandleNW_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function HandleNW_getMaxY() {
+    function getMaxY() {
         return self.maxY;
     }
-    function HandleNW_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function HandleNW_getMinY() {
+    function getMinY() {
         return self.minY;
     }
-    function HandleNW_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function HandleNW_yEnabled() {
+    function yEnabled() {
         return true;
     }
-    self.complete = HandleNW_complete;
-    self.dragTo = HandleNW_dragTo;
-    self.getCursor = HandleNW_getCursor;
-    self.getMaxX = HandleNW_getMaxX;
-    self.getMaxY = HandleNW_getMaxY;
-    self.getMinX = HandleNW_getMinX;
-    self.getMinY = HandleNW_getMinY;
-    self.xEnabled = HandleNW_xEnabled;
-    self.yEnabled = HandleNW_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMaxY = getMaxY;
+    self.getMinX = getMinX;
+    self.getMinY = getMinY;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function HandleNorth() {
     var self = { _type: 'HandleNorth' };
-    function HandleNorth_complete() {
+    function complete() {
         saveRectangleCoords(self);
     }
-    function HandleNorth_dragTo(x, y) {
+    function dragTo(x, y) {
         var element;
         element = self.element;
         element.top = y;
         element.height = self.bottom - y;
         findHorizontalForHandle(self, element, y);
     }
-    function HandleNorth_getCursor() {
+    function getCursor() {
         return 'ns-resize';
     }
-    function HandleNorth_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function HandleNorth_getMaxY() {
+    function getMaxY() {
         return self.maxY;
     }
-    function HandleNorth_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function HandleNorth_getMinY() {
+    function getMinY() {
         return self.minY;
     }
-    function HandleNorth_xEnabled() {
+    function xEnabled() {
         return false;
     }
-    function HandleNorth_yEnabled() {
+    function yEnabled() {
         return true;
     }
-    self.complete = HandleNorth_complete;
-    self.dragTo = HandleNorth_dragTo;
-    self.getCursor = HandleNorth_getCursor;
-    self.getMaxX = HandleNorth_getMaxX;
-    self.getMaxY = HandleNorth_getMaxY;
-    self.getMinX = HandleNorth_getMinX;
-    self.getMinY = HandleNorth_getMinY;
-    self.xEnabled = HandleNorth_xEnabled;
-    self.yEnabled = HandleNorth_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMaxY = getMaxY;
+    self.getMinX = getMinX;
+    self.getMinY = getMinY;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function HandleSE() {
     var self = { _type: 'HandleSE' };
-    function HandleSE_complete() {
+    function complete() {
         saveRectangleCoords(self);
     }
-    function HandleSE_dragTo(x, y) {
+    function dragTo(x, y) {
         self.element.width = x - self.left;
         self.element.height = y - self.top;
         findHorizontalForHandle(self, self.element, y);
         findVerticalForHandle(self, self.element, x);
     }
-    function HandleSE_getCursor() {
+    function getCursor() {
         return 'nwse-resize';
     }
-    function HandleSE_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function HandleSE_getMaxY() {
+    function getMaxY() {
         return self.maxY;
     }
-    function HandleSE_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function HandleSE_getMinY() {
+    function getMinY() {
         return self.minY;
     }
-    function HandleSE_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function HandleSE_yEnabled() {
+    function yEnabled() {
         return true;
     }
-    self.complete = HandleSE_complete;
-    self.dragTo = HandleSE_dragTo;
-    self.getCursor = HandleSE_getCursor;
-    self.getMaxX = HandleSE_getMaxX;
-    self.getMaxY = HandleSE_getMaxY;
-    self.getMinX = HandleSE_getMinX;
-    self.getMinY = HandleSE_getMinY;
-    self.xEnabled = HandleSE_xEnabled;
-    self.yEnabled = HandleSE_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMaxY = getMaxY;
+    self.getMinX = getMinX;
+    self.getMinY = getMinY;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function HandleSW() {
     var self = { _type: 'HandleSW' };
-    function HandleSW_complete() {
+    function complete() {
         saveRectangleCoords(self);
     }
-    function HandleSW_dragTo(x, y) {
+    function dragTo(x, y) {
         self.element.left = x;
         self.element.top = self.top;
         self.element.width = self.right - x;
@@ -3556,129 +4405,129 @@ function HandleSW() {
         findHorizontalForHandle(self, self.element, y);
         findVerticalForHandle(self, self.element, x);
     }
-    function HandleSW_getCursor() {
+    function getCursor() {
         return 'nesw-resize';
     }
-    function HandleSW_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function HandleSW_getMaxY() {
+    function getMaxY() {
         return self.maxY;
     }
-    function HandleSW_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function HandleSW_getMinY() {
+    function getMinY() {
         return self.minY;
     }
-    function HandleSW_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function HandleSW_yEnabled() {
+    function yEnabled() {
         return true;
     }
-    self.complete = HandleSW_complete;
-    self.dragTo = HandleSW_dragTo;
-    self.getCursor = HandleSW_getCursor;
-    self.getMaxX = HandleSW_getMaxX;
-    self.getMaxY = HandleSW_getMaxY;
-    self.getMinX = HandleSW_getMinX;
-    self.getMinY = HandleSW_getMinY;
-    self.xEnabled = HandleSW_xEnabled;
-    self.yEnabled = HandleSW_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMaxY = getMaxY;
+    self.getMinX = getMinX;
+    self.getMinY = getMinY;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function HandleSouth() {
     var self = { _type: 'HandleSouth' };
-    function HandleSouth_complete() {
+    function complete() {
         saveRectangleCoords(self);
     }
-    function HandleSouth_dragTo(x, y) {
+    function dragTo(x, y) {
         var element;
         element = self.element;
         self.element.height = y - self.top;
         findHorizontalForHandle(self, element, y);
     }
-    function HandleSouth_getCursor() {
+    function getCursor() {
         return 'ns-resize';
     }
-    function HandleSouth_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function HandleSouth_getMaxY() {
+    function getMaxY() {
         return self.maxY;
     }
-    function HandleSouth_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function HandleSouth_getMinY() {
+    function getMinY() {
         return self.minY;
     }
-    function HandleSouth_xEnabled() {
+    function xEnabled() {
         return false;
     }
-    function HandleSouth_yEnabled() {
+    function yEnabled() {
         return true;
     }
-    self.complete = HandleSouth_complete;
-    self.dragTo = HandleSouth_dragTo;
-    self.getCursor = HandleSouth_getCursor;
-    self.getMaxX = HandleSouth_getMaxX;
-    self.getMaxY = HandleSouth_getMaxY;
-    self.getMinX = HandleSouth_getMinX;
-    self.getMinY = HandleSouth_getMinY;
-    self.xEnabled = HandleSouth_xEnabled;
-    self.yEnabled = HandleSouth_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMaxY = getMaxY;
+    self.getMinX = getMinX;
+    self.getMinY = getMinY;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function HandleWest() {
     var self = { _type: 'HandleWest' };
-    function HandleWest_complete() {
+    function complete() {
         saveRectangleCoords(self);
     }
-    function HandleWest_dragTo(x, y) {
+    function dragTo(x, y) {
         self.element.left = x;
         self.element.width = self.right - x;
         findVerticalForHandle(self, self.element, x);
     }
-    function HandleWest_getCursor() {
+    function getCursor() {
         return 'ew-resize';
     }
-    function HandleWest_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function HandleWest_getMaxY() {
+    function getMaxY() {
         return self.maxY;
     }
-    function HandleWest_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function HandleWest_getMinY() {
+    function getMinY() {
         return self.minY;
     }
-    function HandleWest_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function HandleWest_yEnabled() {
+    function yEnabled() {
         return false;
     }
-    self.complete = HandleWest_complete;
-    self.dragTo = HandleWest_dragTo;
-    self.getCursor = HandleWest_getCursor;
-    self.getMaxX = HandleWest_getMaxX;
-    self.getMaxY = HandleWest_getMaxY;
-    self.getMinX = HandleWest_getMinX;
-    self.getMinY = HandleWest_getMinY;
-    self.xEnabled = HandleWest_xEnabled;
-    self.yEnabled = HandleWest_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMaxY = getMaxY;
+    self.getMinX = getMinX;
+    self.getMinY = getMinY;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function LineEnd() {
     var self = { _type: 'LineEnd' };
-    function LineEnd_complete() {
+    function complete() {
         saveLineCoords(self);
     }
-    function LineEnd_dragTo(x, y) {
+    function dragTo(x, y) {
         var x2, y2;
         x2 = x - self.element.left;
         y2 = y - self.element.top;
@@ -3688,44 +4537,44 @@ function LineEnd() {
             findGuidesForPoint(self, x, y);
         }
     }
-    function LineEnd_getCursor() {
+    function getCursor() {
         return 'move';
     }
-    function LineEnd_getMaxX() {
+    function getMaxX() {
         return Number.MAX_SAFE_INTEGER;
     }
-    function LineEnd_getMaxY() {
+    function getMaxY() {
         return Number.MAX_SAFE_INTEGER;
     }
-    function LineEnd_getMinX() {
+    function getMinX() {
         return Number.MIN_SAFE_INTEGER;
     }
-    function LineEnd_getMinY() {
+    function getMinY() {
         return Number.MIN_SAFE_INTEGER;
     }
-    function LineEnd_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function LineEnd_yEnabled() {
+    function yEnabled() {
         return true;
     }
-    self.complete = LineEnd_complete;
-    self.dragTo = LineEnd_dragTo;
-    self.getCursor = LineEnd_getCursor;
-    self.getMaxX = LineEnd_getMaxX;
-    self.getMaxY = LineEnd_getMaxY;
-    self.getMinX = LineEnd_getMinX;
-    self.getMinY = LineEnd_getMinY;
-    self.xEnabled = LineEnd_xEnabled;
-    self.yEnabled = LineEnd_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMaxY = getMaxY;
+    self.getMinX = getMinX;
+    self.getMinY = getMinY;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function LineStart() {
     var self = { _type: 'LineStart' };
-    function LineStart_complete() {
+    function complete() {
         saveLineCoords(self);
     }
-    function LineStart_dragTo(x, y) {
+    function dragTo(x, y) {
         var x2, y2;
         x2 = self.right - x;
         y2 = self.bottom - y;
@@ -3737,41 +4586,41 @@ function LineStart() {
             findGuidesForPoint(self, x, y);
         }
     }
-    function LineStart_getCursor() {
+    function getCursor() {
         return 'move';
     }
-    function LineStart_getMaxX() {
+    function getMaxX() {
         return Number.MAX_SAFE_INTEGER;
     }
-    function LineStart_getMaxY() {
+    function getMaxY() {
         return Number.MAX_SAFE_INTEGER;
     }
-    function LineStart_getMinX() {
+    function getMinX() {
         return Number.MIN_SAFE_INTEGER;
     }
-    function LineStart_getMinY() {
+    function getMinY() {
         return Number.MIN_SAFE_INTEGER;
     }
-    function LineStart_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function LineStart_yEnabled() {
+    function yEnabled() {
         return true;
     }
-    self.complete = LineStart_complete;
-    self.dragTo = LineStart_dragTo;
-    self.getCursor = LineStart_getCursor;
-    self.getMaxX = LineStart_getMaxX;
-    self.getMaxY = LineStart_getMaxY;
-    self.getMinX = LineStart_getMinX;
-    self.getMinY = LineStart_getMinY;
-    self.xEnabled = LineStart_xEnabled;
-    self.yEnabled = LineStart_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMaxY = getMaxY;
+    self.getMinX = getMinX;
+    self.getMinY = getMinY;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function RoundedRadius() {
     var self = { _type: 'RoundedRadius' };
-    function RoundedRadius_complete() {
+    function complete() {
         var change;
         change = {
             id: self.element.id,
@@ -3780,44 +4629,44 @@ function RoundedRadius() {
         };
         updateAndKeepSelection(self.widget, [change]);
     }
-    function RoundedRadius_dragTo(x, y) {
+    function dragTo(x, y) {
         self.element.aux = self.right - x - self.touch * 2;
     }
-    function RoundedRadius_getCursor() {
+    function getCursor() {
         return 'ew-resize';
     }
-    function RoundedRadius_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function RoundedRadius_getMaxY() {
+    function getMaxY() {
         return self.maxY;
     }
-    function RoundedRadius_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function RoundedRadius_getMinY() {
+    function getMinY() {
         return self.minY;
     }
-    function RoundedRadius_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function RoundedRadius_yEnabled() {
+    function yEnabled() {
         return false;
     }
-    self.complete = RoundedRadius_complete;
-    self.dragTo = RoundedRadius_dragTo;
-    self.getCursor = RoundedRadius_getCursor;
-    self.getMaxX = RoundedRadius_getMaxX;
-    self.getMaxY = RoundedRadius_getMaxY;
-    self.getMinX = RoundedRadius_getMinX;
-    self.getMinY = RoundedRadius_getMinY;
-    self.xEnabled = RoundedRadius_xEnabled;
-    self.yEnabled = RoundedRadius_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMaxY = getMaxY;
+    self.getMinX = getMinX;
+    self.getMinY = getMinY;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function RoundedRadiusLeft() {
     var self = { _type: 'RoundedRadiusLeft' };
-    function RoundedRadiusLeft_complete() {
+    function complete() {
         var change;
         change = {
             id: self.element.id,
@@ -3826,70 +4675,70 @@ function RoundedRadiusLeft() {
         };
         updateAndKeepSelection(self.widget, [change]);
     }
-    function RoundedRadiusLeft_dragTo(x, y) {
+    function dragTo(x, y) {
         self.element.aux = x - self.left - self.touch * 2;
     }
-    function RoundedRadiusLeft_getCursor() {
+    function getCursor() {
         return 'ew-resize';
     }
-    function RoundedRadiusLeft_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function RoundedRadiusLeft_getMaxY() {
+    function getMaxY() {
         return self.maxY;
     }
-    function RoundedRadiusLeft_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function RoundedRadiusLeft_getMinY() {
+    function getMinY() {
         return self.minY;
     }
-    function RoundedRadiusLeft_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function RoundedRadiusLeft_yEnabled() {
+    function yEnabled() {
         return false;
     }
-    self.complete = RoundedRadiusLeft_complete;
-    self.dragTo = RoundedRadiusLeft_dragTo;
-    self.getCursor = RoundedRadiusLeft_getCursor;
-    self.getMaxX = RoundedRadiusLeft_getMaxX;
-    self.getMaxY = RoundedRadiusLeft_getMaxY;
-    self.getMinX = RoundedRadiusLeft_getMinX;
-    self.getMinY = RoundedRadiusLeft_getMinY;
-    self.xEnabled = RoundedRadiusLeft_xEnabled;
-    self.yEnabled = RoundedRadiusLeft_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMaxY = getMaxY;
+    self.getMinX = getMinX;
+    self.getMinY = getMinY;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function VertexHandle() {
     var self = { _type: 'VertexHandle' };
-    function VertexHandle_complete() {
+    function complete() {
         var element;
         element = self.element;
         savePoly(self.widget, element.id, self.left, self.top, element.coords);
     }
-    function VertexHandle_dragTo(x, y) {
+    function dragTo(x, y) {
         var point;
         point = self.element.coords[self.ordinal];
         point.x = x - self.left;
         point.y = y - self.top;
     }
-    function VertexHandle_getCursor() {
+    function getCursor() {
         return 'move';
     }
-    function VertexHandle_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function VertexHandle_getMaxY() {
+    function getMaxY() {
         return self.maxY;
     }
-    function VertexHandle_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function VertexHandle_getMinY() {
+    function getMinY() {
         return self.minY;
     }
-    function VertexHandle_makeContextMenu() {
+    function makeContextMenu() {
         var items;
         items = [];
         pushMenuItem('add_vertex', items, tr(self.widget, 'Add vertex'), undefined, function () {
@@ -3903,22 +4752,22 @@ function VertexHandle() {
         }
         return items;
     }
-    function VertexHandle_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function VertexHandle_yEnabled() {
+    function yEnabled() {
         return true;
     }
-    self.complete = VertexHandle_complete;
-    self.dragTo = VertexHandle_dragTo;
-    self.getCursor = VertexHandle_getCursor;
-    self.getMaxX = VertexHandle_getMaxX;
-    self.getMaxY = VertexHandle_getMaxY;
-    self.getMinX = VertexHandle_getMinX;
-    self.getMinY = VertexHandle_getMinY;
-    self.makeContextMenu = VertexHandle_makeContextMenu;
-    self.xEnabled = VertexHandle_xEnabled;
-    self.yEnabled = VertexHandle_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMaxY = getMaxY;
+    self.getMinX = getMinX;
+    self.getMinY = getMinY;
+    self.makeContextMenu = makeContextMenu;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function createRadiusHandle(widget, element, ctx) {
@@ -4638,19 +5487,19 @@ function calculateRectBox(element) {
 }
 function Callout() {
     var self = { _type: 'Callout' };
-    function Callout_calculateBox(element, config) {
+    function calculateBox(element, config) {
         calculateRectBox(element);
     }
-    function Callout_canEditContent() {
+    function canEditContent() {
         return true;
     }
-    function Callout_canEditLink() {
+    function canEditLink() {
         return true;
     }
-    function Callout_canGuide() {
+    function canGuide() {
         return false;
     }
-    function Callout_create(pos) {
+    function create(pos) {
         var item;
         item = {
             type: 'callout',
@@ -4663,7 +5512,7 @@ function Callout() {
         };
         return item;
     }
-    function Callout_drawCandies(widget, element, ctx) {
+    function drawCandies(widget, element, ctx) {
         var handle, left, top, visuals;
         drawRectCandies(widget, element, ctx);
         visuals = widget.visuals;
@@ -4683,20 +5532,20 @@ function Callout() {
         handle.primId = 'callout-' + element.id;
         createHandle(visuals, handle, ctx);
     }
-    function Callout_flow(visuals, element) {
+    function flow(visuals, element) {
         var options;
         options = {};
         return buildTextContent(visuals, element, options, element.width);
     }
-    function Callout_getAccepted() {
+    function getAccepted() {
         var accepted;
         accepted = getStandardProps();
         return accepted;
     }
-    function Callout_hit(element, pos) {
+    function hit(element, pos) {
         return true;
     }
-    function Callout_render(visuals, element, ctx) {
+    function render(visuals, element, ctx) {
         var renderCallback;
         renderCallback = function (ctx, left, top) {
             calloutPath(ctx, left, top, element.width, element.height, element.px, element.py);
@@ -4704,33 +5553,33 @@ function Callout() {
         renderIconShapeComplex(ctx, visuals, element, renderCallback, element.left, element.top);
         centerContentFree(visuals, element, ctx);
     }
-    self.calculateBox = Callout_calculateBox;
-    self.canEditContent = Callout_canEditContent;
-    self.canEditLink = Callout_canEditLink;
-    self.canGuide = Callout_canGuide;
-    self.create = Callout_create;
-    self.drawCandies = Callout_drawCandies;
-    self.flow = Callout_flow;
-    self.getAccepted = Callout_getAccepted;
-    self.hit = Callout_hit;
-    self.render = Callout_render;
+    self.calculateBox = calculateBox;
+    self.canEditContent = canEditContent;
+    self.canEditLink = canEditLink;
+    self.canGuide = canGuide;
+    self.create = create;
+    self.drawCandies = drawCandies;
+    self.flow = flow;
+    self.getAccepted = getAccepted;
+    self.hit = hit;
+    self.render = render;
     return self;
 }
 function Cloud() {
     var self = { _type: 'Cloud' };
-    function Cloud_calculateBox(element, config) {
+    function calculateBox(element, config) {
         calculateRectBox(element);
     }
-    function Cloud_canEditContent() {
+    function canEditContent() {
         return true;
     }
-    function Cloud_canEditLink() {
+    function canEditLink() {
         return true;
     }
-    function Cloud_canGuide() {
+    function canGuide() {
         return true;
     }
-    function Cloud_create(pos) {
+    function create(pos) {
         var item;
         item = {
             type: 'cloud',
@@ -4741,25 +5590,25 @@ function Cloud() {
         };
         return item;
     }
-    function Cloud_drawCandies(widget, element, ctx) {
+    function drawCandies(widget, element, ctx) {
         drawRectCandies(widget, element, ctx);
     }
-    function Cloud_flow(visuals, element) {
+    function flow(visuals, element) {
         var options, padding, width;
         padding = 0.08;
         options = {};
         width = Math.round(element.width * (1 - padding * 2));
         return buildTextContent(visuals, element, options, width);
     }
-    function Cloud_getAccepted() {
+    function getAccepted() {
         var accepted;
         accepted = getStandardProps();
         return accepted;
     }
-    function Cloud_hit(element, pos) {
+    function hit(element, pos) {
         return true;
     }
-    function Cloud_render(visuals, element, ctx) {
+    function render(visuals, element, ctx) {
         var centerY, left, padding, top;
         padding = 0.08;
         left = Math.round(element.left + element.width * padding);
@@ -4768,36 +5617,33 @@ function Cloud() {
         top = Math.floor(centerY - element.contentHeight / 2);
         renderContentCore(visuals, element, left, top);
     }
-    self.calculateBox = Cloud_calculateBox;
-    self.canEditContent = Cloud_canEditContent;
-    self.canEditLink = Cloud_canEditLink;
-    self.canGuide = Cloud_canGuide;
-    self.create = Cloud_create;
-    self.drawCandies = Cloud_drawCandies;
-    self.flow = Cloud_flow;
-    self.getAccepted = Cloud_getAccepted;
-    self.hit = Cloud_hit;
-    self.render = Cloud_render;
+    self.calculateBox = calculateBox;
+    self.canEditContent = canEditContent;
+    self.canEditLink = canEditLink;
+    self.canGuide = canGuide;
+    self.create = create;
+    self.drawCandies = drawCandies;
+    self.flow = flow;
+    self.getAccepted = getAccepted;
+    self.hit = hit;
+    self.render = render;
     return self;
-}
-function getComboButtonWidth(element) {
-    return Math.round(element.height * 0.8);
 }
 function Combobox() {
     var self = { _type: 'Combobox' };
-    function Combobox_calculateBox(element, config) {
+    function calculateBox(element, config) {
         calculateRectBox(element);
     }
-    function Combobox_canEditContent() {
+    function canEditContent() {
         return true;
     }
-    function Combobox_canEditLink() {
+    function canEditLink() {
         return true;
     }
-    function Combobox_canGuide() {
+    function canGuide() {
         return true;
     }
-    function Combobox_create(pos) {
+    function create(pos) {
         var item;
         item = {
             type: 'combobox',
@@ -4808,23 +5654,23 @@ function Combobox() {
         };
         return item;
     }
-    function Combobox_drawCandies(widget, element, ctx) {
+    function drawCandies(widget, element, ctx) {
         drawRectCandies(widget, element, ctx);
     }
-    function Combobox_flow(visuals, element) {
+    function flow(visuals, element) {
         var options;
         options = { centerContent: false };
         return buildTextContent(visuals, element, options, element.width);
     }
-    function Combobox_getAccepted() {
+    function getAccepted() {
         var accepted;
         accepted = getStandardProps();
         return accepted;
     }
-    function Combobox_hit(element, pos) {
+    function hit(element, pos) {
         return true;
     }
-    function Combobox_render(visuals, element, ctx) {
+    function render(visuals, element, ctx) {
         var config, h, w, x, x0, x1, xp, y, y0, y1, yp;
         config = visuals.config;
         renderFreeIconShape(ctx, visuals, element, buildRectCoords, undefined);
@@ -4844,33 +5690,36 @@ function Combobox() {
         triPath(ctx, x0, y0, x1, y0, x, y1);
         ctx.fill();
     }
-    self.calculateBox = Combobox_calculateBox;
-    self.canEditContent = Combobox_canEditContent;
-    self.canEditLink = Combobox_canEditLink;
-    self.canGuide = Combobox_canGuide;
-    self.create = Combobox_create;
-    self.drawCandies = Combobox_drawCandies;
-    self.flow = Combobox_flow;
-    self.getAccepted = Combobox_getAccepted;
-    self.hit = Combobox_hit;
-    self.render = Combobox_render;
+    self.calculateBox = calculateBox;
+    self.canEditContent = canEditContent;
+    self.canEditLink = canEditLink;
+    self.canGuide = canGuide;
+    self.create = create;
+    self.drawCandies = drawCandies;
+    self.flow = flow;
+    self.getAccepted = getAccepted;
+    self.hit = hit;
+    self.render = render;
     return self;
+}
+function getComboButtonWidth(element) {
+    return Math.round(element.height * 0.8);
 }
 function Database() {
     var self = { _type: 'Database' };
-    function Database_calculateBox(element, config) {
+    function calculateBox(element, config) {
         calculateRectBox(element);
     }
-    function Database_canEditContent() {
+    function canEditContent() {
         return true;
     }
-    function Database_canEditLink() {
+    function canEditLink() {
         return true;
     }
-    function Database_canGuide() {
+    function canGuide() {
         return true;
     }
-    function Database_create(pos) {
+    function create(pos) {
         var item;
         item = {
             type: 'database',
@@ -4881,23 +5730,23 @@ function Database() {
         };
         return item;
     }
-    function Database_drawCandies(widget, element, ctx) {
+    function drawCandies(widget, element, ctx) {
         drawRectCandies(widget, element, ctx);
     }
-    function Database_flow(visuals, element) {
+    function flow(visuals, element) {
         var options;
         options = {};
         return buildTextContent(visuals, element, options, element.width);
     }
-    function Database_getAccepted() {
+    function getAccepted() {
         var accepted;
         accepted = getStandardProps();
         return accepted;
     }
-    function Database_hit(element, pos) {
+    function hit(element, pos) {
         return true;
     }
-    function Database_render(visuals, element, ctx) {
+    function render(visuals, element, ctx) {
         var centerY, top;
         renderFreeIconShapeComplex(ctx, visuals, element, databasePath, element.aux);
         databaseLidPath(ctx, element.left, element.top, element.width, element.height);
@@ -4906,21 +5755,21 @@ function Database() {
         top = Math.floor(centerY - element.contentHeight / 2);
         renderContentCore(visuals, element, element.left, top);
     }
-    self.calculateBox = Database_calculateBox;
-    self.canEditContent = Database_canEditContent;
-    self.canEditLink = Database_canEditLink;
-    self.canGuide = Database_canGuide;
-    self.create = Database_create;
-    self.drawCandies = Database_drawCandies;
-    self.flow = Database_flow;
-    self.getAccepted = Database_getAccepted;
-    self.hit = Database_hit;
-    self.render = Database_render;
+    self.calculateBox = calculateBox;
+    self.canEditContent = canEditContent;
+    self.canEditLink = canEditLink;
+    self.canGuide = canGuide;
+    self.create = create;
+    self.drawCandies = drawCandies;
+    self.flow = flow;
+    self.getAccepted = getAccepted;
+    self.hit = hit;
+    self.render = render;
     return self;
 }
 function Frame() {
     var self = { _type: 'Frame' };
-    function Frame_calculateBox(element, config) {
+    function calculateBox(element, config) {
         var bottom, margin, margin2, right;
         margin = config.socketTouchRadius;
         margin2 = config.socketTouchRadius / 2;
@@ -4934,16 +5783,16 @@ function Frame() {
         element.boxes.push(boxForHorizontalLine(element.left, element.top, right, margin2));
         element.boxes.push(boxForHorizontalLine(element.left, bottom, right, margin2));
     }
-    function Frame_canEditContent() {
+    function canEditContent() {
         return false;
     }
-    function Frame_canEditLink() {
+    function canEditLink() {
         return false;
     }
-    function Frame_canGuide() {
+    function canGuide() {
         return true;
     }
-    function Frame_create(pos) {
+    function create(pos) {
         var item;
         item = {
             type: 'frame',
@@ -4954,15 +5803,15 @@ function Frame() {
         };
         return item;
     }
-    function Frame_drawCandies(widget, element, ctx) {
+    function drawCandies(widget, element, ctx) {
         drawRectCandies(widget, element, ctx);
     }
-    function Frame_flow(visuals, element) {
+    function flow(visuals, element) {
         var options;
         options = {};
         return undefined;
     }
-    function Frame_getAccepted() {
+    function getAccepted() {
         var accepted;
         accepted = [];
         accepted.push('lines');
@@ -4970,17 +5819,17 @@ function Frame() {
         accepted.push('lineStyle');
         return accepted;
     }
-    function Frame_hit(element, pos) {
-        var _collection_178, box;
-        _collection_178 = element.boxes;
-        for (box of _collection_178) {
+    function hit(element, pos) {
+        var _collection_1572, box;
+        _collection_1572 = element.boxes;
+        for (box of _collection_1572) {
             if (hitBox(box, pos.x, pos.y)) {
                 return true;
             }
         }
         return false;
     }
-    function Frame_render(visuals, element, ctx) {
+    function render(visuals, element, ctx) {
         var color, config, line;
         config = visuals.config;
         line = getLineWidth(visuals, element);
@@ -4990,33 +5839,33 @@ function Frame() {
         setLineDashFromStyle(config, element, line, 'lineStyle', ctx);
         renderIconShapeBorder(ctx, visuals, buildRectCoords, line, element.left, element.top, element.width, element.height, undefined);
     }
-    self.calculateBox = Frame_calculateBox;
-    self.canEditContent = Frame_canEditContent;
-    self.canEditLink = Frame_canEditLink;
-    self.canGuide = Frame_canGuide;
-    self.create = Frame_create;
-    self.drawCandies = Frame_drawCandies;
-    self.flow = Frame_flow;
-    self.getAccepted = Frame_getAccepted;
-    self.hit = Frame_hit;
-    self.render = Frame_render;
+    self.calculateBox = calculateBox;
+    self.canEditContent = canEditContent;
+    self.canEditLink = canEditLink;
+    self.canGuide = canGuide;
+    self.create = create;
+    self.drawCandies = drawCandies;
+    self.flow = flow;
+    self.getAccepted = getAccepted;
+    self.hit = hit;
+    self.render = render;
     return self;
 }
 function FreeImage() {
     var self = { _type: 'FreeImage' };
-    function FreeImage_calculateBox(element, config) {
+    function calculateBox(element, config) {
         calculateRectBox(element);
     }
-    function FreeImage_canEditContent() {
+    function canEditContent() {
         return true;
     }
-    function FreeImage_canEditLink() {
+    function canEditLink() {
         return false;
     }
-    function FreeImage_canGuide() {
+    function canGuide() {
         return true;
     }
-    function FreeImage_create(pos) {
+    function create(pos) {
         var item;
         item = {
             type: 'free-image',
@@ -5027,23 +5876,23 @@ function FreeImage() {
         };
         return item;
     }
-    function FreeImage_drawCandies(widget, element, ctx) {
+    function drawCandies(widget, element, ctx) {
         drawRectCandies(widget, element, ctx);
     }
-    function FreeImage_flow(visuals, element) {
+    function flow(visuals, element) {
         var options;
         options = {};
         return buildTextContent(visuals, element, options, element.width);
     }
-    function FreeImage_getAccepted() {
+    function getAccepted() {
         var accepted;
         accepted = getStandardProps();
         return accepted;
     }
-    function FreeImage_hit(element, pos) {
+    function hit(element, pos) {
         return true;
     }
-    function FreeImage_render(visuals, element, ctx) {
+    function render(visuals, element, ctx) {
         var _branch_, bottom, cy, height, image, imageHeight, left, line, middle, textLeft, textTop, top, width;
         _branch_ = 'Fill';
         while (true) {
@@ -5095,7 +5944,7 @@ function FreeImage() {
             }
         }
     }
-    function FreeImage_renderRef(visuals, element, ctx) {
+    function renderRef(visuals, element, ctx) {
         var renderCallback;
         renderCallback = function (ctx, left, top) {
             calloutPath(ctx, left, top, element.width, element.height, element.px, element.py);
@@ -5103,34 +5952,34 @@ function FreeImage() {
         renderIconShapeComplex(ctx, visuals, element, renderCallback, element.left, element.top);
         centerContentFree(visuals, element, ctx);
     }
-    self.calculateBox = FreeImage_calculateBox;
-    self.canEditContent = FreeImage_canEditContent;
-    self.canEditLink = FreeImage_canEditLink;
-    self.canGuide = FreeImage_canGuide;
-    self.create = FreeImage_create;
-    self.drawCandies = FreeImage_drawCandies;
-    self.flow = FreeImage_flow;
-    self.getAccepted = FreeImage_getAccepted;
-    self.hit = FreeImage_hit;
-    self.render = FreeImage_render;
-    self.renderRef = FreeImage_renderRef;
+    self.calculateBox = calculateBox;
+    self.canEditContent = canEditContent;
+    self.canEditLink = canEditLink;
+    self.canGuide = canGuide;
+    self.create = create;
+    self.drawCandies = drawCandies;
+    self.flow = flow;
+    self.getAccepted = getAccepted;
+    self.hit = hit;
+    self.render = render;
+    self.renderRef = renderRef;
     return self;
 }
 function GlyphIcon() {
     var self = { _type: 'GlyphIcon' };
-    function GlyphIcon_calculateBox(element, config) {
+    function calculateBox(element, config) {
         calculateRectBox(element);
     }
-    function GlyphIcon_canEditContent() {
+    function canEditContent() {
         return false;
     }
-    function GlyphIcon_canEditLink() {
+    function canEditLink() {
         return false;
     }
-    function GlyphIcon_canGuide() {
+    function canGuide() {
         return true;
     }
-    function GlyphIcon_create(pos) {
+    function create(pos) {
         var item;
         item = {
             type: self.type,
@@ -5141,38 +5990,38 @@ function GlyphIcon() {
         };
         return item;
     }
-    function GlyphIcon_drawCandies(widget, element, ctx) {
+    function drawCandies(widget, element, ctx) {
         drawRectCandies(widget, element, ctx);
     }
-    function GlyphIcon_flow(visuals, element) {
+    function flow(visuals, element) {
         var options;
         options = {};
         return buildTextContent(visuals, element, options, element.width);
     }
-    function GlyphIcon_getAccepted() {
+    function getAccepted() {
         var accepted;
         accepted = [];
         accepted.push('lines');
         accepted.push('lineWidth');
         return accepted;
     }
-    function GlyphIcon_hit(element, pos) {
+    function hit(element, pos) {
         return true;
     }
-    self.calculateBox = GlyphIcon_calculateBox;
-    self.canEditContent = GlyphIcon_canEditContent;
-    self.canEditLink = GlyphIcon_canEditLink;
-    self.canGuide = GlyphIcon_canGuide;
-    self.create = GlyphIcon_create;
-    self.drawCandies = GlyphIcon_drawCandies;
-    self.flow = GlyphIcon_flow;
-    self.getAccepted = GlyphIcon_getAccepted;
-    self.hit = GlyphIcon_hit;
+    self.calculateBox = calculateBox;
+    self.canEditContent = canEditContent;
+    self.canEditLink = canEditLink;
+    self.canGuide = canGuide;
+    self.create = create;
+    self.drawCandies = drawCandies;
+    self.flow = flow;
+    self.getAccepted = getAccepted;
+    self.hit = hit;
     return self;
 }
 function GroupDuration() {
     var self = { _type: 'GroupDuration' };
-    function GroupDuration_calculateBox(element, config) {
+    function calculateBox(element, config) {
         var bottomX, bottomY, height, innerRight, left, margin, right, topX, topY, width;
         element.innerBox = boxFromPoint(element.x, element.y, element.w, element.h);
         topY = element.y + element.hiY;
@@ -5197,16 +6046,16 @@ function GroupDuration() {
             element.subboxes.push(boxForHorizontalLine(element.x, bottomY, element.x + element.loX, margin));
         }
     }
-    function GroupDuration_canEditContent() {
+    function canEditContent() {
         return true;
     }
-    function GroupDuration_canEditLink() {
+    function canEditLink() {
         return true;
     }
-    function GroupDuration_canGuide() {
+    function canGuide() {
         return false;
     }
-    function GroupDuration_create(pos) {
+    function create(pos) {
         var item;
         item = {
             type: 'group-duration',
@@ -5225,39 +6074,39 @@ function GroupDuration() {
         }
         return item;
     }
-    function GroupDuration_drawCandies(widget, element, ctx) {
+    function drawCandies(widget, element, ctx) {
         var config;
         config = widget.visuals.config;
         standardCandy(element, ctx, config);
         drawGroupHandles(widget, element, ctx, config);
     }
-    function GroupDuration_flow(visuals, element) {
+    function flow(visuals, element) {
         var size;
         size = contentDuration(visuals, element);
         setNodeSize(visuals.config, element, size);
         element.contentHeight = size.height;
     }
-    function GroupDuration_getAccepted() {
+    function getAccepted() {
         var accepted;
         accepted = getStandardProps();
         accepted.push('lines');
         accepted.push('lineWidth');
         return accepted;
     }
-    function GroupDuration_hit(element, pos) {
-        var _collection_180, box;
+    function hit(element, pos) {
+        var _collection_1574, box;
         if (hitBox(element.innerBox, pos.x, pos.y)) {
             return true;
         }
-        _collection_180 = element.subboxes;
-        for (box of _collection_180) {
+        _collection_1574 = element.subboxes;
+        for (box of _collection_1574) {
             if (hitBox(box, pos.x, pos.y)) {
                 return true;
             }
         }
         return false;
     }
-    function GroupDuration_render(visuals, element, ctx) {
+    function render(visuals, element, ctx) {
         var _branch_, bottom, bx, cbottom, color, config, ctop, cx, cx2, dash, lineWidth, radius, top, tx, x, y;
         _branch_ = 'Set up';
         while (true) {
@@ -5365,31 +6214,31 @@ function GroupDuration() {
             }
         }
     }
-    self.calculateBox = GroupDuration_calculateBox;
-    self.canEditContent = GroupDuration_canEditContent;
-    self.canEditLink = GroupDuration_canEditLink;
-    self.canGuide = GroupDuration_canGuide;
-    self.create = GroupDuration_create;
-    self.drawCandies = GroupDuration_drawCandies;
-    self.flow = GroupDuration_flow;
-    self.getAccepted = GroupDuration_getAccepted;
-    self.hit = GroupDuration_hit;
-    self.render = GroupDuration_render;
+    self.calculateBox = calculateBox;
+    self.canEditContent = canEditContent;
+    self.canEditLink = canEditLink;
+    self.canGuide = canGuide;
+    self.create = create;
+    self.drawCandies = drawCandies;
+    self.flow = flow;
+    self.getAccepted = getAccepted;
+    self.hit = hit;
+    self.render = render;
     return self;
 }
 function Line() {
     var self = { _type: 'Line' };
-    function Line_calculateBox(element, config) {
+    function calculateBox(element, config) {
         var margin;
         margin = config.socketTouchRadius;
         element.margin = margin;
         element.innerBox = calculateLineBox(element, 0);
         element.box = createBoxWithMargin(element.innerBox.left, element.innerBox.top, element.innerBox.width, element.innerBox.height, margin);
     }
-    function Line_canGuide() {
+    function canGuide() {
         return true;
     }
-    function Line_create(pos) {
+    function create(pos) {
         var item;
         item = {
             type: 'line',
@@ -5403,7 +6252,7 @@ function Line() {
         }
         return item;
     }
-    function Line_drawCandies(widget, element, ctx) {
+    function drawCandies(widget, element, ctx) {
         var big, config, end, start, visuals;
         big = 4000;
         visuals = widget.visuals;
@@ -5423,15 +6272,15 @@ function Line() {
         end.primId = 'lineend-' + element.id;
         createHandle(visuals, end, ctx);
     }
-    function Line_flow(visuals, element) {
+    function flow(visuals, element) {
     }
-    function Line_formatArrow() {
+    function formatArrow() {
         return true;
     }
-    function Line_formatLines() {
+    function formatLines() {
         return true;
     }
-    function Line_getAccepted() {
+    function getAccepted() {
         var accepted;
         accepted = [];
         accepted.push('lines');
@@ -5441,7 +6290,7 @@ function Line() {
         accepted.push('tailStyle');
         return accepted;
     }
-    function Line_hit(element, pos) {
+    function hit(element, pos) {
         var x1, x2, y1, y2;
         x1 = element.left;
         x2 = x1 + element.x2;
@@ -5449,7 +6298,7 @@ function Line() {
         y2 = y1 + element.y2;
         return hitLine(x1, y1, x2, y2, pos, element.margin);
     }
-    function Line_render(visuals, element, ctx) {
+    function render(visuals, element, ctx) {
         var angle, color, config, iconBack, lineWidth, x1, x2, y1, y2;
         x1 = element.left;
         x2 = x1 + element.x2;
@@ -5468,33 +6317,33 @@ function Line() {
             drawCap(ctx, element.style.headStyle, x2, y2, angle, color, iconBack, lineWidth);
         }
     }
-    self.calculateBox = Line_calculateBox;
-    self.canGuide = Line_canGuide;
-    self.create = Line_create;
-    self.drawCandies = Line_drawCandies;
-    self.flow = Line_flow;
-    self.formatArrow = Line_formatArrow;
-    self.formatLines = Line_formatLines;
-    self.getAccepted = Line_getAccepted;
-    self.hit = Line_hit;
-    self.render = Line_render;
+    self.calculateBox = calculateBox;
+    self.canGuide = canGuide;
+    self.create = create;
+    self.drawCandies = drawCandies;
+    self.flow = flow;
+    self.formatArrow = formatArrow;
+    self.formatLines = formatLines;
+    self.getAccepted = getAccepted;
+    self.hit = hit;
+    self.render = render;
     return self;
 }
 function Polygon() {
     var self = { _type: 'Polygon' };
-    function Polygon_calculateBox(element, config) {
+    function calculateBox(element, config) {
         calculateRectBox(element);
     }
-    function Polygon_canEditContent() {
+    function canEditContent() {
         return true;
     }
-    function Polygon_canEditLink() {
+    function canEditLink() {
         return true;
     }
-    function Polygon_canGuide() {
+    function canGuide() {
         return true;
     }
-    function Polygon_create(pos) {
+    function create(pos) {
         var item;
         item = {
             type: 'polygon',
@@ -5505,7 +6354,7 @@ function Polygon() {
         calculatePolygonRect(item);
         return item;
     }
-    function Polygon_drawCandies(widget, element, ctx) {
+    function drawCandies(widget, element, ctx) {
         var handle, i, left, point, top, visuals;
         visuals = widget.visuals;
         for (i = 0; i < element.coords.length; i++) {
@@ -5530,20 +6379,20 @@ function Polygon() {
             createHandle(visuals, handle, ctx);
         }
     }
-    function Polygon_flow(visuals, element) {
+    function flow(visuals, element) {
         var options;
         options = {};
         return buildTextContent(visuals, element, options, element.width);
     }
-    function Polygon_getAccepted() {
+    function getAccepted() {
         var accepted;
         accepted = getStandardProps();
         return accepted;
     }
-    function Polygon_hit(element, pos) {
+    function hit(element, pos) {
         return true;
     }
-    function Polygon_render(visuals, element, ctx) {
+    function render(visuals, element, ctx) {
         var buildCoords;
         buildCoords = function (left, top) {
             return polygonCoords(left, top, element.coords);
@@ -5551,36 +6400,36 @@ function Polygon() {
         renderFreeIconShape(ctx, visuals, element, buildCoords);
         centerContentFree(visuals, element, ctx);
     }
-    self.calculateBox = Polygon_calculateBox;
-    self.canEditContent = Polygon_canEditContent;
-    self.canEditLink = Polygon_canEditLink;
-    self.canGuide = Polygon_canGuide;
-    self.create = Polygon_create;
-    self.drawCandies = Polygon_drawCandies;
-    self.flow = Polygon_flow;
-    self.getAccepted = Polygon_getAccepted;
-    self.hit = Polygon_hit;
-    self.render = Polygon_render;
+    self.calculateBox = calculateBox;
+    self.canEditContent = canEditContent;
+    self.canEditLink = canEditLink;
+    self.canGuide = canGuide;
+    self.create = create;
+    self.drawCandies = drawCandies;
+    self.flow = flow;
+    self.getAccepted = getAccepted;
+    self.hit = hit;
+    self.render = render;
     return self;
 }
 function Polyline() {
     var self = { _type: 'Polyline' };
-    function Polyline_calculateBox(element, config) {
+    function calculateBox(element, config) {
         var margin;
         margin = config.socketTouchRadius;
         element.margin = margin;
         element.box = createBoxWithMargin(element.left, element.top, element.width, element.height, margin);
     }
-    function Polyline_canEditContent() {
+    function canEditContent() {
         return false;
     }
-    function Polyline_canEditLink() {
+    function canEditLink() {
         return false;
     }
-    function Polyline_canGuide() {
+    function canGuide() {
         return false;
     }
-    function Polyline_create(pos) {
+    function create(pos) {
         var coords, item;
         coords = [
             {
@@ -5613,7 +6462,7 @@ function Polyline() {
         calculatePolygonRect(item);
         return item;
     }
-    function Polyline_drawCandies(widget, element, ctx) {
+    function drawCandies(widget, element, ctx) {
         var handle, i, left, point, top, visuals;
         visuals = widget.visuals;
         for (i = 0; i < element.coords.length; i++) {
@@ -5638,12 +6487,12 @@ function Polyline() {
             createHandle(visuals, handle, ctx);
         }
     }
-    function Polyline_flow(visuals, element) {
+    function flow(visuals, element) {
         var options;
         options = {};
         return buildTextContent(visuals, element, options, element.width);
     }
-    function Polyline_getAccepted() {
+    function getAccepted() {
         var accepted;
         accepted = [];
         accepted.push('lines');
@@ -5653,7 +6502,7 @@ function Polyline() {
         accepted.push('tailStyle');
         return accepted;
     }
-    function Polyline_hit(element, pos) {
+    function hit(element, pos) {
         var coords, curr, hit, i, left, prev, top, x1, x2, y1, y2;
         coords = element.coords;
         left = element.left;
@@ -5672,7 +6521,7 @@ function Polyline() {
         }
         return false;
     }
-    function Polyline_render(visuals, element, ctx) {
+    function render(visuals, element, ctx) {
         var config, coords, iconBack, lineWidth, lines, minLine, style;
         style = element.style || {};
         minLine = 40;
@@ -5693,33 +6542,33 @@ function Polyline() {
         drawTail(ctx, coords, style.tailStyle, line, iconBack, lineWidth);
         drawHead(ctx, coords, style.headStyle, line, iconBack, lineWidth);
     }
-    self.calculateBox = Polyline_calculateBox;
-    self.canEditContent = Polyline_canEditContent;
-    self.canEditLink = Polyline_canEditLink;
-    self.canGuide = Polyline_canGuide;
-    self.create = Polyline_create;
-    self.drawCandies = Polyline_drawCandies;
-    self.flow = Polyline_flow;
-    self.getAccepted = Polyline_getAccepted;
-    self.hit = Polyline_hit;
-    self.render = Polyline_render;
+    self.calculateBox = calculateBox;
+    self.canEditContent = canEditContent;
+    self.canEditLink = canEditLink;
+    self.canGuide = canGuide;
+    self.create = create;
+    self.drawCandies = drawCandies;
+    self.flow = flow;
+    self.getAccepted = getAccepted;
+    self.hit = hit;
+    self.render = render;
     return self;
 }
 function PtrLeft() {
     var self = { _type: 'PtrLeft' };
-    function PtrLeft_calculateBox(element, config) {
+    function calculateBox(element, config) {
         calculateRectBox(element);
     }
-    function PtrLeft_canEditContent() {
+    function canEditContent() {
         return true;
     }
-    function PtrLeft_canEditLink() {
+    function canEditLink() {
         return true;
     }
-    function PtrLeft_canGuide() {
+    function canGuide() {
         return true;
     }
-    function PtrLeft_create(pos) {
+    function create(pos) {
         var item;
         item = {
             type: 'f_ptr_left',
@@ -5731,57 +6580,57 @@ function PtrLeft() {
         };
         return item;
     }
-    function PtrLeft_drawCandies(widget, element, ctx) {
+    function drawCandies(widget, element, ctx) {
         drawRectCandies(widget, element, ctx);
         createRadiusHandleLeft(widget, element, ctx);
     }
-    function PtrLeft_flow(visuals, element) {
+    function flow(visuals, element) {
         var options;
         options = {};
         return buildTextContent(visuals, element, options, element.width - element.aux);
     }
-    function PtrLeft_getAccepted() {
+    function getAccepted() {
         var accepted;
         accepted = getStandardProps();
         return accepted;
     }
-    function PtrLeft_hit(element, pos) {
+    function hit(element, pos) {
         return true;
     }
-    function PtrLeft_render(visuals, element, ctx) {
+    function render(visuals, element, ctx) {
         var centerY, top;
         renderFreeIconShape(ctx, visuals, element, buildPtrLeftCoords, element.aux);
         centerY = element.top + element.height / 2;
         top = Math.floor(centerY - element.contentHeight / 2);
         renderContentCore(visuals, element, element.left + element.aux, top);
     }
-    self.calculateBox = PtrLeft_calculateBox;
-    self.canEditContent = PtrLeft_canEditContent;
-    self.canEditLink = PtrLeft_canEditLink;
-    self.canGuide = PtrLeft_canGuide;
-    self.create = PtrLeft_create;
-    self.drawCandies = PtrLeft_drawCandies;
-    self.flow = PtrLeft_flow;
-    self.getAccepted = PtrLeft_getAccepted;
-    self.hit = PtrLeft_hit;
-    self.render = PtrLeft_render;
+    self.calculateBox = calculateBox;
+    self.canEditContent = canEditContent;
+    self.canEditLink = canEditLink;
+    self.canGuide = canGuide;
+    self.create = create;
+    self.drawCandies = drawCandies;
+    self.flow = flow;
+    self.getAccepted = getAccepted;
+    self.hit = hit;
+    self.render = render;
     return self;
 }
 function PtrRight() {
     var self = { _type: 'PtrRight' };
-    function PtrRight_calculateBox(element, config) {
+    function calculateBox(element, config) {
         calculateRectBox(element);
     }
-    function PtrRight_canEditContent() {
+    function canEditContent() {
         return true;
     }
-    function PtrRight_canEditLink() {
+    function canEditLink() {
         return true;
     }
-    function PtrRight_canGuide() {
+    function canGuide() {
         return true;
     }
-    function PtrRight_create(pos) {
+    function create(pos) {
         var item;
         item = {
             type: 'f_ptr_right',
@@ -5793,54 +6642,54 @@ function PtrRight() {
         };
         return item;
     }
-    function PtrRight_drawCandies(widget, element, ctx) {
+    function drawCandies(widget, element, ctx) {
         drawRectCandies(widget, element, ctx);
         createRadiusHandle(widget, element, ctx);
     }
-    function PtrRight_flow(visuals, element) {
+    function flow(visuals, element) {
         var options;
         options = {};
         return buildTextContent(visuals, element, options, element.width - element.aux);
     }
-    function PtrRight_getAccepted() {
+    function getAccepted() {
         var accepted;
         accepted = getStandardProps();
         return accepted;
     }
-    function PtrRight_hit(element, pos) {
+    function hit(element, pos) {
         return true;
     }
-    function PtrRight_render(visuals, element, ctx) {
+    function render(visuals, element, ctx) {
         renderFreeIconShape(ctx, visuals, element, buildPtrRightCoords, element.aux);
         centerContentFree(visuals, element, ctx);
     }
-    self.calculateBox = PtrRight_calculateBox;
-    self.canEditContent = PtrRight_canEditContent;
-    self.canEditLink = PtrRight_canEditLink;
-    self.canGuide = PtrRight_canGuide;
-    self.create = PtrRight_create;
-    self.drawCandies = PtrRight_drawCandies;
-    self.flow = PtrRight_flow;
-    self.getAccepted = PtrRight_getAccepted;
-    self.hit = PtrRight_hit;
-    self.render = PtrRight_render;
+    self.calculateBox = calculateBox;
+    self.canEditContent = canEditContent;
+    self.canEditLink = canEditLink;
+    self.canGuide = canGuide;
+    self.create = create;
+    self.drawCandies = drawCandies;
+    self.flow = flow;
+    self.getAccepted = getAccepted;
+    self.hit = hit;
+    self.render = render;
     return self;
 }
 function Rectangle() {
     var self = { _type: 'Rectangle' };
-    function Rectangle_calculateBox(element, config) {
+    function calculateBox(element, config) {
         calculateRectBox(element);
     }
-    function Rectangle_canEditContent() {
+    function canEditContent() {
         return true;
     }
-    function Rectangle_canEditLink() {
+    function canEditLink() {
         return true;
     }
-    function Rectangle_canGuide() {
+    function canGuide() {
         return true;
     }
-    function Rectangle_create(pos) {
+    function create(pos) {
         var item;
         item = {
             type: self.type,
@@ -5854,48 +6703,48 @@ function Rectangle() {
         }
         return item;
     }
-    function Rectangle_drawCandies(widget, element, ctx) {
+    function drawCandies(widget, element, ctx) {
         drawRectCandies(widget, element, ctx);
     }
-    function Rectangle_flow(visuals, element) {
+    function flow(visuals, element) {
         var options;
         options = {};
         return buildTextContent(visuals, element, options, element.width);
     }
-    function Rectangle_getAccepted() {
+    function getAccepted() {
         var accepted;
         accepted = getStandardProps();
         return accepted;
     }
-    function Rectangle_hit(element, pos) {
+    function hit(element, pos) {
         return true;
     }
-    self.calculateBox = Rectangle_calculateBox;
-    self.canEditContent = Rectangle_canEditContent;
-    self.canEditLink = Rectangle_canEditLink;
-    self.canGuide = Rectangle_canGuide;
-    self.create = Rectangle_create;
-    self.drawCandies = Rectangle_drawCandies;
-    self.flow = Rectangle_flow;
-    self.getAccepted = Rectangle_getAccepted;
-    self.hit = Rectangle_hit;
+    self.calculateBox = calculateBox;
+    self.canEditContent = canEditContent;
+    self.canEditLink = canEditLink;
+    self.canGuide = canGuide;
+    self.create = create;
+    self.drawCandies = drawCandies;
+    self.flow = flow;
+    self.getAccepted = getAccepted;
+    self.hit = hit;
     return self;
 }
 function SimpleFree() {
     var self = { _type: 'SimpleFree' };
-    function SimpleFree_calculateBox(element, config) {
+    function calculateBox(element, config) {
         calculateRectBox(element);
     }
-    function SimpleFree_canEditContent() {
+    function canEditContent() {
         return false;
     }
-    function SimpleFree_canEditLink() {
+    function canEditLink() {
         return false;
     }
-    function SimpleFree_canGuide() {
+    function canGuide() {
         return true;
     }
-    function SimpleFree_create(pos) {
+    function create(pos) {
         var item;
         item = {
             type: self.type,
@@ -5906,15 +6755,15 @@ function SimpleFree() {
         };
         return item;
     }
-    function SimpleFree_drawCandies(widget, element, ctx) {
+    function drawCandies(widget, element, ctx) {
         drawRectCandies(widget, element, ctx);
     }
-    function SimpleFree_flow(visuals, element) {
+    function flow(visuals, element) {
         var options;
         options = {};
         return buildTextContent(visuals, element, options, element.width);
     }
-    function SimpleFree_getAccepted() {
+    function getAccepted() {
         return [
             'iconBack',
             'iconBorder',
@@ -5925,32 +6774,32 @@ function SimpleFree() {
             'shadowOffsetY'
         ];
     }
-    function SimpleFree_hit(element, pos) {
+    function hit(element, pos) {
         return true;
     }
-    self.calculateBox = SimpleFree_calculateBox;
-    self.canEditContent = SimpleFree_canEditContent;
-    self.canEditLink = SimpleFree_canEditLink;
-    self.canGuide = SimpleFree_canGuide;
-    self.create = SimpleFree_create;
-    self.drawCandies = SimpleFree_drawCandies;
-    self.flow = SimpleFree_flow;
-    self.getAccepted = SimpleFree_getAccepted;
-    self.hit = SimpleFree_hit;
+    self.calculateBox = calculateBox;
+    self.canEditContent = canEditContent;
+    self.canEditLink = canEditLink;
+    self.canGuide = canGuide;
+    self.create = create;
+    self.drawCandies = drawCandies;
+    self.flow = flow;
+    self.getAccepted = getAccepted;
+    self.hit = hit;
     return self;
 }
 function Text() {
     var self = { _type: 'Text' };
-    function Text_calculateBox(element, config) {
+    function calculateBox(element, config) {
         calculateRectBox(element);
     }
-    function Text_canEditContent() {
+    function canEditContent() {
         return true;
     }
-    function Text_canGuide() {
+    function canGuide() {
         return true;
     }
-    function Text_create(pos) {
+    function create(pos) {
         var item;
         item = {
             type: 'text',
@@ -5962,10 +6811,10 @@ function Text() {
         };
         return item;
     }
-    function Text_drawCandies(widget, element, ctx) {
+    function drawCandies(widget, element, ctx) {
         drawRectCandies(widget, element, ctx);
     }
-    function Text_flow(visuals, element) {
+    function flow(visuals, element) {
         var options;
         options = {
             centerContent: false,
@@ -5973,7 +6822,7 @@ function Text() {
         };
         return buildTextContent(visuals, element, options, element.width);
     }
-    function Text_getAccepted() {
+    function getAccepted() {
         var accepted;
         accepted = getStandardProps();
         return [
@@ -5985,10 +6834,10 @@ function Text() {
         ];
         return accepted;
     }
-    function Text_hit(element, pos) {
+    function hit(element, pos) {
         return true;
     }
-    function Text_render(visuals, element, ctx) {
+    function render(visuals, element, ctx) {
         var config, height, left, top, width;
         config = visuals.config;
         left = element.left;
@@ -6001,15 +6850,15 @@ function Text() {
         }
         centerContentFree(visuals, element, ctx);
     }
-    self.calculateBox = Text_calculateBox;
-    self.canEditContent = Text_canEditContent;
-    self.canGuide = Text_canGuide;
-    self.create = Text_create;
-    self.drawCandies = Text_drawCandies;
-    self.flow = Text_flow;
-    self.getAccepted = Text_getAccepted;
-    self.hit = Text_hit;
-    self.render = Text_render;
+    self.calculateBox = calculateBox;
+    self.canEditContent = canEditContent;
+    self.canGuide = canGuide;
+    self.create = create;
+    self.drawCandies = drawCandies;
+    self.flow = flow;
+    self.getAccepted = getAccepted;
+    self.hit = hit;
+    self.render = render;
     return self;
 }
 function createRectangular(render, type, props) {
@@ -6781,7 +7630,7 @@ function setCommonHandleFields(widget, element, handle) {
     handle.id = element.id;
 }
 function addLineVertex(widget, id, ordinal) {
-    var _branch_, _collection_182, _collection_184, _collection_186, _collection_188, cx1, cx2, cy1, cy2, dx, dy, element, len, newVertex, next, old, point, prev, radius, shift, visuals;
+    var _branch_, _collection_1576, _collection_1578, _collection_1580, _collection_1582, cx1, cx2, cy1, cy2, dx, dy, element, len, newVertex, next, old, point, prev, radius, shift, visuals;
     _branch_ = 'Prepare';
     while (true) {
         switch (_branch_) {
@@ -6856,8 +7705,8 @@ function addLineVertex(widget, id, ordinal) {
         case 'Move vertexes up':
             dx = 0;
             dy = -shift;
-            _collection_186 = element.coords;
-            for (point of _collection_186) {
+            _collection_1580 = element.coords;
+            for (point of _collection_1580) {
                 if (point.y < old.y) {
                     point.y -= shift * 2;
                 }
@@ -6867,8 +7716,8 @@ function addLineVertex(widget, id, ordinal) {
         case 'Move vertexes down':
             dx = 0;
             dy = shift;
-            _collection_188 = element.coords;
-            for (point of _collection_188) {
+            _collection_1582 = element.coords;
+            for (point of _collection_1582) {
                 if (point.y > old.y) {
                     point.y += shift * 2;
                 }
@@ -6878,8 +7727,8 @@ function addLineVertex(widget, id, ordinal) {
         case 'Move vertexes left':
             dx = -shift;
             dy = 0;
-            _collection_182 = element.coords;
-            for (point of _collection_182) {
+            _collection_1576 = element.coords;
+            for (point of _collection_1576) {
                 if (point.x < old.x) {
                     point.x -= shift * 2;
                 }
@@ -6889,8 +7738,8 @@ function addLineVertex(widget, id, ordinal) {
         case 'Move vertexes right':
             dx = shift;
             dy = 0;
-            _collection_184 = element.coords;
-            for (point of _collection_184) {
+            _collection_1578 = element.coords;
+            for (point of _collection_1578) {
                 if (point.x > old.x) {
                     point.x += shift * 2;
                 }
@@ -6916,7 +7765,7 @@ function addLineVertex(widget, id, ordinal) {
     }
 }
 function addVertex(widget, id, ordinal) {
-    var _branch_, _collection_190, _collection_192, _collection_194, _collection_196, cx1, cx2, cy1, cy2, dx, dy, element, len, newVertex, next, nindex, old, pindex, point, prev, radius, shift, visuals;
+    var _branch_, _collection_1584, _collection_1586, _collection_1588, _collection_1590, cx1, cx2, cy1, cy2, dx, dy, element, len, newVertex, next, nindex, old, pindex, point, prev, radius, shift, visuals;
     _branch_ = 'Prepare';
     while (true) {
         switch (_branch_) {
@@ -6971,8 +7820,8 @@ function addVertex(widget, id, ordinal) {
         case 'Move vertexes up':
             dx = 0;
             dy = -shift;
-            _collection_194 = element.coords;
-            for (point of _collection_194) {
+            _collection_1588 = element.coords;
+            for (point of _collection_1588) {
                 if (point.y < old.y) {
                     point.y -= shift * 2;
                 }
@@ -6982,8 +7831,8 @@ function addVertex(widget, id, ordinal) {
         case 'Move vertexes down':
             dx = 0;
             dy = shift;
-            _collection_196 = element.coords;
-            for (point of _collection_196) {
+            _collection_1590 = element.coords;
+            for (point of _collection_1590) {
                 if (point.y > old.y) {
                     point.y += shift * 2;
                 }
@@ -6993,8 +7842,8 @@ function addVertex(widget, id, ordinal) {
         case 'Move vertexes left':
             dx = -shift;
             dy = 0;
-            _collection_190 = element.coords;
-            for (point of _collection_190) {
+            _collection_1584 = element.coords;
+            for (point of _collection_1584) {
                 if (point.x < old.x) {
                     point.x -= shift * 2;
                 }
@@ -7004,8 +7853,8 @@ function addVertex(widget, id, ordinal) {
         case 'Move vertexes right':
             dx = shift;
             dy = 0;
-            _collection_192 = element.coords;
-            for (point of _collection_192) {
+            _collection_1586 = element.coords;
+            for (point of _collection_1586) {
                 if (point.x > old.x) {
                     point.x += shift * 2;
                 }
@@ -7261,9 +8110,9 @@ function getDiagramCenter(widget) {
     return pos;
 }
 function getFree(visuals, id) {
-    var _collection_198, element;
-    _collection_198 = visuals.free;
-    for (element of _collection_198) {
+    var _collection_1592, element;
+    _collection_1592 = visuals.free;
+    for (element of _collection_1592) {
         if (element.id === id) {
             return element;
         }
@@ -7406,9 +8255,9 @@ function insertFreeItem(widget, edits, item) {
     return createItem(widget.model, edits, item);
 }
 function intersectBoxes(element, frame) {
-    var _collection_200, box;
-    _collection_200 = element.boxes;
-    for (box of _collection_200) {
+    var _collection_1594, box;
+    _collection_1594 = element.boxes;
+    for (box of _collection_1594) {
         if (boxesIntersect(box, frame)) {
             return true;
         }
@@ -7502,12 +8351,12 @@ function sortFreeIcons(visuals) {
     utils.sortBy(visuals.free, 'zIndex');
 }
 function findHorizontalCentralGuide(widget, id, box, y) {
-    var _collection_204, ebox, element, found, guide, left, right;
+    var _collection_1598, ebox, element, found, guide, left, right;
     left = box.centerX;
     right = box.centerX;
     found = false;
-    _collection_204 = widget.visuals.free;
-    for (element of _collection_204) {
+    _collection_1598 = widget.visuals.free;
+    for (element of _collection_1598) {
         if (element.id !== id && canGuide(widget, element)) {
             ebox = getGuideBox(element);
             if (ebox.centerY === y) {
@@ -7528,12 +8377,12 @@ function findHorizontalCentralGuide(widget, id, box, y) {
     }
 }
 function findHorizontalGuide(widget, id, box, y) {
-    var _collection_206, ebox, element, found, guide, left, right;
+    var _collection_1600, ebox, element, found, guide, left, right;
     left = box.left;
     right = box.right;
     found = false;
-    _collection_206 = widget.visuals.free;
-    for (element of _collection_206) {
+    _collection_1600 = widget.visuals.free;
+    for (element of _collection_1600) {
         if (element.id !== id && canGuide(widget, element)) {
             ebox = getGuideBox(element);
             if (ebox.top === y || ebox.bottom === y) {
@@ -7554,12 +8403,12 @@ function findHorizontalGuide(widget, id, box, y) {
     }
 }
 function findVerticalCentralGuide(widget, id, box, x) {
-    var _collection_208, bottom, ebox, element, found, guide, left, right, top;
+    var _collection_1602, bottom, ebox, element, found, guide, left, right, top;
     top = box.centerY;
     bottom = box.centerY;
     found = false;
-    _collection_208 = widget.visuals.free;
-    for (element of _collection_208) {
+    _collection_1602 = widget.visuals.free;
+    for (element of _collection_1602) {
         if (element.id !== id && canGuide(widget, element)) {
             ebox = getGuideBox(element);
             if (ebox.centerX === x) {
@@ -7582,12 +8431,12 @@ function findVerticalCentralGuide(widget, id, box, x) {
     }
 }
 function findVerticalGuide(widget, id, box, x) {
-    var _collection_210, bottom, ebox, element, found, guide, top;
+    var _collection_1604, bottom, ebox, element, found, guide, top;
     top = box.top;
     bottom = box.bottom;
     found = false;
-    _collection_210 = widget.visuals.free;
-    for (element of _collection_210) {
+    _collection_1604 = widget.visuals.free;
+    for (element of _collection_1604) {
         if (element.id !== id && canGuide(widget, element)) {
             ebox = getGuideBox(element);
             if (ebox.left === x || ebox.right === x) {
@@ -8048,22 +8897,22 @@ function buildIconCore(context) {
 }
 function DefaultIconCore() {
     var self = { _type: 'DefaultIconCore' };
-    function DefaultIconCore_buildDom() {
+    function buildDom() {
         return undefined;
     }
-    function DefaultIconCore_commit(width) {
+    function commit(width) {
         return undefined;
     }
-    function DefaultIconCore_measure(refObject) {
+    function measure(refObject) {
         return undefined;
     }
-    function DefaultIconCore_renderContent(left, top, ctx) {
+    function renderContent(left, top, ctx) {
         return undefined;
     }
-    self.buildDom = DefaultIconCore_buildDom;
-    self.commit = DefaultIconCore_commit;
-    self.measure = DefaultIconCore_measure;
-    self.renderContent = DefaultIconCore_renderContent;
+    self.buildDom = buildDom;
+    self.commit = commit;
+    self.measure = measure;
+    self.renderContent = renderContent;
     return self;
 }
 function commitCore(visuals, node, width) {
@@ -9687,13 +10536,13 @@ function initIconRender(output, input) {
     mergeConfigs(output, input, 'iconRender', defaultValues);
 }
 function reflowIcon(visuals, node) {
-    var _selectValue_212, config, size;
+    var _selectValue_1606, config, size;
     config = visuals.config;
     size = commitCore(visuals, node, node.w * 2);
     setNodeSize(config, node, size);
     node.contentHeight = size.height;
-    _selectValue_212 = node.type;
-    if (_selectValue_212 === 'branch' || (_selectValue_212 === 'case' || _selectValue_212 === 'address')) {
+    _selectValue_1606 = node.type;
+    if (_selectValue_1606 === 'branch' || (_selectValue_1606 === 'case' || _selectValue_1606 === 'address')) {
         node.h += config.triangleHeight / 2;
     }
 }
@@ -9738,7 +10587,7 @@ function canComeBackTo(src, loops) {
     return context.success;
 }
 function canComeBackToStep(context, node) {
-    var _collection_214, loops, prev, visited;
+    var _collection_1608, loops, prev, visited;
     loops = context.loops;
     visited = context.visited;
     if (!context.finished) {
@@ -9751,8 +10600,8 @@ function canComeBackToStep(context, node) {
                     context.finished = true;
                     context.success = true;
                 } else {
-                    _collection_214 = node.prev;
-                    for (prev of _collection_214) {
+                    _collection_1608 = node.prev;
+                    for (prev of _collection_1608) {
                         canComeBackToStep(context, prev);
                     }
                 }
@@ -9872,9 +10721,9 @@ function createNodeSocket(visuals, node, source) {
     return socket;
 }
 function findLianaSource(visuals, prim) {
-    var _selectValue_216, beneath, edge, node;
-    _selectValue_216 = prim.elType;
-    if (_selectValue_216 === 'node') {
+    var _selectValue_1610, beneath, edge, node;
+    _selectValue_1610 = prim.elType;
+    if (_selectValue_1610 === 'node') {
         node = getNode(visuals, prim.id);
         if (node.arrow) {
             return node.arrow;
@@ -9928,7 +10777,7 @@ function findLianaSource(visuals, prim) {
             }
         }
     } else {
-        if (_selectValue_216 === 'edge') {
+        if (_selectValue_1610 === 'edge') {
             edge = getEdge(visuals, prim.id);
             if (edge.arrow) {
                 return edge.arrow;
@@ -9977,27 +10826,27 @@ function getNodeByItem(visuals, itemId) {
     return getNode(visuals, nodeId);
 }
 function hasOtherEntries(visuals, source, higher) {
-    var _collection_218, context, link, node;
+    var _collection_1612, context, link, node;
     context = {
         found: false,
         visited: {}
     };
-    _collection_218 = source.links;
-    for (link of _collection_218) {
+    _collection_1612 = source.links;
+    for (link of _collection_1612) {
         node = getNodeByItem(visuals, link.source);
         hasOtherEntriesStep(node, higher, context);
     }
     return context.found;
 }
 function hasOtherEntriesStep(lower, higher, context) {
-    var _collection_220, prev;
+    var _collection_1614, prev;
     if (!(context.found || lower === higher || lower.id in context.visited)) {
         context.visited[lower.id] = true;
         if (lower.prev.length === 0) {
             context.found = true;
         } else {
-            _collection_220 = lower.prev;
-            for (prev of _collection_220) {
+            _collection_1614 = lower.prev;
+            for (prev of _collection_1614) {
                 hasOtherEntriesStep(prev, higher, context);
             }
         }
@@ -10057,9 +10906,9 @@ function isLower(record, source) {
     }
 }
 function isSimpleItem(node) {
-    var _selectValue_222;
-    _selectValue_222 = node.type;
-    if (_selectValue_222 === 'header' || (_selectValue_222 === 'end' || (_selectValue_222 === 'junction' || _selectValue_222 === 'select' || _selectValue_222 === 'question' || _selectValue_222 === 'address')) || _selectValue_222 === 'case' && firstCase(node.select) === node) {
+    var _selectValue_1616;
+    _selectValue_1616 = node.type;
+    if (_selectValue_1616 === 'header' || (_selectValue_1616 === 'end' || (_selectValue_1616 === 'junction' || _selectValue_1616 === 'select' || _selectValue_1616 === 'question' || _selectValue_1616 === 'address')) || _selectValue_1616 === 'case' && firstCase(node.select) === node) {
         return false;
     } else {
         return true;
@@ -10077,7 +10926,7 @@ function sameLoop(visuals, srcLinks, targetId) {
     return true;
 }
 function showLianaSockets(widget, prim) {
-    var _branch_, _collection_224, _collection_227, _collection_230, _collection_233, _collection_236, downEdge, id, record, source, targetId, visuals;
+    var _branch_, _collection_1618, _collection_1621, _collection_1624, _collection_1627, _collection_1630, downEdge, id, record, source, targetId, visuals;
     _branch_ = 'Liana source';
     while (true) {
         switch (_branch_) {
@@ -10085,7 +10934,7 @@ function showLianaSockets(widget, prim) {
             if (isDrakon(widget)) {
                 visuals = widget.visuals;
                 clearSockets(visuals);
-                if (isReadonly(widget)) {
+                if (isReadonlyImpl(widget)) {
                     _branch_ = 'Exit';
                 } else {
                     source = findLianaSource(visuals, prim);
@@ -10101,9 +10950,9 @@ function showLianaSockets(widget, prim) {
             break;
         case 'Outer-outer':
             if (source.outer) {
-                _collection_236 = source.outer.outer;
-                for (targetId in _collection_236) {
-                    record = _collection_236[targetId];
+                _collection_1630 = source.outer.outer;
+                for (targetId in _collection_1630) {
+                    record = _collection_1630[targetId];
                     if (isLower(record, source)) {
                         createLianaSocket(visuals, record, source, 'outer-outer');
                     }
@@ -10115,18 +10964,18 @@ function showLianaSockets(widget, prim) {
             break;
         case 'Arrow pads':
             if (!source.arrow) {
-                _collection_233 = source.outer.outerArrPads;
-                for (id in _collection_233) {
-                    downEdge = _collection_233[id];
+                _collection_1627 = source.outer.outerArrPads;
+                for (id in _collection_1627) {
+                    downEdge = _collection_1627[id];
                     createArrowSocket(visuals, downEdge, source);
                 }
             }
             _branch_ = 'Outer-inner';
             break;
         case 'Outer-inner':
-            _collection_230 = source.outer.inner;
-            for (targetId in _collection_230) {
-                record = _collection_230[targetId];
+            _collection_1624 = source.outer.inner;
+            for (targetId in _collection_1624) {
+                record = _collection_1624[targetId];
                 if (canOuterToInner(record, source)) {
                     createLianaSocket(visuals, record, source, 'outer-inner');
                 }
@@ -10139,9 +10988,9 @@ function showLianaSockets(widget, prim) {
             break;
         case 'Inner-outer':
             if (source.inner) {
-                _collection_227 = source.inner.outer;
-                for (targetId in _collection_227) {
-                    record = _collection_227[targetId];
+                _collection_1621 = source.inner.outer;
+                for (targetId in _collection_1621) {
+                    record = _collection_1621[targetId];
                     if (source.role !== 'right-loop' && (source.vertical || isLower(record, source))) {
                         createLianaSocket(visuals, record, source, 'inner-outer');
                     }
@@ -10153,9 +11002,9 @@ function showLianaSockets(widget, prim) {
             break;
         case 'Inner-inner':
             if (isDegQuestion(source)) {
-                _collection_224 = source.inner.inner;
-                for (targetId in _collection_224) {
-                    record = _collection_224[targetId];
+                _collection_1618 = source.inner.inner;
+                for (targetId in _collection_1618) {
+                    record = _collection_1618[targetId];
                     createLianaSocket(visuals, record, source, 'inner-inner');
                 }
             }
@@ -10170,10 +11019,10 @@ function showLianaSockets(widget, prim) {
     }
 }
 function withinSameLoop(visuals, src, target) {
-    var _collection_239, link, node, targetNode;
+    var _collection_1633, link, node, targetNode;
     targetNode = target.finalTarget;
-    _collection_239 = src.links;
-    for (link of _collection_239) {
+    _collection_1633 = src.links;
+    for (link of _collection_1633) {
         node = getNodeByItem(visuals, link.source);
         if (!withinSameLoopCore(node, targetNode, 0)) {
             return false;
@@ -10182,12 +11031,12 @@ function withinSameLoop(visuals, src, target) {
     return true;
 }
 function withinSameLoopCore(node, target, depth) {
-    var _collection_243, _selectValue_241, prev;
-    _selectValue_241 = node.type;
-    if (_selectValue_241 === 'loopbegin') {
+    var _collection_1637, _selectValue_1635, prev;
+    _selectValue_1635 = node.type;
+    if (_selectValue_1635 === 'loopbegin') {
         depth--;
     } else {
-        if (_selectValue_241 === 'loopend') {
+        if (_selectValue_1635 === 'loopend') {
             depth++;
         }
     }
@@ -10195,8 +11044,8 @@ function withinSameLoopCore(node, target, depth) {
         return false;
     } else {
         if (node !== target) {
-            _collection_243 = node.prev;
-            for (prev of _collection_243) {
+            _collection_1637 = node.prev;
+            for (prev of _collection_1637) {
                 if (!withinSameLoopCore(prev, target, depth)) {
                     return false;
                 }
@@ -10250,12 +11099,12 @@ function addToMindSelection(widget, node) {
     }
 }
 function buildMenuByTypeMind(widget, prim, node) {
-    var _selectValue_245, menu;
+    var _selectValue_1639, menu;
     menu = [];
     pushMenuItem('copy_one', menu, tr(widget, 'Copy'), undefined, function () {
         copy(widget);
     });
-    if (!isReadonly(widget) && canDelete(widget.visuals, node)) {
+    if (!isReadonlyImpl(widget) && canDelete(widget.visuals, node)) {
         pushMenuItem('cut_one', menu, tr(widget, 'Cut'), undefined, function () {
             cut(widget);
         });
@@ -10275,7 +11124,7 @@ function buildMenuByTypeMind(widget, prim, node) {
             pushMenuItem('edit_content', menu, tr(widget, 'Edit content'), undefined, function () {
                 startEditContent(widget, prim);
             });
-            if (prim.type === 'graf-image' && !isReadonly(widget)) {
+            if (prim.type === 'graf-image' && !isReadonlyImpl(widget)) {
                 pushMenuItem('change_image', menu, tr(widget, 'Change image'), undefined, function () {
                     startChangeImage(widget, prim);
                 });
@@ -10286,12 +11135,12 @@ function buildMenuByTypeMind(widget, prim, node) {
             });
         }
     }
-    if (isReadonly(widget)) {
+    if (isReadonlyImpl(widget)) {
         return menu;
     } else {
         menu.push({ type: 'separator' });
-        _selectValue_245 = getTType(prim);
-        if (_selectValue_245 === 'horizontal') {
+        _selectValue_1639 = getTType(prim);
+        if (_selectValue_1639 === 'horizontal') {
             pushMenuItem('layout_tree', menu, tr(widget, 'Tree-like layout'), widget.visuals.config.imagePath + 'layout_tree.png', function () {
                 changeLayout(widget, prim, 'treeview');
             });
@@ -10299,7 +11148,7 @@ function buildMenuByTypeMind(widget, prim, node) {
                 changeLayout(widget, prim, 'vertical');
             });
         } else {
-            if (_selectValue_245 === 'vertical') {
+            if (_selectValue_1639 === 'vertical') {
                 pushMenuItem('layout_tree', menu, tr(widget, 'Tree-like layout'), widget.visuals.config.imagePath + 'layout_tree.png', function () {
                     changeLayout(widget, prim, 'treeview');
                 });
@@ -10307,8 +11156,8 @@ function buildMenuByTypeMind(widget, prim, node) {
                     changeLayout(widget, prim, 'horizontal');
                 });
             } else {
-                if (_selectValue_245 !== 'treeview') {
-                    throw new Error('Unexpected case value: ' + _selectValue_245);
+                if (_selectValue_1639 !== 'treeview') {
+                    throw new Error('Unexpected case value: ' + _selectValue_1639);
                 }
                 pushMenuItem('layout_ver', menu, tr(widget, 'Vertical layout'), widget.visuals.config.imagePath + 'layout_ver.png', function () {
                     changeLayout(widget, prim, 'vertical');
@@ -10354,7 +11203,7 @@ function buildMenuByTypeMind(widget, prim, node) {
 function buildMindEdgeMenu(widget, edge) {
     var clipboard, menu;
     menu = [];
-    if (!isReadonly(widget)) {
+    if (!isReadonlyImpl(widget)) {
         clipboard = getClipboardClone(widget);
         if (clipboard && clipboard.type === 'mind') {
             pushMenuItem('paste_mind', menu, tr(widget, 'Paste'), undefined, function () {
@@ -10375,35 +11224,35 @@ function buildMindEdgeMenu(widget, edge) {
     return menu;
 }
 function buildMindTree(visuals) {
-    var _collection_247, _collection_250, _collection_253, id, node;
-    _collection_247 = visuals.nodes;
-    for (id in _collection_247) {
-        node = _collection_247[id];
+    var _collection_1641, _collection_1644, _collection_1647, id, node;
+    _collection_1641 = visuals.nodes;
+    for (id in _collection_1641) {
+        node = _collection_1641[id];
         node.children = [];
         if (node.parent) {
             node.parent = getNode(visuals, node.parent);
         }
     }
-    _collection_250 = visuals.nodes;
-    for (id in _collection_250) {
-        node = _collection_250[id];
+    _collection_1644 = visuals.nodes;
+    for (id in _collection_1644) {
+        node = _collection_1644[id];
         if (node.parent) {
             node.parent.children.push(node);
         }
     }
-    _collection_253 = visuals.nodes;
-    for (id in _collection_253) {
-        node = _collection_253[id];
+    _collection_1647 = visuals.nodes;
+    for (id in _collection_1647) {
+        node = _collection_1647[id];
         utils.sortBy(node.children, 'ordinal');
     }
 }
 function calculateHorizontalSubtree(config, node) {
-    var _collection_256, _collection_258, child, first, height, last, lastY, left, nBottom, nTop, right, shift, top;
+    var _collection_1650, _collection_1652, child, first, height, last, lastY, left, nBottom, nTop, right, shift, top;
     top = 0;
     left = node.w * 2 + config.metre * 2;
     right = node.subtreeBox.width;
-    _collection_256 = node.children;
-    for (child of _collection_256) {
+    _collection_1650 = node.children;
+    for (child of _collection_1650) {
         right = Math.max(right, left + child.subtreeBox.width);
         child.subtreeBox.left = left;
         child.subtreeBox.top = top;
@@ -10431,8 +11280,8 @@ function calculateHorizontalSubtree(config, node) {
     nBottom = node.y + node.h;
     if (nTop < 0) {
         shift = -nTop;
-        _collection_258 = node.children;
-        for (child of _collection_258) {
+        _collection_1652 = node.children;
+        for (child of _collection_1652) {
             child.subtreeBox.top += shift;
         }
         height += shift;
@@ -10442,7 +11291,7 @@ function calculateHorizontalSubtree(config, node) {
     node.subtreeBox.height = Math.max(nBottom, height);
 }
 function calculateTvSubtree(config, node) {
-    var _collection_260, child, left, right, top;
+    var _collection_1654, child, left, right, top;
     if (node.parent) {
         left = config.metre * 2;
     } else {
@@ -10450,8 +11299,8 @@ function calculateTvSubtree(config, node) {
     }
     top = node.h * 2 + config.metre;
     right = node.subtreeBox.width;
-    _collection_260 = node.children;
-    for (child of _collection_260) {
+    _collection_1654 = node.children;
+    for (child of _collection_1654) {
         right = Math.max(right, left + child.subtreeBox.width);
         child.subtreeBox.left = left;
         child.subtreeBox.top = top;
@@ -10463,12 +11312,12 @@ function calculateTvSubtree(config, node) {
     node.subtreeBox.height = top - config.metre;
 }
 function calculateVerticalSubtree(config, node) {
-    var _collection_262, _collection_264, bottom, child, first, last, lastX, left, nLeft, nRight, shift, top, width;
+    var _collection_1656, _collection_1658, bottom, child, first, last, lastX, left, nLeft, nRight, shift, top, width;
     left = 0;
     top = node.h * 2 + config.metre * 2;
     bottom = node.subtreeBox.height;
-    _collection_262 = node.children;
-    for (child of _collection_262) {
+    _collection_1656 = node.children;
+    for (child of _collection_1656) {
         bottom = Math.max(bottom, top + child.subtreeBox.height);
         child.subtreeBox.left = left;
         child.subtreeBox.top = top;
@@ -10496,8 +11345,8 @@ function calculateVerticalSubtree(config, node) {
     nRight = node.x + node.w;
     if (nLeft < 0) {
         shift = -nLeft;
-        _collection_264 = node.children;
-        for (child of _collection_264) {
+        _collection_1658 = node.children;
+        for (child of _collection_1658) {
             child.subtreeBox.left += shift;
         }
         width += shift;
@@ -10508,68 +11357,68 @@ function calculateVerticalSubtree(config, node) {
 }
 function LeftMindResizeHandle() {
     var self = { _type: 'LeftMindResizeHandle' };
-    function LeftMindResizeHandle_complete() {
+    function complete() {
         completeMindResize(self);
     }
-    function LeftMindResizeHandle_dragTo(x, y) {
+    function dragTo(x, y) {
         self.element.w = (self.right - x) / 2;
         self.element.x = self.right - self.element.w;
     }
-    function LeftMindResizeHandle_getCursor() {
+    function getCursor() {
         return 'ew-resize';
     }
-    function LeftMindResizeHandle_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function LeftMindResizeHandle_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function LeftMindResizeHandle_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function LeftMindResizeHandle_yEnabled() {
+    function yEnabled() {
         return false;
     }
-    self.complete = LeftMindResizeHandle_complete;
-    self.dragTo = LeftMindResizeHandle_dragTo;
-    self.getCursor = LeftMindResizeHandle_getCursor;
-    self.getMaxX = LeftMindResizeHandle_getMaxX;
-    self.getMinX = LeftMindResizeHandle_getMinX;
-    self.xEnabled = LeftMindResizeHandle_xEnabled;
-    self.yEnabled = LeftMindResizeHandle_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMinX = getMinX;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function RightMindResizeHandle() {
     var self = { _type: 'RightMindResizeHandle' };
-    function RightMindResizeHandle_complete() {
+    function complete() {
         completeMindResize(self);
     }
-    function RightMindResizeHandle_dragTo(x, y) {
+    function dragTo(x, y) {
         self.element.w = (x - self.left) / 2;
         self.element.x = self.left + self.element.w;
     }
-    function RightMindResizeHandle_getCursor() {
+    function getCursor() {
         return 'ew-resize';
     }
-    function RightMindResizeHandle_getMaxX() {
+    function getMaxX() {
         return self.maxX;
     }
-    function RightMindResizeHandle_getMinX() {
+    function getMinX() {
         return self.minX;
     }
-    function RightMindResizeHandle_xEnabled() {
+    function xEnabled() {
         return true;
     }
-    function RightMindResizeHandle_yEnabled() {
+    function yEnabled() {
         return false;
     }
-    self.complete = RightMindResizeHandle_complete;
-    self.dragTo = RightMindResizeHandle_dragTo;
-    self.getCursor = RightMindResizeHandle_getCursor;
-    self.getMaxX = RightMindResizeHandle_getMaxX;
-    self.getMinX = RightMindResizeHandle_getMinX;
-    self.xEnabled = RightMindResizeHandle_xEnabled;
-    self.yEnabled = RightMindResizeHandle_yEnabled;
+    self.complete = complete;
+    self.dragTo = dragTo;
+    self.getCursor = getCursor;
+    self.getMaxX = getMaxX;
+    self.getMinX = getMinX;
+    self.xEnabled = xEnabled;
+    self.yEnabled = yEnabled;
     return self;
 }
 function completeMindResize(handle) {
@@ -10634,7 +11483,7 @@ function createMindEdge(visuals, head, tail, vertical, target) {
     return ed;
 }
 function createMindEdges(visuals, node) {
-    var _collection_266, _collection_268, _collection_270, child, childJun, config, connector, prev, rootJun, ttype;
+    var _collection_1660, _collection_1662, _collection_1664, child, childJun, config, connector, prev, rootJun, ttype;
     if (node.children.length === 0) {
     } else {
         config = visuals.config;
@@ -10647,8 +11496,8 @@ function createMindEdges(visuals, node) {
             } else {
                 prev = undefined;
                 connector = undefined;
-                _collection_266 = node.children;
-                for (child of _collection_266) {
+                _collection_1660 = node.children;
+                for (child of _collection_1660) {
                     createMindEdges(visuals, child);
                     childJun = createJunction(visuals, undefined);
                     childJun.x = child.x;
@@ -10698,8 +11547,8 @@ function createMindEdges(visuals, node) {
                 } else {
                     prev = undefined;
                     connector = undefined;
-                    _collection_268 = node.children;
-                    for (child of _collection_268) {
+                    _collection_1662 = node.children;
+                    for (child of _collection_1662) {
                         createMindEdges(visuals, child);
                         childJun = createJunction(visuals, undefined);
                         childJun.y = child.y;
@@ -10750,8 +11599,8 @@ function createMindEdges(visuals, node) {
                     createEdge(visuals, rootJun, node, false);
                 }
                 prev = rootJun;
-                _collection_270 = node.children;
-                for (child of _collection_270) {
+                _collection_1664 = node.children;
+                for (child of _collection_1664) {
                     createMindEdges(visuals, child);
                     childJun = createJunction(visuals, undefined);
                     childJun.y = child.y;
@@ -10767,13 +11616,13 @@ function createMindEdges(visuals, node) {
     }
 }
 function createMindIconOrPaste(widget, socket, parent, payload, edits) {
-    var _collection_272, citem, edit, id, newItem, oldToNew, roots;
+    var _collection_1666, citem, edit, id, newItem, oldToNew, roots;
     roots = [];
     if (payload) {
         oldToNew = generateNewIds(widget, payload.items);
         oldToNew['target'] = parent.id;
-        _collection_272 = payload.items;
-        for (citem of _collection_272) {
+        _collection_1666 = payload.items;
+        for (citem of _collection_1666) {
             if (citem.parent === 'target') {
                 roots.push(citem.id);
             }
@@ -10796,7 +11645,7 @@ function createMindIconOrPaste(widget, socket, parent, payload, edits) {
 }
 function createMindSockets(widget) {
     var after, before, child, config, cpos, node, nodes, r2, radius, selectedNodes, sib, visuals;
-    if (isMind(widget) && !isReadonly(widget)) {
+    if (isMind(widget) && !isReadonlyImpl(widget)) {
         visuals = widget.visuals;
         config = widget.visuals.config;
         radius = config.socketTouchRadius;
@@ -10951,10 +11800,10 @@ function getMindSiblingSocketPos(r2, node) {
     };
 }
 function getMindSubtree(node, output) {
-    var _collection_274, child;
+    var _collection_1668, child;
     output.push(node);
-    _collection_274 = node.children;
-    for (child of _collection_274) {
+    _collection_1668 = node.children;
+    for (child of _collection_1668) {
         getMindSubtree(child, output);
     }
 }
@@ -11111,22 +11960,22 @@ function positionMind(visuals) {
     createMindEdges(visuals, visuals.header);
 }
 function setSameHeightForMindChildren(parent) {
-    var _collection_276, _collection_278, height, node;
+    var _collection_1670, _collection_1672, height, node;
     height = 0;
-    _collection_276 = parent.children;
-    for (node of _collection_276) {
+    _collection_1670 = parent.children;
+    for (node of _collection_1670) {
         height = Math.max(height, node.h);
     }
-    _collection_278 = parent.children;
-    for (node of _collection_278) {
+    _collection_1672 = parent.children;
+    for (node of _collection_1672) {
         node.h = height;
     }
 }
 function setSameHeightMind(visuals) {
-    var _collection_280, id, node, ttype;
-    _collection_280 = visuals.nodes;
-    for (id in _collection_280) {
-        node = _collection_280[id];
+    var _collection_1674, id, node, ttype;
+    _collection_1674 = visuals.nodes;
+    for (id in _collection_1674) {
+        node = _collection_1674[id];
         ttype = getTType(node);
         if (ttype === 'vertical') {
             setSameHeightForMindChildren(node);
@@ -11134,22 +11983,22 @@ function setSameHeightMind(visuals) {
     }
 }
 function setSameWidthForMindChildren(parent) {
-    var _collection_283, _collection_285, node, width;
+    var _collection_1677, _collection_1679, node, width;
     width = 0;
-    _collection_283 = parent.children;
-    for (node of _collection_283) {
+    _collection_1677 = parent.children;
+    for (node of _collection_1677) {
         width = Math.max(width, node.w);
     }
-    _collection_285 = parent.children;
-    for (node of _collection_285) {
+    _collection_1679 = parent.children;
+    for (node of _collection_1679) {
         node.w = width;
     }
 }
 function setSameWidthMind(visuals) {
-    var _collection_287, id, node, ttype;
-    _collection_287 = visuals.nodes;
-    for (id in _collection_287) {
-        node = _collection_287[id];
+    var _collection_1681, id, node, ttype;
+    _collection_1681 = visuals.nodes;
+    for (id in _collection_1681) {
+        node = _collection_1681[id];
         ttype = getTType(node);
         if (ttype === 'treeview' || ttype === 'horizontal') {
             setSameWidthForMindChildren(node);
@@ -11157,11 +12006,11 @@ function setSameWidthMind(visuals) {
     }
 }
 function showMindInsertSockets(widget, op, type, imageData) {
-    var _collection_290, id, node, visuals;
+    var _collection_1684, id, node, visuals;
     visuals = widget.visuals;
-    _collection_290 = visuals.nodes;
-    for (id in _collection_290) {
-        node = _collection_290[id];
+    _collection_1684 = visuals.nodes;
+    for (id in _collection_1684) {
+        node = _collection_1684[id];
         if (isMindIcon(widget, node)) {
             showMindSocketsForIcon(visuals, node, op, type, imageData);
         }
@@ -11250,9 +12099,9 @@ function drawNodeCandy(widget, id, ctx, config) {
     }
 }
 function findHandle(visuals, pos) {
-    var _collection_293, handle;
-    _collection_293 = visuals.handles;
-    for (handle of _collection_293) {
+    var _collection_1687, handle;
+    _collection_1687 = visuals.handles;
+    for (handle of _collection_1687) {
         if (hitBox(handle.box, pos.x, pos.y)) {
             return handle;
         }
@@ -11348,7 +12197,7 @@ function copyBlock(widget, startId, items, images) {
     return copyItemsToClipboard(widget, startId, items, images, 'block');
 }
 function copyBranch(widget, node) {
-    var _collection_296, block, bnode, branchNodes, end, images, itemId, items, next, targets;
+    var _collection_1690, block, bnode, branchNodes, end, images, itemId, items, next, targets;
     images = {};
     branchNodes = {};
     scanBranchItems(node, branchNodes);
@@ -11360,8 +12209,8 @@ function copyBranch(widget, node) {
     targets = {};
     for (itemId in branchNodes) {
         bnode = branchNodes[itemId];
-        _collection_296 = bnode.next;
-        for (next of _collection_296) {
+        _collection_1690 = bnode.next;
+        for (next of _collection_1690) {
             if (!(next.itemId in branchNodes)) {
                 targets[next.itemId] = next.content;
             }
@@ -11386,10 +12235,10 @@ function copyCase(widget, node) {
     return copyItemsToClipboard(widget, node.itemId, [copy], images, 'case');
 }
 function copyCore(widget) {
-    var _selectValue_298, all, elements, nodes;
+    var _selectValue_1692, all, elements, nodes;
     nodes = getNodesFromSelection(widget);
-    _selectValue_298 = nodes.length;
-    if (_selectValue_298 === 0) {
+    _selectValue_1692 = nodes.length;
+    if (_selectValue_1692 === 0) {
         elements = getSelectedFree(widget);
         if (elements.length === 0) {
             return undefined;
@@ -11397,7 +12246,7 @@ function copyCore(widget) {
             return copyFree(widget, elements);
         }
     } else {
-        if (_selectValue_298 === 1) {
+        if (_selectValue_1692 === 1) {
             if (isMind(widget)) {
                 all = [];
                 getMindSubtree(nodes[0], all);
@@ -11502,13 +12351,13 @@ function copyQuestion(widget, node) {
     return copyBlock(widget, node.itemId, [copy], images);
 }
 function copySelect(widget, node) {
-    var _collection_301, caseItem, caseNode, images, items, selectItem;
+    var _collection_1695, caseItem, caseNode, images, items, selectItem;
     images = {};
     items = [];
     selectItem = copyItem(widget, node.itemId, images);
     items.push(selectItem);
-    _collection_301 = node.cases;
-    for (caseNode of _collection_301) {
+    _collection_1695 = node.cases;
+    for (caseNode of _collection_1695) {
         caseItem = copyItem(widget, caseNode.itemId, images);
         caseItem.one = 'finish';
         items.push(caseItem);
@@ -11571,9 +12420,9 @@ function generateNewIds(widget, items) {
     return oldToNew;
 }
 function getBranchByName(visuals, name) {
-    var _collection_303, branch, itemId;
-    _collection_303 = visuals.branches;
-    for (itemId of _collection_303) {
+    var _collection_1697, branch, itemId;
+    _collection_1697 = visuals.branches;
+    for (itemId of _collection_1697) {
         branch = getNode(visuals, itemId);
         if (branch.content === name) {
             return branch;
@@ -11582,39 +12431,39 @@ function getBranchByName(visuals, name) {
     return undefined;
 }
 function getCopyFunction(node) {
-    var _selectValue_305;
-    _selectValue_305 = node.type;
-    if (_selectValue_305 === 'header') {
+    var _selectValue_1699;
+    _selectValue_1699 = node.type;
+    if (_selectValue_1699 === 'header') {
         return undefined;
     } else {
-        if (_selectValue_305 === 'question') {
+        if (_selectValue_1699 === 'question') {
             return copyQuestion;
         } else {
-            if (_selectValue_305 === 'case') {
+            if (_selectValue_1699 === 'case') {
                 return copyCase;
             } else {
-                if (_selectValue_305 === 'duration') {
+                if (_selectValue_1699 === 'duration') {
                     return copyDuration;
                 } else {
-                    if (_selectValue_305 === 'address') {
+                    if (_selectValue_1699 === 'address') {
                         return undefined;
                     } else {
-                        if (_selectValue_305 === 'params') {
+                        if (_selectValue_1699 === 'params') {
                             return undefined;
                         } else {
-                            if (_selectValue_305 === 'junction') {
+                            if (_selectValue_1699 === 'junction') {
                                 return undefined;
                             } else {
-                                if (_selectValue_305 === 'branch') {
+                                if (_selectValue_1699 === 'branch') {
                                     return copyBranch;
                                 } else {
-                                    if (_selectValue_305 === 'select') {
+                                    if (_selectValue_1699 === 'select') {
                                         return copySelect;
                                     } else {
-                                        if (_selectValue_305 === 'loopbegin') {
+                                        if (_selectValue_1699 === 'loopbegin') {
                                             return copyLoop;
                                         } else {
-                                            if (_selectValue_305 === 'loopend') {
+                                            if (_selectValue_1699 === 'loopend') {
                                                 return copyLoopEnd;
                                             } else {
                                                 return copySimple;
@@ -11699,7 +12548,7 @@ function pasteBranch(widget, socket, block) {
     return edits;
 }
 function pasteInSocket(widget, socket, images) {
-    var _selectValue_308, _selectValue_310, clipboard, ctype, edits, payload;
+    var _selectValue_1702, _selectValue_1704, clipboard, ctype, edits, payload;
     edits = [];
     clipboard = getClipboardClone(widget);
     if (clipboard) {
@@ -11707,42 +12556,42 @@ function pasteInSocket(widget, socket, images) {
         ctype = clipboard.type;
         Object.assign(images, payload.images);
         if (ctype === 'mind') {
-            _selectValue_310 = socket.type;
-            if (_selectValue_310 === 'mind-before') {
+            _selectValue_1704 = socket.type;
+            if (_selectValue_1704 === 'mind-before') {
                 edits = mindBeforeInsert(widget, socket, payload);
             } else {
-                if (_selectValue_310 === 'mind-after') {
+                if (_selectValue_1704 === 'mind-after') {
                     edits = mindAfterInsert(widget, socket, payload);
                 } else {
-                    if (_selectValue_310 === 'mind-child') {
+                    if (_selectValue_1704 === 'mind-child') {
                         edits = mindChildInsert(widget, socket, payload);
                     }
                 }
             }
             return edits;
         } else {
-            _selectValue_308 = socket.type;
-            if (_selectValue_308 === 'block') {
+            _selectValue_1702 = socket.type;
+            if (_selectValue_1702 === 'block') {
                 if (socket.type === ctype) {
                     edits = pasteBlock(widget, socket, payload);
                 }
             } else {
-                if (_selectValue_308 === 'case') {
+                if (_selectValue_1702 === 'case') {
                     if (ctype === 'case') {
                         edits = caseInsertCore(widget, socket.node, payload.items[0]);
                     }
                 } else {
-                    if (_selectValue_308 === 'duration') {
+                    if (_selectValue_1702 === 'duration') {
                         if (ctype === 'duration') {
                             edits = pasteDuration(widget, socket.node, payload.items[0]);
                         }
                     } else {
-                        if (_selectValue_308 === 'first-case') {
+                        if (_selectValue_1702 === 'first-case') {
                             if (ctype === 'case') {
                                 edits = firstCaseInsertCore(widget, socket.node, payload.items[0]);
                             }
                         } else {
-                            if (_selectValue_308 === 'branch' && socket.type === ctype) {
+                            if (_selectValue_1702 === 'branch' && socket.type === ctype) {
                                 edits = pasteBranch(widget, socket, payload);
                             }
                         }
@@ -11825,14 +12674,14 @@ function isUpstream(visuals, lower, upper) {
     return context.found;
 }
 function isUpstreamStep(lower, upper, context) {
-    var _collection_312, prev;
+    var _collection_1706, prev;
     if (!context.found) {
         if (lower.id === upper.id) {
             context.found = true;
         } else {
             context.visited[lower.id] = true;
-            _collection_312 = lower.prev;
-            for (prev of _collection_312) {
+            _collection_1706 = lower.prev;
+            for (prev of _collection_1706) {
                 isUpstreamStep(prev, upper, context);
             }
         }
@@ -11879,7 +12728,7 @@ function addLink(links, link) {
     links.push(link);
 }
 function buildBoxes(widget, visuals) {
-    var _collection_316, bottom, edge, edges, element, height, id, left, node, nodes, right, top, tr, width;
+    var _collection_1710, bottom, edge, edges, element, height, id, left, node, nodes, right, top, tr, width;
     tr = visuals.config.socketTouchRadius;
     nodes = visuals.nodes;
     for (id in nodes) {
@@ -11917,23 +12766,23 @@ function buildBoxes(widget, visuals) {
         }
         edge.box = createBox(left, top, width, height);
     }
-    _collection_316 = visuals.free;
-    for (element of _collection_316) {
+    _collection_1710 = visuals.free;
+    for (element of _collection_1710) {
         calculateFreeBox(widget, element, visuals.config);
     }
 }
 function buildSkewers(visuals) {
-    var _collection_318, _collection_321, id, node;
-    _collection_318 = visuals.nodes;
-    for (id in _collection_318) {
-        node = _collection_318[id];
+    var _collection_1712, _collection_1715, id, node;
+    _collection_1712 = visuals.nodes;
+    for (id in _collection_1712) {
+        node = _collection_1712[id];
         if (!node.up && node.down && !node.skewer) {
             traceSkewer(visuals, node);
         }
     }
-    _collection_321 = visuals.nodes;
-    for (id in _collection_321) {
-        node = _collection_321[id];
+    _collection_1715 = visuals.nodes;
+    for (id in _collection_1715) {
+        node = _collection_1715[id];
         if (!node.left) {
             traceLevel(visuals, node);
         }
@@ -12021,7 +12870,7 @@ function drawParams(visuals) {
     }
 }
 function findLeftLinks(visuals, skewer) {
-    var _branch_, _selectValue_326, boundary, corner, finish, head, hskewer, left, metre, node, rightJ, start, tail;
+    var _branch_, _selectValue_1720, boundary, corner, finish, head, hskewer, left, metre, node, rightJ, start, tail;
     _branch_ = 'Start';
     while (true) {
         switch (_branch_) {
@@ -12048,8 +12897,8 @@ function findLeftLinks(visuals, skewer) {
                 }
                 _branch_ = 'Exit';
             } else {
-                _selectValue_326 = node.type;
-                if (_selectValue_326 === 'question') {
+                _selectValue_1720 = node.type;
+                if (_selectValue_1720 === 'question') {
                     rightJ = getRight(node);
                     if (rightJ.up) {
                         linkSkewers(visuals, node.skewer, skewer, node.w + boundary + metre);
@@ -12060,12 +12909,12 @@ function findLeftLinks(visuals, skewer) {
                         node = getDown(corner);
                     }
                 } else {
-                    if (_selectValue_326 === 'arrow-loop') {
+                    if (_selectValue_1720 === 'arrow-loop') {
                         rightJ = getRight(node);
                         linkSkewers(visuals, rightJ.skewer, skewer, boundary);
                         node = getDown(node);
                     } else {
-                        if (_selectValue_326 === 'junction') {
+                        if (_selectValue_1720 === 'junction') {
                             linkSkewers(visuals, node.skewer, skewer, node.w + boundary);
                             if (node.subtype === 'parbegin') {
                                 corner = goRight(node);
@@ -12078,7 +12927,7 @@ function findLeftLinks(visuals, skewer) {
                                 }
                             }
                         } else {
-                            if (_selectValue_326 === 'select') {
+                            if (_selectValue_1720 === 'select') {
                                 linkSkewers(visuals, node.skewer, skewer, node.w + boundary);
                                 node = lastCase(node);
                             } else {
@@ -12286,11 +13135,11 @@ function moveEndUp(visuals) {
     }
 }
 function positionLevels(visuals) {
-    var _collection_328, _collection_331, _collection_334, _collection_337, distance, down, h, id, jun, leftHeight, level, lowest, max, metre, node;
+    var _collection_1722, _collection_1725, _collection_1728, _collection_1731, distance, down, h, id, jun, leftHeight, level, lowest, max, metre, node;
     metre = visuals.config.metre;
-    _collection_328 = visuals.nodes;
-    for (id in _collection_328) {
-        node = _collection_328[id];
+    _collection_1722 = visuals.nodes;
+    for (id in _collection_1722) {
+        node = _collection_1722[id];
         if (node.down) {
             down = getDown(node);
             leftHeight = getLeftHeight(node);
@@ -12306,19 +13155,19 @@ function positionLevels(visuals) {
     lowest = getLowestLevel(visuals);
     calculateSkewerPos(visuals.levels, visuals.levelLinks, lowest, 0);
     max = 0;
-    _collection_331 = visuals.levels;
-    for (id in _collection_331) {
-        level = _collection_331[id];
+    _collection_1725 = visuals.levels;
+    for (id in _collection_1725) {
+        level = _collection_1725[id];
         max = Math.max(max, level.coord);
     }
-    _collection_334 = visuals.levels;
-    for (id in _collection_334) {
-        level = _collection_334[id];
+    _collection_1728 = visuals.levels;
+    for (id in _collection_1728) {
+        level = _collection_1728[id];
         level.coord = max - level.coord;
     }
-    _collection_337 = visuals.nodes;
-    for (id in _collection_337) {
-        node = _collection_337[id];
+    _collection_1731 = visuals.nodes;
+    for (id in _collection_1731) {
+        node = _collection_1731[id];
         if (node.type === 'case' || node.type === 'branch' && node.up) {
             jun = getUp(node);
             node.level.coord = jun.level.coord + metre + node.h;
@@ -12326,10 +13175,10 @@ function positionLevels(visuals) {
     }
 }
 function positionSkewers(visuals) {
-    var _collection_340, id, left, skewer;
-    _collection_340 = visuals.skewers;
-    for (id in _collection_340) {
-        skewer = _collection_340[id];
+    var _collection_1734, id, left, skewer;
+    _collection_1734 = visuals.skewers;
+    for (id in _collection_1734) {
+        skewer = _collection_1734[id];
         findLeftLinks(visuals, skewer);
     }
     if (visuals.branches.length === 1) {
@@ -12340,9 +13189,9 @@ function positionSkewers(visuals) {
     }
 }
 function removeTempEdges(visuals) {
-    var _collection_343, edgeDown, edgeUp, finalTarget, lower, newLevel, oldLevel, tmpEdge, tmpJun, upper;
-    _collection_343 = visuals.tempEdges;
-    for (tmpEdge of _collection_343) {
+    var _collection_1737, edgeDown, edgeUp, finalTarget, lower, newLevel, oldLevel, tmpEdge, tmpJun, upper;
+    _collection_1737 = visuals.tempEdges;
+    for (tmpEdge of _collection_1737) {
         tmpJun = tmpEdge.head;
         removeEdge(visuals, tmpEdge.id);
         edgeUp = tmpJun.up;
@@ -12383,13 +13232,13 @@ function setSameHeightForSelect(visuals, select) {
     setSameHeightForNodes(visuals, select.cases);
 }
 function setSameWidth(visuals, skewer) {
-    var _collection_345, _collection_347, config, dur, leftWidth, margin, node, width;
+    var _collection_1739, _collection_1741, config, dur, leftWidth, margin, node, width;
     config = visuals.config;
     width = 0;
     leftWidth = 0;
     margin = 0;
-    _collection_345 = skewer.nodes;
-    for (node of _collection_345) {
+    _collection_1739 = skewer.nodes;
+    for (node of _collection_1739) {
         if (node.type !== 'header') {
             width = Math.max(width, node.w);
         }
@@ -12399,8 +13248,8 @@ function setSameWidth(visuals, skewer) {
     }
     width = config.maxWidth / 2;
     skewer.boundary = width;
-    _collection_347 = skewer.nodes;
-    for (node of _collection_347) {
+    _collection_1741 = skewer.nodes;
+    for (node of _collection_1741) {
         if (shouldAlignWidth(visuals, node)) {
             node.w = width;
             dur = getDurExtend(visuals, node);
@@ -12455,9 +13304,9 @@ function traceSkewer(visuals, node) {
     }
 }
 function hasUntouchedArrows(visited, node) {
-    var _collection_349, prev;
-    _collection_349 = node.aprev;
-    for (prev of _collection_349) {
+    var _collection_1743, prev;
+    _collection_1743 = node.aprev;
+    for (prev of _collection_1743) {
         if (!(prev.itemId in visited)) {
             return true;
         }
@@ -12465,12 +13314,12 @@ function hasUntouchedArrows(visited, node) {
     return false;
 }
 function hasUntouchedUpstream(visited, node) {
-    var _collection_351, prev;
+    var _collection_1745, prev;
     if (node.type === 'case') {
         return false;
     } else {
-        _collection_351 = node.prev;
-        for (prev of _collection_351) {
+        _collection_1745 = node.prev;
+        for (prev of _collection_1745) {
             if (!(prev.itemId in visited)) {
                 return true;
             }
@@ -12526,15 +13375,15 @@ function unlinkArrow(arrowNode, visited, edits) {
     redirectUpperItems(edits, arrowNode.up.links, node.itemId);
 }
 function canDelete(visuals, node) {
-    var _selectValue_353;
-    _selectValue_353 = node.type;
-    if (_selectValue_353 === 'junction' || (_selectValue_353 === 'header' || _selectValue_353 === 'arrow-loop' || _selectValue_353 === 'address' || _selectValue_353 === 'end')) {
+    var _selectValue_1747;
+    _selectValue_1747 = node.type;
+    if (_selectValue_1747 === 'junction' || (_selectValue_1747 === 'header' || _selectValue_1747 === 'arrow-loop' || _selectValue_1747 === 'address' || _selectValue_1747 === 'end')) {
         return false;
     } else {
-        if (_selectValue_353 === 'branch') {
+        if (_selectValue_1747 === 'branch') {
             return canDeleteBranch(visuals);
         } else {
-            if (_selectValue_353 === 'case') {
+            if (_selectValue_1747 === 'case') {
                 return canDeleteCase(node);
             } else {
                 return true;
@@ -12679,7 +13528,7 @@ function deleteLoop(widget, node) {
     }
 }
 function deleteOne(widget, node) {
-    var _selectValue_355, edits, nodes;
+    var _selectValue_1749, edits, nodes;
     edits = [];
     if (canDelete(widget.visuals, node)) {
         if (isMindIcon(widget, node)) {
@@ -12687,29 +13536,29 @@ function deleteOne(widget, node) {
             getMindSubtree(node, nodes);
             edits = deleteMind(widget, nodes);
         } else {
-            _selectValue_355 = node.type;
-            if (_selectValue_355 === 'question') {
+            _selectValue_1749 = node.type;
+            if (_selectValue_1749 === 'question') {
                 edits = deleteQuestion(widget, node);
             } else {
-                if (_selectValue_355 === 'loopbegin') {
+                if (_selectValue_1749 === 'loopbegin') {
                     edits = deleteLoop(widget, node);
                 } else {
-                    if (_selectValue_355 === 'loopend') {
+                    if (_selectValue_1749 === 'loopend') {
                         edits = deleteLoop(widget, node.loopStart);
                     } else {
-                        if (_selectValue_355 === 'params') {
+                        if (_selectValue_1749 === 'params') {
                             edits = deleteParams(widget, node);
                         } else {
-                            if (_selectValue_355 === 'case') {
+                            if (_selectValue_1749 === 'case') {
                                 edits = deleteCase(widget, node);
                             } else {
-                                if (_selectValue_355 === 'select') {
+                                if (_selectValue_1749 === 'select') {
                                     edits = deleteSelect(widget, node);
                                 } else {
-                                    if (_selectValue_355 === 'branch') {
+                                    if (_selectValue_1749 === 'branch') {
                                         edits = deleteBranch(widget, node);
                                     } else {
-                                        if (_selectValue_355 === 'duration') {
+                                        if (_selectValue_1749 === 'duration') {
                                             edits = deleteDuration(widget, node);
                                         } else {
                                             edits = deleteSimple(widget, node);
@@ -12795,7 +13644,23 @@ function deleteSelect(widget, node) {
     markToDelete(widget, toKeep, node, first.itemId, edits);
     return edits;
 }
-function deleteSelection(widget) {
+function deleteSelectionCore(widget, nodes) {
+    var _selectValue_1751, edits;
+    _selectValue_1751 = nodes.length;
+    if (_selectValue_1751 !== 0) {
+        if (_selectValue_1751 === 1) {
+            deleteOne(widget, nodes[0]);
+        } else {
+            if (isMindIcon(widget, nodes[0])) {
+                edits = deleteMind(widget, nodes);
+                doEdit(widget, edits);
+            } else {
+                deleteBlock(widget, nodes);
+            }
+        }
+    }
+}
+function deleteSelectionImpl(widget) {
     var connection, elements, nodes;
     elements = getSelectedFree(widget);
     if (elements.length === 0) {
@@ -12810,22 +13675,6 @@ function deleteSelection(widget) {
         }
     } else {
         deleteFree(widget, elements);
-    }
-}
-function deleteSelectionCore(widget, nodes) {
-    var _selectValue_357, edits;
-    _selectValue_357 = nodes.length;
-    if (_selectValue_357 !== 0) {
-        if (_selectValue_357 === 1) {
-            deleteOne(widget, nodes[0]);
-        } else {
-            if (isMindIcon(widget, nodes[0])) {
-                edits = deleteMind(widget, nodes);
-                doEdit(widget, edits);
-            } else {
-                deleteBlock(widget, nodes);
-            }
-        }
     }
 }
 function deleteSimple(widget, node) {
@@ -12855,10 +13704,10 @@ function findSelectionBottom(widget) {
     return next.itemId;
 }
 function markOtherCasesToStay(widget, node) {
-    var _collection_359, below, caseNode, toKeep;
+    var _collection_1753, below, caseNode, toKeep;
     toKeep = {};
-    _collection_359 = node.select.cases;
-    for (caseNode of _collection_359) {
+    _collection_1753 = node.select.cases;
+    for (caseNode of _collection_1753) {
         if (caseNode !== node) {
             below = caseNode.next[0];
             markToStay(widget, caseNode, below.itemId, toKeep);
@@ -12921,7 +13770,7 @@ function createEdge(visuals, head, tail, vertical) {
     return edge;
 }
 function createNode(visuals, itemId, type, content, id) {
-    var _selectValue_361, node;
+    var _selectValue_1755, node;
     if (!id) {
         id = 'n' + getNextId(visuals);
     }
@@ -12945,11 +13794,11 @@ function createNode(visuals, itemId, type, content, id) {
         visuals.itemsToNodes[itemId] = id;
     }
     addToMultiDict(visuals.byType, node.type, node.id);
-    _selectValue_361 = node.type;
-    if (_selectValue_361 === 'header') {
+    _selectValue_1755 = node.type;
+    if (_selectValue_1755 === 'header') {
         visuals.header = node;
     } else {
-        if (_selectValue_361 === 'end') {
+        if (_selectValue_1755 === 'end') {
             visuals.end = node;
         }
     }
@@ -13209,7 +14058,7 @@ function layoutParBlock(visuals, stack, firstPar) {
     }
 }
 function layoutSelect(visuals, stack, select) {
-    var _collection_363, caseNode, edge, i, jun, left, node;
+    var _collection_1757, caseNode, edge, i, jun, left, node;
     select.cases = [];
     node = select.next[0];
     while (true) {
@@ -13222,8 +14071,8 @@ function layoutSelect(visuals, stack, select) {
         }
     }
     left = null;
-    _collection_363 = select.cases;
-    for (caseNode of _collection_363) {
+    _collection_1757 = select.cases;
+    for (caseNode of _collection_1757) {
         jun = createJunction(visuals, undefined);
         jun.role = 'case';
         makeDownEdgeCore(visuals, jun, caseNode, undefined);
@@ -13321,22 +14170,22 @@ function parallelCompatible(node1, node2) {
     }
 }
 function planNextSteps(visuals, stack, node) {
-    var _selectValue_365, next1, next2;
-    _selectValue_365 = node.type;
-    if (_selectValue_365 === 'select') {
+    var _selectValue_1759, next1, next2;
+    _selectValue_1759 = node.type;
+    if (_selectValue_1759 === 'select') {
         layoutSelect(visuals, stack, node);
     } else {
-        if (_selectValue_365 === 'question') {
+        if (_selectValue_1759 === 'question') {
             next1 = node.next[0];
             next2 = node.next[1];
             planRightStep(stack, node, next2);
             planStep(stack, node, next1);
         } else {
-            if (_selectValue_365 === 'arrow-loop') {
+            if (_selectValue_1759 === 'arrow-loop') {
                 next1 = buildArrowUp(visuals, node);
                 planNextSteps(visuals, stack, next1);
             } else {
-                if (_selectValue_365 === 'junction' && node.subtype === 'parbegin') {
+                if (_selectValue_1759 === 'junction' && node.subtype === 'parbegin') {
                     layoutParBlock(visuals, stack, node);
                 } else {
                     if (node.next.length !== 0) {
@@ -13496,11 +14345,11 @@ function decrementImageRefCount(visuals, imageId) {
     }
 }
 function deleteOrphanImages(widget, edits) {
-    var _collection_367, id, image, images2;
+    var _collection_1761, id, image, images2;
     images2 = {};
-    _collection_367 = widget.images;
-    for (id in _collection_367) {
-        image = _collection_367[id];
+    _collection_1761 = widget.images;
+    for (id in _collection_1761) {
+        image = _collection_1761[id];
         if (image.refCount === 0) {
             deleteItemCore(edits, id);
         } else {
@@ -13560,12 +14409,12 @@ function loadImage(image) {
     return _obj_.run();
 }
 async function loadImages(widget) {
-    var _collection_370, diagram, id, image, item;
+    var _collection_1764, diagram, id, image, item;
     diagram = widget.edit.diagram;
     widget.images = {};
-    _collection_370 = diagram.items;
-    for (id in _collection_370) {
-        item = _collection_370[id];
+    _collection_1764 = diagram.items;
+    for (id in _collection_1764) {
+        item = _collection_1764[id];
         if (item.type === 'image') {
             image = {
                 content: item.content,
@@ -13577,10 +14426,10 @@ async function loadImages(widget) {
     }
 }
 function resetImageRefCounts(widget) {
-    var _collection_373, id, image;
-    _collection_373 = widget.images;
-    for (id in _collection_373) {
-        image = _collection_373[id];
+    var _collection_1767, id, image;
+    _collection_1767 = widget.images;
+    for (id in _collection_1767) {
+        image = _collection_1767[id];
         image.refCount = 0;
     }
 }
@@ -13597,7 +14446,7 @@ function resizeElementToImage(widget, edits) {
     }
 }
 function drawEdge(widget, edge, ctx) {
-    var _selectValue_376, color, config, endPos, length, low, radius, showMeat, socketY, startPos, thickness, visuals, x1, x2, y1, y2;
+    var _selectValue_1770, color, config, endPos, length, low, radius, showMeat, socketY, startPos, thickness, visuals, x1, x2, y1, y2;
     visuals = widget.visuals;
     config = visuals.config;
     x1 = getX(edge.head);
@@ -13626,7 +14475,7 @@ function drawEdge(widget, edge, ctx) {
         }
         line(ctx, x1, y1, x2, y2, color, thickness);
         showMeat = false;
-        if (!(isReadonly(widget) || !(showMeat && edge.role === 'down') || !(visuals.highlight !== edge.id))) {
+        if (!(isReadonlyImpl(widget) || !(showMeat && edge.role === 'down') || !(visuals.highlight !== edge.id))) {
             startPos = getVerticalStartPos(edge);
             endPos = getVerticalEndPos(edge);
             length = endPos - startPos;
@@ -13647,11 +14496,11 @@ function drawEdge(widget, edge, ctx) {
             edge.thickness = thickness;
             edge.color = color;
         } else {
-            _selectValue_376 = edge.role;
-            if (_selectValue_376 === 'arrow') {
+            _selectValue_1770 = edge.role;
+            if (_selectValue_1770 === 'arrow') {
                 drawArrowHead(ctx, color, x1 + thickness, y1, Math.PI);
             } else {
-                if (_selectValue_376 === 'rarrow') {
+                if (_selectValue_1770 === 'rarrow') {
                     drawArrowHead(ctx, color, x2 - thickness, y1, 0);
                 }
             }
@@ -13859,9 +14708,9 @@ function hitScrollBar(visuals, pos) {
     }
 }
 function canHaveDuration(node) {
-    var _selectValue_378;
-    _selectValue_378 = node.type;
-    if ((_selectValue_378 === 'action' || (_selectValue_378 === 'question' || _selectValue_378 === 'select' || _selectValue_378 === 'insertion' || _selectValue_378 === 'simpleinput' || _selectValue_378 === 'simpleoutput' || _selectValue_378 === 'input' || _selectValue_378 === 'output' || _selectValue_378 === 'shelf' || _selectValue_378 === 'process')) && !node.side) {
+    var _selectValue_1772;
+    _selectValue_1772 = node.type;
+    if ((_selectValue_1772 === 'action' || (_selectValue_1772 === 'question' || _selectValue_1772 === 'select' || _selectValue_1772 === 'insertion' || _selectValue_1772 === 'simpleinput' || _selectValue_1772 === 'simpleoutput' || _selectValue_1772 === 'input' || _selectValue_1772 === 'output' || _selectValue_1772 === 'shelf' || _selectValue_1772 === 'process')) && !node.side) {
         return true;
     } else {
         return false;
@@ -13903,7 +14752,7 @@ function createSocket(visuals, x, y, op, type, radius) {
     return self;
 }
 function createSocketFromEdge(visuals, edge, op, type, imageData) {
-    var Min, _selectValue_380, box, endPos, head, hh, hw, length, radius, socket, startPos, tail, th, tw, x, x1, x2, y, y1, y2;
+    var Min, _selectValue_1774, box, endPos, head, hh, hw, length, radius, socket, startPos, tail, th, tw, x, x1, x2, y, y1, y2;
     radius = visuals.config.socketRadius;
     head = edge.head;
     tail = edge.tail;
@@ -13937,11 +14786,11 @@ function createSocketFromEdge(visuals, edge, op, type, imageData) {
     socket = createSocket(visuals, x, y, op, type, radius);
     socket.edge = edge;
     socket.imageData = imageData;
-    _selectValue_380 = edge.role;
-    if (_selectValue_380 === 'floor') {
+    _selectValue_1774 = edge.role;
+    if (_selectValue_1774 === 'floor') {
         socket.target = getFloorTarget(visuals, edge);
     } else {
-        if (_selectValue_380 === 'parceiling') {
+        if (_selectValue_1774 === 'parceiling') {
             socket.target = getParTarget(edge.head);
         } else {
             socket.target = edge.finalTarget.itemId;
@@ -14065,9 +14914,9 @@ function findForInsertion(visuals) {
     return result;
 }
 function findSocket(visuals, x, y) {
-    var _collection_383, socket;
-    _collection_383 = visuals.sockets;
-    for (socket of _collection_383) {
+    var _collection_1777, socket;
+    _collection_1777 = visuals.sockets;
+    for (socket of _collection_1777) {
         if (hitBox(socket.box, x, y)) {
             return socket.id;
         }
@@ -14075,13 +14924,13 @@ function findSocket(visuals, x, y) {
     return undefined;
 }
 function getFloorTarget(visuals, floorEdge) {
-    var _collection_385, itemId, left, leftBranch, right, rightBranch;
+    var _collection_1779, itemId, left, leftBranch, right, rightBranch;
     left = getUp(floorEdge.head);
     right = getUp(floorEdge.tail);
     leftBranch = left.branch.itemId;
     rightBranch = right.branch.itemId;
-    _collection_385 = visuals.branches;
-    for (itemId of _collection_385) {
+    _collection_1779 = visuals.branches;
+    for (itemId of _collection_1779) {
         if (!(itemId === leftBranch || itemId === rightBranch)) {
             return itemId;
         }
@@ -14177,10 +15026,10 @@ function showCaseSockets(visuals, node, op) {
     }
 }
 function showDurationSockets(visuals, op) {
-    var _collection_387, id, node;
-    _collection_387 = visuals.nodes;
-    for (id in _collection_387) {
-        node = _collection_387[id];
+    var _collection_1781, id, node;
+    _collection_1781 = visuals.nodes;
+    for (id in _collection_1781) {
+        node = _collection_1781[id];
         if (canHaveDuration(node)) {
             createDurationSocket(visuals, node, op);
         }
@@ -14312,7 +15161,7 @@ function addUpperCorner(sub, node) {
     addNodeSubRecord(sub.outer, node);
 }
 function crawl(crawler, startEdge) {
-    var _collection_395, edge, node, step;
+    var _collection_1789, edge, node, step;
     step = {};
     edge = startEdge;
     while (true) {
@@ -14323,8 +15172,8 @@ function crawl(crawler, startEdge) {
             break;
         }
     }
-    _collection_395 = crawler.plan;
-    for (node of _collection_395) {
+    _collection_1789 = crawler.plan;
+    for (node of _collection_1789) {
         createQSubspace(crawler, node);
     }
 }
@@ -14441,17 +15290,17 @@ function drawSubNode(node, ctx, color) {
     ctx.fillRect(node.x - size / 2, node.y - size / 2, size, size);
 }
 function drawSubspaces(visuals, ctx) {
-    var _collection_397, _collection_399, _collection_402, itemId, record, sub;
-    _collection_397 = visuals.subs;
-    for (sub of _collection_397) {
-        _collection_399 = sub.inner;
-        for (itemId in _collection_399) {
-            record = _collection_399[itemId];
+    var _collection_1791, _collection_1793, _collection_1796, itemId, record, sub;
+    _collection_1791 = visuals.subs;
+    for (sub of _collection_1791) {
+        _collection_1793 = sub.inner;
+        for (itemId in _collection_1793) {
+            record = _collection_1793[itemId];
             drawInnerSubItem(record, ctx, sub.color);
         }
-        _collection_402 = sub.outer;
-        for (itemId in _collection_402) {
-            record = _collection_402[itemId];
+        _collection_1796 = sub.outer;
+        for (itemId in _collection_1796) {
+            record = _collection_1796[itemId];
             drawOuterSubItem(record, ctx, sub.color);
         }
     }
@@ -14540,18 +15389,18 @@ function planSpace(crawler, node) {
     crawler.plan.push(node);
 }
 function skipParBlock(node) {
-    var _selectValue_405, counter;
+    var _selectValue_1799, counter;
     counter = 1;
     while (true) {
         node = getDown(node);
-        _selectValue_405 = node.subtype;
-        if (_selectValue_405 === 'parend') {
+        _selectValue_1799 = node.subtype;
+        if (_selectValue_1799 === 'parend') {
             counter--;
             if (counter === 0) {
                 break;
             }
         } else {
-            if (_selectValue_405 === 'parbegin') {
+            if (_selectValue_1799 === 'parbegin') {
                 counter++;
             }
         }
@@ -14759,30 +15608,30 @@ function arc(ctx, x, y, radius, begin, end, thickness, color) {
     ctx.stroke();
 }
 function bakeSubtreeCoords(node, parentX, parentY) {
-    var _collection_409, child, subtreeX, subtreeY;
+    var _collection_1803, child, subtreeX, subtreeY;
     subtreeX = node.subtreeBox.left + parentX;
     subtreeY = node.subtreeBox.top + parentY;
     node.x += subtreeX;
     node.y += subtreeY;
-    _collection_409 = node.children;
-    for (child of _collection_409) {
+    _collection_1803 = node.children;
+    for (child of _collection_1803) {
         bakeSubtreeCoords(child, subtreeX, subtreeY);
     }
 }
 function buildBackgroundMenu(widget, x, y) {
-    var _selectValue_411, clipboard, menu;
+    var _selectValue_1805, clipboard, menu;
     menu = [];
-    if (!isReadonly(widget)) {
+    if (!isReadonlyImpl(widget)) {
         clipboard = getClipboardClone(widget);
         if (clipboard) {
-            _selectValue_411 = clipboard.type;
-            if (_selectValue_411 === 'case' || _selectValue_411 === 'branch' || _selectValue_411 === 'block') {
+            _selectValue_1805 = clipboard.type;
+            if (_selectValue_1805 === 'case' || _selectValue_1805 === 'branch' || _selectValue_1805 === 'block') {
                 pushMenuItem('paste', menu, tr(widget, 'Paste'), undefined, function () {
                     widget.showPasteSockets(clipboard.type);
                 });
                 menu.push({ type: 'separator' });
             } else {
-                if (_selectValue_411 === 'mind') {
+                if (_selectValue_1805 === 'mind') {
                     if (isMind(widget)) {
                         pushMenuItem('paste', menu, tr(widget, 'Paste'), undefined, function () {
                             widget.showPasteSockets(clipboard.type);
@@ -14790,7 +15639,7 @@ function buildBackgroundMenu(widget, x, y) {
                         menu.push({ type: 'separator' });
                     }
                 } else {
-                    if (_selectValue_411 === 'free') {
+                    if (_selectValue_1805 === 'free') {
                         pushMenuItem('paste', menu, tr(widget, 'Paste'), undefined, function (evt) {
                             pasteFree(widget, clipboard, evt);
                         });
@@ -14808,7 +15657,7 @@ function buildBackgroundMenu(widget, x, y) {
 function buildBeginParMenu(widget, node) {
     var menu;
     menu = [];
-    if (!isReadonly(widget)) {
+    if (!isReadonlyImpl(widget)) {
         pushMenuItem('add_path_left', menu, tr(widget, 'Add path to the left'), widget.visuals.config.imagePath + 'par.png', function () {
             insertPath(widget, node, true);
         });
@@ -14830,13 +15679,13 @@ function buildBlockMenu(widget) {
     pushMenuItem('copy_block', menu, tr(widget, 'Copy'), undefined, function () {
         copy(widget);
     });
-    if (!isReadonly(widget)) {
+    if (!isReadonlyImpl(widget)) {
         pushMenuItem('cut_block', menu, tr(widget, 'Cut'), undefined, function () {
             cut(widget);
         });
         menu.push({ type: 'separator' });
         pushMenuItem('delete_block', menu, tr(widget, 'Delete'), widget.visuals.config.imagePath + 'delete.png', function () {
-            deleteSelection(widget);
+            deleteSelectionImpl(widget);
         });
         menu.push({ type: 'separator' });
         pushMenuItem('format', menu, tr(widget, 'Format'), undefined, function () {
@@ -14848,7 +15697,7 @@ function buildBlockMenu(widget) {
 function buildCeilEdgeMenu(widget, edge) {
     var branchNode, clipboard, menu;
     menu = [];
-    if (!isReadonly(widget)) {
+    if (!isReadonlyImpl(widget)) {
         branchNode = edge.tail.down.tail;
         clipboard = getClipboardClone(widget);
         if (clipboard && clipboard.type === 'branch') {
@@ -14922,11 +15771,11 @@ function buildConfig(userConfig) {
     return config;
 }
 function buildContextMenuForPrim(widget, prim, evt) {
-    var _selectValue_413, _selectValue_415, edge, menu, node, selected, underlying, visuals;
+    var _selectValue_1807, _selectValue_1809, edge, menu, node, selected, underlying, visuals;
     visuals = widget.visuals;
     if (prim) {
-        _selectValue_413 = prim.elType;
-        if (_selectValue_413 === 'node') {
+        _selectValue_1807 = prim.elType;
+        if (_selectValue_1807 === 'node') {
             node = getNode(visuals, prim.id);
             if (node.type == 'end') {
                 menu = [];
@@ -14958,26 +15807,26 @@ function buildContextMenuForPrim(widget, prim, evt) {
                 }
             }
         } else {
-            if (_selectValue_413 === 'edge') {
+            if (_selectValue_1807 === 'edge') {
                 edge = getEdge(visuals, prim.id);
-                _selectValue_415 = edge.role;
-                if (_selectValue_415 === 'parceiling') {
+                _selectValue_1809 = edge.role;
+                if (_selectValue_1809 === 'parceiling') {
                     selectPrim(widget, prim.id);
                     menu = buildParCeilMenu(widget, edge);
                 } else {
-                    if (_selectValue_415 === 'down') {
+                    if (_selectValue_1809 === 'down') {
                         ensureSelectedOne(widget, prim);
                         menu = buildDownEdgeMenu(widget, edge);
                     } else {
-                        if (_selectValue_415 === 'mind-child') {
+                        if (_selectValue_1809 === 'mind-child') {
                             selectPrim(widget, prim.id);
                             menu = buildMindEdgeMenu(widget, edge);
                         } else {
-                            if (_selectValue_415 === 'ceil') {
+                            if (_selectValue_1809 === 'ceil') {
                                 selectPrim(widget, prim.id);
                                 menu = buildCeilEdgeMenu(widget, edge);
                             } else {
-                                if (_selectValue_415 === 'selectceil') {
+                                if (_selectValue_1809 === 'selectceil') {
                                     selectPrim(widget, prim.id);
                                     menu = buildSelectCeilEdgeMenu(widget, edge);
                                 } else {
@@ -14989,7 +15838,7 @@ function buildContextMenuForPrim(widget, prim, evt) {
                     }
                 }
             } else {
-                if (_selectValue_413 === 'free') {
+                if (_selectValue_1807 === 'free') {
                     if (isSelected(widget, prim.id)) {
                         selected = getSelectedFree(widget);
                         if (selected.length > 1) {
@@ -15003,7 +15852,7 @@ function buildContextMenuForPrim(widget, prim, evt) {
                         menu = buildFreeMenu(widget, prim);
                     }
                 } else {
-                    if (_selectValue_413 === 'nugget') {
+                    if (_selectValue_1807 === 'nugget') {
                         selected = getSelectedFree(widget);
                         if (selected.length > 1) {
                             menu = buildBlockMenu(widget);
@@ -15012,13 +15861,13 @@ function buildContextMenuForPrim(widget, prim, evt) {
                             menu = buildFreeMenu(widget, prim);
                         }
                     } else {
-                        if (_selectValue_413 === 'connection') {
+                        if (_selectValue_1807 === 'connection') {
                             if (!isSelected(widget, prim.id)) {
                                 selectPrim(widget, prim.id);
                             }
                             menu = buildConnectionMenu(widget, prim);
                         } else {
-                            if (_selectValue_413 === 'handle') {
+                            if (_selectValue_1807 === 'handle') {
                                 if (prim.makeContextMenu) {
                                     menu = prim.makeContextMenu();
                                 } else {
@@ -15039,7 +15888,7 @@ function buildContextMenuForPrim(widget, prim, evt) {
     return menu;
 }
 function buildDiagramModel(widget, diagram) {
-    var _collection_417, branch, end, idNum, item, itemId, model, nextId, type;
+    var _collection_1811, branch, end, idNum, item, itemId, model, nextId, type;
     diagram.initial = [];
     type = diagram.type || 'drakon';
     model = {
@@ -15058,9 +15907,9 @@ function buildDiagramModel(widget, diagram) {
         model.doc.style = JSON.parse(diagram.style);
     }
     nextId = 0;
-    _collection_417 = diagram.items;
-    for (itemId in _collection_417) {
-        item = _collection_417[itemId];
+    _collection_1811 = diagram.items;
+    for (itemId in _collection_1811) {
+        item = _collection_1811[itemId];
         item.id = itemId;
         addItemToModel(model, item);
         idNum = parseInt(item.id);
@@ -15088,7 +15937,7 @@ function buildDiagramModel(widget, diagram) {
 function buildDownEdgeMenu(widget, edge) {
     var clipboard, menu;
     menu = [];
-    if (!isReadonly(widget)) {
+    if (!isReadonlyImpl(widget)) {
         clipboard = getClipboardClone(widget);
         if (clipboard && clipboard.type === 'block') {
             pushMenuItem('paste_block', menu, tr(widget, 'Paste'), undefined, function () {
@@ -15163,7 +16012,7 @@ function buildFreeMenu(widget, prim) {
     pushMenuItem('copy_free', menu, tr(widget, 'Copy'), undefined, function () {
         copy(widget);
     });
-    if (isReadonly(widget)) {
+    if (isReadonlyImpl(widget)) {
         menu.push({ type: 'separator' });
         pushMenuItem('edit_content', menu, tr(widget, 'Edit content'), undefined, function () {
             startEditContent(widget, prim);
@@ -15182,7 +16031,7 @@ function buildFreeMenu(widget, prim) {
             pushMenuItem('edit_content', menu, tr(widget, 'Edit content'), undefined, function () {
                 startEditContent(widget, prim);
             });
-            if (prim.type === 'free-image' && !isReadonly(widget)) {
+            if (prim.type === 'free-image' && !isReadonlyImpl(widget)) {
                 pushMenuItem('change_image', menu, tr(widget, 'Change image'), undefined, function () {
                     startChangeImage(widget, prim);
                 });
@@ -15207,7 +16056,7 @@ function buildFreeMenu(widget, prim) {
         });
         menu.push({ type: 'separator' });
         pushMenuItem('delete_free', menu, tr(widget, 'Delete'), widget.visuals.config.imagePath + 'delete.png', function () {
-            deleteSelection(widget);
+            deleteSelectionImpl(widget);
         });
         menu.push({ type: 'separator' });
         pushMenuItem('format', menu, tr(widget, 'Format'), undefined, function () {
@@ -15229,13 +16078,13 @@ function buildGrafHeader(visuals, model) {
     flowIcon(visuals, visuals.header);
 }
 function buildMenuByType(widget, prim, node) {
-    var _selectValue_420, func, menu;
+    var _selectValue_1814, func, menu;
     menu = [];
     if (prim.type === 'params') {
         pushMenuItem('edit_content', menu, tr(widget, 'Edit content'), undefined, function () {
             startEditContent(widget, prim);
         });
-        if (!isReadonly(widget)) {
+        if (!isReadonlyImpl(widget)) {
             menu.push({ type: 'separator' });
             pushMenuItem('delete_one', menu, tr(widget, 'Delete'), widget.visuals.config.imagePath + 'delete.png', function () {
                 deleteOne(widget, node);
@@ -15252,7 +16101,7 @@ function buildMenuByType(widget, prim, node) {
             pushMenuItem('copy_one', menu, tr(widget, 'Copy'), undefined, function () {
                 copy(widget);
             });
-            if (!isReadonly(widget) && canDelete(widget.visuals, node)) {
+            if (!isReadonlyImpl(widget) && canDelete(widget.visuals, node)) {
                 pushMenuItem('cut_one', menu, tr(widget, 'Cut'), undefined, function () {
                     cut(widget);
                 });
@@ -15263,7 +16112,7 @@ function buildMenuByType(widget, prim, node) {
             pushMenuItem('rename', menu, tr(widget, 'Rename'), undefined, function () {
                 startEditContent(widget, prim);
             });
-            if (!(widget.visuals.params || isReadonly(widget))) {
+            if (!(widget.visuals.params || isReadonlyImpl(widget))) {
                 pushMenuItem('add_params', menu, tr(widget, 'Add parameters'), undefined, function () {
                     addParameters(widget, prim);
                 });
@@ -15278,7 +16127,7 @@ function buildMenuByType(widget, prim, node) {
                 pushMenuItem('edit_content', menu, tr(widget, 'Edit content'), undefined, function () {
                     startEditContent(widget, prim);
                 });
-                if (prim.type === 'drakon-image' && !isReadonly(widget)) {
+                if (prim.type === 'drakon-image' && !isReadonlyImpl(widget)) {
                     pushMenuItem('change_image', menu, tr(widget, 'Change image'), undefined, function () {
                         startChangeImage(widget, prim);
                     });
@@ -15294,23 +16143,23 @@ function buildMenuByType(widget, prim, node) {
                 });
             }
         }
-        if (isReadonly(widget)) {
+        if (isReadonlyImpl(widget)) {
             return menu;
         } else {
-            _selectValue_420 = prim.type;
-            if (_selectValue_420 === 'question') {
+            _selectValue_1814 = prim.type;
+            if (_selectValue_1814 === 'question') {
                 pushMenuItem('swap_yes_no', menu, tr(widget, 'Swap "Yes" and "No"'), undefined, function () {
                     widget.swapYesNo(prim.id);
                 });
             } else {
-                if (_selectValue_420 === 'address') {
+                if (_selectValue_1814 === 'address') {
                     pushMenuItem('go_to_target_branch', menu, tr(widget, 'Go to branch'), undefined, function () {
                         widget.showItem(node.branch.id);
                     });
                     menu.push({ type: 'separator' });
                     addressDestinations(widget, node, menu);
                 } else {
-                    if (_selectValue_420 === 'branch') {
+                    if (_selectValue_1814 === 'branch') {
                         if (getBranchMargin(node) !== 0) {
                             pushMenuItem('reset_margin', menu, tr(widget, 'Reset margin'), undefined, function () {
                                 resetMargin(widget, node.id);
@@ -15339,7 +16188,7 @@ function buildMenuByType(widget, prim, node) {
                             });
                         }
                     } else {
-                        if (_selectValue_420 === 'case') {
+                        if (_selectValue_1814 === 'case') {
                             pushMenuItem('insert_case_left', menu, tr(widget, 'Insert Case to the left'), widget.visuals.config.imagePath + 'case.png', function () {
                                 insertCase(widget, node, true);
                             });
@@ -15369,7 +16218,7 @@ function buildMenuByType(widget, prim, node) {
 function buildParCeilMenu(widget, edge) {
     var menu;
     menu = [];
-    if (!isReadonly(widget)) {
+    if (!isReadonlyImpl(widget)) {
         if (!edge.head.left) {
             pushMenuItem('add_path_left', menu, tr(widget, 'Add path to the left'), widget.visuals.config.imagePath + 'par.png', function () {
                 insertPath(widget, edge.head, true);
@@ -15388,7 +16237,7 @@ function buildParCeilMenu(widget, edge) {
 function buildSelectCeilEdgeMenu(widget, edge) {
     var caseNode, clipboard, menu;
     menu = [];
-    if (!isReadonly(widget)) {
+    if (!isReadonlyImpl(widget)) {
         caseNode = edge.head.down.tail;
         clipboard = getClipboardClone(widget);
         if (clipboard && clipboard.type === 'case') {
@@ -15404,19 +16253,19 @@ function buildSelectCeilEdgeMenu(widget, edge) {
     return menu;
 }
 function buildSubspaces(visuals) {
-    var _collection_422, branch, branchNode;
+    var _collection_1816, branch, branchNode;
     if (visuals.branches.length === 1) {
         crawlSubdiagram(visuals, visuals.header.down);
     } else {
-        _collection_422 = visuals.branches;
-        for (branch of _collection_422) {
+        _collection_1816 = visuals.branches;
+        for (branch of _collection_1816) {
             branchNode = getNode(visuals, branch);
             crawlSubdiagram(visuals, branchNode.down);
         }
     }
 }
 function buildVisuals(widget) {
-    var _branch_, _collection_424, _collection_426, _collection_429, _selectValue_432, _selectValue_434, bItemId, branch, config, context, ctx, element, id, item, model, node, skewer, visuals;
+    var _branch_, _collection_1818, _collection_1820, _collection_1823, _selectValue_1826, _selectValue_1828, bItemId, branch, config, context, ctx, element, id, item, model, node, skewer, visuals;
     _branch_ = 'Create visuals object';
     while (true) {
         switch (_branch_) {
@@ -15457,24 +16306,24 @@ function buildVisuals(widget) {
             _branch_ = 'Header and params';
             break;
         case 'Header and params':
-            _selectValue_434 = model.type;
-            if (_selectValue_434 === 'drakon') {
+            _selectValue_1828 = model.type;
+            if (_selectValue_1828 === 'drakon') {
                 buildDrakonHeader(visuals, model);
             } else {
-                if (_selectValue_434 === 'graf') {
+                if (_selectValue_1828 === 'graf') {
                     buildGrafHeader(visuals, model);
                 } else {
-                    if (_selectValue_434 !== 'free') {
-                        throw new Error('Unexpected case value: ' + _selectValue_434);
+                    if (_selectValue_1828 !== 'free') {
+                        throw new Error('Unexpected case value: ' + _selectValue_1828);
                     }
                 }
             }
             _branch_ = 'Create nodes';
             break;
         case 'Create nodes':
-            _collection_426 = model.items;
-            for (id in _collection_426) {
-                item = _collection_426[id];
+            _collection_1820 = model.items;
+            for (id in _collection_1820) {
+                item = _collection_1820[id];
                 if (item.type === 'connection') {
                     addConnectionToVisuals(visuals, id, item);
                 } else {
@@ -15490,23 +16339,23 @@ function buildVisuals(widget) {
                 }
             }
             sortFreeIcons(visuals);
-            _selectValue_432 = model.type;
-            if (_selectValue_432 === 'drakon') {
+            _selectValue_1826 = model.type;
+            if (_selectValue_1826 === 'drakon') {
                 _branch_ = 'Link nodes';
             } else {
-                if (_selectValue_432 === 'graf') {
+                if (_selectValue_1826 === 'graf') {
                     _branch_ = 'Graf';
                 } else {
-                    if (_selectValue_432 !== 'free') {
-                        throw new Error('Unexpected case value: ' + _selectValue_432);
+                    if (_selectValue_1826 !== 'free') {
+                        throw new Error('Unexpected case value: ' + _selectValue_1826);
                     }
                     _branch_ = 'Free';
                 }
             }
             break;
         case 'Link nodes':
-            _collection_424 = visuals.branches;
-            for (bItemId of _collection_424) {
+            _collection_1818 = visuals.branches;
+            for (bItemId of _collection_1818) {
                 context = {
                     visuals: visuals,
                     addresses: []
@@ -15529,9 +16378,9 @@ function buildVisuals(widget) {
             break;
         case 'Calculate coords':
             buildSkewers(visuals);
-            _collection_429 = visuals.skewers;
-            for (id in _collection_429) {
-                skewer = _collection_429[id];
+            _collection_1823 = visuals.skewers;
+            for (id in _collection_1823) {
+                skewer = _collection_1823[id];
                 setSameWidth(visuals, skewer);
             }
             reflowContent(visuals);
@@ -15617,7 +16466,7 @@ function calculateBoxIter(node, box) {
     }
 }
 function calculateDiagramBox(visuals) {
-    var _collection_436, _collection_439, _collection_441, _collection_444, bottom, box, conbox, connection, element, id, metre, node, padding, right;
+    var _collection_1830, _collection_1833, _collection_1835, _collection_1838, bottom, box, conbox, connection, element, id, metre, node, padding, right;
     box = {
         left: Number.MAX_SAFE_INTEGER,
         right: Number.MIN_SAFE_INTEGER,
@@ -15625,21 +16474,21 @@ function calculateDiagramBox(visuals) {
         bottom: Number.MIN_SAFE_INTEGER
     };
     metre = visuals.config.metre;
-    _collection_436 = visuals.nodes;
-    for (id in _collection_436) {
-        node = _collection_436[id];
+    _collection_1830 = visuals.nodes;
+    for (id in _collection_1830) {
+        node = _collection_1830[id];
         calculateBoxIter(node, box);
     }
-    _collection_439 = visuals.free;
-    for (element of _collection_439) {
+    _collection_1833 = visuals.free;
+    for (element of _collection_1833) {
         calculateBoxFromFree(element.box, box);
     }
-    _collection_441 = visuals.connectionById;
-    for (id in _collection_441) {
-        connection = _collection_441[id];
+    _collection_1835 = visuals.connectionById;
+    for (id in _collection_1835) {
+        connection = _collection_1835[id];
         buildConnectionBoxes(visuals, connection);
-        _collection_444 = connection.boxes;
-        for (conbox of _collection_444) {
+        _collection_1838 = connection.boxes;
+        for (conbox of _collection_1838) {
             right = conbox.left + conbox.width;
             bottom = conbox.top + conbox.height;
             nextBox(box, conbox.left, conbox.top, right, bottom);
@@ -15679,15 +16528,15 @@ function calculateScrollableWidth(widget) {
     return Math.max(boxWidth, widget.width);
 }
 function calculateSubtreeBox(config, node) {
-    var _collection_446, child, subtreeBox, ttype;
+    var _collection_1840, child, subtreeBox, ttype;
     subtreeBox = createBox(0, 0, node.w * 2, node.h * 2);
     node.subtreeBox = subtreeBox;
     if (node.children.length === 0) {
         node.x = node.w;
         node.y = node.h;
     } else {
-        _collection_446 = node.children;
-        for (child of _collection_446) {
+        _collection_1840 = node.children;
+        for (child of _collection_1840) {
             calculateSubtreeBox(config, child);
         }
         ttype = getTType(node);
@@ -15753,7 +16602,7 @@ function compareBranches(leftId, rightId, items) {
     return left.branchId - right.branchId;
 }
 function connectBranch(visuals, branch, upper, lower) {
-    var _branch_, _collection_448, address, branchLower, ceil, floor;
+    var _branch_, _collection_1842, address, branchLower, ceil, floor;
     _branch_ = 'Top';
     while (true) {
         switch (_branch_) {
@@ -15773,8 +16622,8 @@ function connectBranch(visuals, branch, upper, lower) {
             _branch_ = 'Bottom';
             break;
         case 'Bottom':
-            _collection_448 = branch.addresses;
-            for (address of _collection_448) {
+            _collection_1842 = branch.addresses;
+            for (address of _collection_1842) {
                 branchLower = createJunction(visuals, undefined);
                 floor = createEdge(visuals, lower, branchLower, false);
                 floor.role = 'floor';
@@ -15902,26 +16751,26 @@ function createParamsNode(visuals, params) {
     }
 }
 function debugLog(text) {
-    var _collection_450, element, line;
+    var _collection_1844, element, line;
     if (unit.debugLog) {
         unit.debugLog.push(text);
         if (unit.debugLog.length > 20) {
             unit.debugLog.shift();
         }
         html.clear(unit.logDiv);
-        _collection_450 = unit.debugLog;
-        for (line of _collection_450) {
+        _collection_1844 = unit.debugLog;
+        for (line of _collection_1844) {
             element = div({ text: line });
             html.add(unit.logDiv, element);
         }
     }
 }
 function drawBackPlane(widget, ctx) {
-    var _collection_452, element, visited, visuals;
+    var _collection_1846, element, visited, visuals;
     visuals = widget.visuals;
     visited = {};
-    _collection_452 = visuals.free;
-    for (element of _collection_452) {
+    _collection_1846 = visuals.free;
+    for (element of _collection_1846) {
         if (element.zIndex >= 0) {
             break;
         } else {
@@ -15932,7 +16781,7 @@ function drawBackPlane(widget, ctx) {
     clearShadow(ctx);
 }
 function drawFreeNuggetAndHandles(widget, ctx) {
-    var _collection_454, _collection_457, common, element, id, showNugget, type, visuals, x, y;
+    var _collection_1848, _collection_1851, common, element, id, showNugget, type, visuals, x, y;
     showNugget = false;
     visuals = widget.visuals;
     ctx.setLineDash([]);
@@ -15943,9 +16792,9 @@ function drawFreeNuggetAndHandles(widget, ctx) {
         right: Number.MIN_SAFE_INTEGER,
         bottom: Number.MIN_SAFE_INTEGER
     };
-    _collection_454 = widget.selection.prims;
-    for (id in _collection_454) {
-        type = _collection_454[id];
+    _collection_1848 = widget.selection.prims;
+    for (id in _collection_1848) {
+        type = _collection_1848[id];
         if (type === 'free') {
             element = getFree(visuals, id);
             if (element.type !== 'group-duration') {
@@ -15961,9 +16810,9 @@ function drawFreeNuggetAndHandles(widget, ctx) {
     } else {
         visuals.nugget = undefined;
     }
-    _collection_457 = widget.selection.prims;
-    for (id in _collection_457) {
-        type = _collection_457[id];
+    _collection_1851 = widget.selection.prims;
+    for (id in _collection_1851) {
+        type = _collection_1851[id];
         if (type === 'free') {
             element = getFree(visuals, id);
             drawFreeCandies(widget, element, ctx);
@@ -15972,11 +16821,11 @@ function drawFreeNuggetAndHandles(widget, ctx) {
     drawEars(visuals, ctx);
 }
 function drawFrontPlane(widget, ctx) {
-    var _collection_460, element, visited, visuals;
+    var _collection_1854, element, visited, visuals;
     visuals = widget.visuals;
     visited = {};
-    _collection_460 = visuals.free;
-    for (element of _collection_460) {
+    _collection_1854 = visuals.free;
+    for (element of _collection_1854) {
         if (element.zIndex >= 0) {
             drawFreeIcon(widget, element, ctx, visited);
         }
@@ -16088,7 +16937,7 @@ function fillTrigangle(ctx, x1, y1, x2, y2, x3, y3, color) {
     ctx.fill();
 }
 function findEdgeLinks(visuals, startEdge, edge) {
-    var _collection_462, itemId, link, prevEdge, source;
+    var _collection_1856, itemId, link, prevEdge, source;
     source = edge.source;
     if (source) {
         if (source.type !== 'junction' || source.subtype === 'parbegin' || source.subtype === 'parend') {
@@ -16096,8 +16945,8 @@ function findEdgeLinks(visuals, startEdge, edge) {
             link = createLink(itemId, edge.vertical ? 0 : 1);
             startEdge.links.push(link);
         } else {
-            _collection_462 = source.sources;
-            for (prevEdge of _collection_462) {
+            _collection_1856 = source.sources;
+            for (prevEdge of _collection_1856) {
                 findEdgeLinks(visuals, startEdge, prevEdge);
             }
         }
@@ -16223,11 +17072,11 @@ function getEffectiveItemId(visuals, node) {
     }
 }
 function getFreeFromSelection(widget) {
-    var _collection_464, elType, id, visuals;
+    var _collection_1858, elType, id, visuals;
     visuals = widget.visuals;
-    _collection_464 = widget.selection.prims;
-    for (id in _collection_464) {
-        elType = _collection_464[id];
+    _collection_1858 = widget.selection.prims;
+    for (id in _collection_1858) {
+        elType = _collection_1858[id];
         if (elType === 'free') {
             return getFree(visuals, id);
         }
@@ -16246,12 +17095,12 @@ function getNodeForItem(visuals, itemId) {
     return visuals.nodes[nodeId];
 }
 function getSelectedPrims(widget) {
-    var _collection_467, connection, elType, element, id, node, prim, prims, visuals;
+    var _collection_1861, connection, elType, element, id, node, prim, prims, visuals;
     visuals = widget.visuals;
     prims = [];
-    _collection_467 = widget.selection.prims;
-    for (id in _collection_467) {
-        elType = _collection_467[id];
+    _collection_1861 = widget.selection.prims;
+    for (id in _collection_1861) {
+        elType = _collection_1861[id];
         if (elType === 'node') {
             node = getNode(visuals, id);
             prim = nodeToVisualItem(widget, node);
@@ -16424,14 +17273,14 @@ function layoutPrimitive(visuals) {
     buildManhattan(visuals, header);
 }
 function layoutSilhouette(visuals) {
-    var _collection_470, branch, branchId, first, firstId, leftDown, leftUp, lower, upper;
+    var _collection_1864, branch, branchId, first, firstId, leftDown, leftUp, lower, upper;
     leftUp = createJunction(visuals, undefined);
     leftDown = createJunction(visuals, undefined);
     createEdge(visuals, leftUp, leftDown, true);
     upper = leftUp;
     lower = leftDown;
-    _collection_470 = visuals.branches;
-    for (branchId of _collection_470) {
+    _collection_1864 = visuals.branches;
+    for (branchId of _collection_1864) {
         branch = visuals.nodes[branchId];
         buildManhattan(visuals, branch);
         connectBranch(visuals, branch, upper, lower);
@@ -16579,19 +17428,19 @@ function no() {
     return 'No';
 }
 function nodeFromItem(visuals, item) {
-    var _selectValue_472, content, node;
+    var _selectValue_1866, content, node;
     if (item.type === 'end') {
         content = visuals.config.end;
     } else {
         content = item.content || '';
     }
     node = createNode(visuals, item.id, item.type, content, item.id);
-    _selectValue_472 = item.type;
-    if (_selectValue_472 === 'parbegin') {
+    _selectValue_1866 = item.type;
+    if (_selectValue_1866 === 'parbegin') {
         node.type = 'junction';
         node.subtype = item.type;
     } else {
-        if (_selectValue_472 === 'parend') {
+        if (_selectValue_1866 === 'parend') {
             node.finalTarget = item.id;
             node.mountRight = node;
             node.type = 'junction';
@@ -16650,7 +17499,7 @@ function paint(widget) {
     drawScrollbars(widget);
 }
 function paintCore(widget, factor, zoom, translateX, translateY, width, height) {
-    var _collection_474, _collection_477, _collection_480, _collection_483, _collection_486, _collection_488, config, ctx, edge, guide, id, node, padding, socket, type, visuals;
+    var _collection_1868, _collection_1871, _collection_1874, _collection_1877, _collection_1880, _collection_1882, config, ctx, edge, guide, id, node, padding, socket, type, visuals;
     visuals = widget.visuals;
     config = visuals.config;
     ctx = visuals.ctx;
@@ -16679,37 +17528,37 @@ function paintCore(widget, factor, zoom, translateX, translateY, width, height) 
     }
     drawBackPlane(widget, ctx);
     ctx.setLineDash([]);
-    _collection_474 = visuals.edges;
-    for (id in _collection_474) {
-        edge = _collection_474[id];
+    _collection_1868 = visuals.edges;
+    for (id in _collection_1868) {
+        edge = _collection_1868[id];
         drawEdge(widget, edge, ctx);
     }
-    _collection_480 = widget.selection.prims;
-    for (id in _collection_480) {
-        type = _collection_480[id];
+    _collection_1874 = widget.selection.prims;
+    for (id in _collection_1874) {
+        type = _collection_1874[id];
         if (type === 'edge') {
             drawEdgeCandy(visuals, id, ctx, config);
         }
     }
-    _collection_477 = visuals.nodes;
-    for (id in _collection_477) {
-        node = _collection_477[id];
+    _collection_1871 = visuals.nodes;
+    for (id in _collection_1871) {
+        node = _collection_1871[id];
         if (isDrawableNode(node)) {
             drawIcon(visuals, node, ctx);
         }
     }
     ctx.setLineDash([]);
-    _collection_483 = widget.selection.prims;
-    for (id in _collection_483) {
-        type = _collection_483[id];
+    _collection_1877 = widget.selection.prims;
+    for (id in _collection_1877) {
+        type = _collection_1877[id];
         if (type === 'node') {
             drawNodeCandy(widget, id, ctx, config);
         }
     }
     drawFrontPlane(widget, ctx);
     drawFreeNuggetAndHandles(widget, ctx);
-    _collection_486 = visuals.sockets;
-    for (socket of _collection_486) {
+    _collection_1880 = visuals.sockets;
+    for (socket of _collection_1880) {
         drawSocket(visuals, socket, ctx, config);
     }
     if (visuals.selectionFrame) {
@@ -16718,8 +17567,8 @@ function paintCore(widget, factor, zoom, translateX, translateY, width, height) 
         ctx.strokeRect(visuals.selectionFrame.left, visuals.selectionFrame.top, visuals.selectionFrame.width, visuals.selectionFrame.height);
     }
     if (visuals.guides.length > 0) {
-        _collection_488 = visuals.guides;
-        for (guide of _collection_488) {
+        _collection_1882 = visuals.guides;
+        for (guide of _collection_1882) {
             line(ctx, guide.x1, guide.y1, guide.x2, guide.y2, visuals.config.theme.guides, 1);
         }
         visuals.guides = [];
@@ -16754,11 +17603,11 @@ function parseStyle(item, node) {
     }
 }
 function positionDurations(visuals) {
-    var _collection_490, dur, edge, id, metre, node, x;
+    var _collection_1884, dur, edge, id, metre, node, x;
     metre = visuals.config.metre;
-    _collection_490 = visuals.nodes;
-    for (id in _collection_490) {
-        node = _collection_490[id];
+    _collection_1884 = visuals.nodes;
+    for (id in _collection_1884) {
+        node = _collection_1884[id];
         dur = node.duration;
         if (dur) {
             edge = createEdge(visuals, dur, node, false);
@@ -16771,10 +17620,10 @@ function positionDurations(visuals) {
     }
 }
 function precacheEdgesLinks(visuals) {
-    var _collection_493, edge, id;
-    _collection_493 = visuals.edges;
-    for (id in _collection_493) {
-        edge = _collection_493[id];
+    var _collection_1887, edge, id;
+    _collection_1887 = visuals.edges;
+    for (id in _collection_1887) {
+        edge = _collection_1887[id];
         findEdgeLinks(visuals, edge, edge);
     }
 }
@@ -16809,17 +17658,17 @@ function putCycleMark(visuals, address) {
     }
 }
 function putLoopsOnCases(visuals, select) {
-    var _collection_496, caseIcon;
-    _collection_496 = select.cases;
-    for (caseIcon of _collection_496) {
+    var _collection_1890, caseIcon;
+    _collection_1890 = select.cases;
+    for (caseIcon of _collection_1890) {
         Object.assign(caseIcon.loops, select.loops);
     }
 }
 function reflowContent(visuals) {
-    var _collection_498, id, node;
-    _collection_498 = visuals.nodes;
-    for (id in _collection_498) {
-        node = _collection_498[id];
+    var _collection_1892, id, node;
+    _collection_1892 = visuals.nodes;
+    for (id in _collection_1892) {
+        node = _collection_1892[id];
         reflowIcon(visuals, node);
     }
 }
@@ -16925,13 +17774,13 @@ function tr(widget, text) {
     }
 }
 function traceLoop(visited, node, loopEnd) {
-    var _collection_503, prev;
+    var _collection_1897, prev;
     if (!(node.id in visited)) {
         visited[node.id] = true;
         if (node.loopEnd !== loopEnd) {
             node.loops[loopEnd.id] = true;
-            _collection_503 = node.prev;
-            for (prev of _collection_503) {
+            _collection_1897 = node.prev;
+            for (prev of _collection_1897) {
                 traceLoop(visited, prev, loopEnd);
             }
         }
@@ -17034,7 +17883,7 @@ function addToSelectionCore(widget, node) {
     }
 }
 function blockSelect(widget) {
-    var _branch_, _collection_506, id, node, prim, selection, selectionIds, snode, visuals;
+    var _branch_, _collection_1900, id, node, prim, selection, selectionIds, snode, visuals;
     _branch_ = 'Any nodes in selection?';
     while (true) {
         switch (_branch_) {
@@ -17068,9 +17917,9 @@ function blockSelect(widget) {
             }
             break;
         case 'Add nodes':
-            _collection_506 = visuals.nodes;
-            for (id in _collection_506) {
-                node = _collection_506[id];
+            _collection_1900 = visuals.nodes;
+            for (id in _collection_1900) {
+                node = _collection_1900[id];
                 if (!isSelected(widget, id) && (canSelectNode(node) && boxesIntersect(visuals.selectionFrame, node.box))) {
                     addToSelection(widget, node);
                 }
@@ -17115,19 +17964,19 @@ function buildSelectionFromEdits(widget, edits) {
     return selection;
 }
 function canSelectNode(node) {
-    var _selectValue_509;
-    _selectValue_509 = node.type;
-    if (_selectValue_509 === 'end' || _selectValue_509 === 'duration' || _selectValue_509 === 'header' || (_selectValue_509 === 'branch' || _selectValue_509 === 'address')) {
+    var _selectValue_1903;
+    _selectValue_1903 = node.type;
+    if (_selectValue_1903 === 'end' || _selectValue_1903 === 'duration' || _selectValue_1903 === 'header' || (_selectValue_1903 === 'branch' || _selectValue_1903 === 'address')) {
         return false;
     } else {
-        if (_selectValue_509 === 'junction') {
+        if (_selectValue_1903 === 'junction') {
             if (node.subtype === 'parbegin') {
                 return true;
             } else {
                 return false;
             }
         } else {
-            if (_selectValue_509 === 'action' && node.id === 'params') {
+            if (_selectValue_1903 === 'action' && node.id === 'params') {
                 return false;
             } else {
                 return true;
@@ -17172,12 +18021,12 @@ function diagramToWidgetY(widget, diaY) {
     return (diaY - widget.visuals.scrollY) * zoom;
 }
 function findClosestNode(widget, filter, srcNode, vertical) {
-    var _collection_511, best, current, distance, id, node;
+    var _collection_1905, best, current, distance, id, node;
     best = undefined;
     distance = 10000000000;
-    _collection_511 = widget.visuals.nodes;
-    for (id in _collection_511) {
-        node = _collection_511[id];
+    _collection_1905 = widget.visuals.nodes;
+    for (id in _collection_1905) {
+        node = _collection_1905[id];
         if (filter(node) && node.type !== 'junction' && node.type !== 'arrow-loop') {
             current = getDistance(node, srcNode, vertical);
             if (current < distance) {
@@ -17204,10 +18053,10 @@ function findElementAt(elements, x, y) {
     return undefined;
 }
 function findHead(selection, byId) {
-    var _collection_515, id, item, type;
-    _collection_515 = selection.prims;
-    for (id in _collection_515) {
-        type = _collection_515[id];
+    var _collection_1909, id, item, type;
+    _collection_1909 = selection.prims;
+    for (id in _collection_1909) {
+        type = _collection_1909[id];
         if (type !== 'node') {
             return undefined;
         }
@@ -17309,7 +18158,7 @@ function findWayUp(lowNode, highNode) {
     }
 }
 function findWayUpStep(context, node, highNode) {
-    var _collection_518, prev, visited;
+    var _collection_1912, prev, visited;
     visited = context.visited;
     if (node.type === 'branch') {
         context.leak = true;
@@ -17320,8 +18169,8 @@ function findWayUpStep(context, node, highNode) {
                 if (node.type === 'case') {
                     findWayUpStep(context, node.select, highNode);
                 } else {
-                    _collection_518 = node.prev;
-                    for (prev of _collection_518) {
+                    _collection_1912 = node.prev;
+                    for (prev of _collection_1912) {
                         findWayUpStep(context, prev, highNode);
                     }
                 }
@@ -17366,12 +18215,12 @@ function getNodeInfo(context, node) {
     return nodeInfo;
 }
 function getNodesFromSelection(widget) {
-    var _collection_520, elType, id, node, result, visuals;
+    var _collection_1914, elType, id, node, result, visuals;
     visuals = widget.visuals;
     result = [];
-    _collection_520 = widget.selection.prims;
-    for (id in _collection_520) {
-        elType = _collection_520[id];
+    _collection_1914 = widget.selection.prims;
+    for (id in _collection_1914) {
+        elType = _collection_1914[id];
         if (elType === 'node') {
             node = getNode(visuals, id);
             result.push(node);
@@ -17501,9 +18350,9 @@ function resetSelectionCore(widget) {
     }
 }
 function selectCluster(widget, headNode, node) {
-    var _collection_527, _selectValue_525, context, id, included, info, inode, result, start;
-    _selectValue_525 = node.type;
-    if (_selectValue_525 === 'select') {
+    var _collection_1921, _selectValue_1919, context, id, included, info, inode, result, start;
+    _selectValue_1919 = node.type;
+    if (_selectValue_1919 === 'select') {
         start = node;
         context = {
             paths: 0,
@@ -17514,9 +18363,9 @@ function selectCluster(widget, headNode, node) {
         info = getNodeInfo(context, start);
         selectClusterStepNext(widget, context, info);
         included = [];
-        _collection_527 = context.nodes;
-        for (id in _collection_527) {
-            info = _collection_527[id];
+        _collection_1921 = context.nodes;
+        for (id in _collection_1921) {
+            info = _collection_1921[id];
             if (info.include) {
                 included.push(info.node);
             }
@@ -17527,7 +18376,7 @@ function selectCluster(widget, headNode, node) {
         }
         return result;
     } else {
-        if (_selectValue_525 === 'case') {
+        if (_selectValue_1919 === 'case') {
             start = node.select;
             context = {
                 paths: 0,
@@ -17538,9 +18387,9 @@ function selectCluster(widget, headNode, node) {
             info = getNodeInfo(context, start);
             selectClusterStepNext(widget, context, info);
             included = [];
-            _collection_527 = context.nodes;
-            for (id in _collection_527) {
-                info = _collection_527[id];
+            _collection_1921 = context.nodes;
+            for (id in _collection_1921) {
+                info = _collection_1921[id];
                 if (info.include) {
                     included.push(info.node);
                 }
@@ -17551,7 +18400,7 @@ function selectCluster(widget, headNode, node) {
             }
             return result;
         } else {
-            if (_selectValue_525 === 'loopbegin') {
+            if (_selectValue_1919 === 'loopbegin') {
                 start = node;
                 context = {
                     paths: 0,
@@ -17562,9 +18411,9 @@ function selectCluster(widget, headNode, node) {
                 info = getNodeInfo(context, start);
                 selectClusterStepNext(widget, context, info);
                 included = [];
-                _collection_527 = context.nodes;
-                for (id in _collection_527) {
-                    info = _collection_527[id];
+                _collection_1921 = context.nodes;
+                for (id in _collection_1921) {
+                    info = _collection_1921[id];
                     if (info.include) {
                         included.push(info.node);
                     }
@@ -17575,7 +18424,7 @@ function selectCluster(widget, headNode, node) {
                 }
                 return result;
             } else {
-                if (_selectValue_525 === 'loopend') {
+                if (_selectValue_1919 === 'loopend') {
                     start = node.loopStart;
                     context = {
                         paths: 0,
@@ -17586,9 +18435,9 @@ function selectCluster(widget, headNode, node) {
                     info = getNodeInfo(context, start);
                     selectClusterStepNext(widget, context, info);
                     included = [];
-                    _collection_527 = context.nodes;
-                    for (id in _collection_527) {
-                        info = _collection_527[id];
+                    _collection_1921 = context.nodes;
+                    for (id in _collection_1921) {
+                        info = _collection_1921[id];
                         if (info.include) {
                             included.push(info.node);
                         }
@@ -17599,7 +18448,7 @@ function selectCluster(widget, headNode, node) {
                     }
                     return result;
                 } else {
-                    if (_selectValue_525 === 'arrow-loop') {
+                    if (_selectValue_1919 === 'arrow-loop') {
                         start = node;
                         context = {
                             paths: 0,
@@ -17610,9 +18459,9 @@ function selectCluster(widget, headNode, node) {
                         info = getNodeInfo(context, start);
                         selectClusterStepNext(widget, context, info);
                         included = [];
-                        _collection_527 = context.nodes;
-                        for (id in _collection_527) {
-                            info = _collection_527[id];
+                        _collection_1921 = context.nodes;
+                        for (id in _collection_1921) {
+                            info = _collection_1921[id];
                             if (info.include) {
                                 included.push(info.node);
                             }
@@ -17623,7 +18472,7 @@ function selectCluster(widget, headNode, node) {
                         }
                         return result;
                     } else {
-                        if (_selectValue_525 === 'question') {
+                        if (_selectValue_1919 === 'question') {
                             start = node;
                             context = {
                                 paths: 0,
@@ -17634,9 +18483,9 @@ function selectCluster(widget, headNode, node) {
                             info = getNodeInfo(context, start);
                             selectClusterStepNext(widget, context, info);
                             included = [];
-                            _collection_527 = context.nodes;
-                            for (id in _collection_527) {
-                                info = _collection_527[id];
+                            _collection_1921 = context.nodes;
+                            for (id in _collection_1921) {
+                                info = _collection_1921[id];
                                 if (info.include) {
                                     included.push(info.node);
                                 }
@@ -17647,7 +18496,7 @@ function selectCluster(widget, headNode, node) {
                             }
                             return result;
                         } else {
-                            if (_selectValue_525 === 'junction') {
+                            if (_selectValue_1919 === 'junction') {
                                 start = goLeft(node);
                                 return addParBlockToSelection(widget, headNode, start);
                             } else {
@@ -17811,12 +18660,12 @@ function toWidget(element, x, y) {
     };
 }
 function tryAddFreeToBlock(widget) {
-    var _collection_530, added, box, element, selection, visuals;
+    var _collection_1924, added, box, element, selection, visuals;
     visuals = widget.visuals;
     selection = widget.selection;
     added = false;
-    _collection_530 = visuals.free;
-    for (element of _collection_530) {
+    _collection_1924 = visuals.free;
+    for (element of _collection_1924) {
         if (!isSelected(widget, element.id)) {
             if (element.innerBox) {
                 box = element.innerBox;
@@ -17903,11 +18752,11 @@ function redirectBranch(visuals, branchNodes, oldTargets, newTarget, edits) {
     }
 }
 function scanBranchItems(node, visited) {
-    var _collection_533, next;
+    var _collection_1927, next;
     if (!(node.itemId in visited || node.type === 'address')) {
         visited[node.itemId] = node;
-        _collection_533 = node.next;
-        for (next of _collection_533) {
+        _collection_1927 = node.next;
+        for (next of _collection_1927) {
             scanBranchItems(next, visited);
         }
     }
@@ -18018,11 +18867,11 @@ function clickedOnTop(widget, prim, pos) {
     }
 }
 function doubleClick(widget, prim, pos, evt) {
-    var _selectValue_535;
+    var _selectValue_1929;
     tracing.trace('double click', prim);
     if (prim) {
-        _selectValue_535 = prim.elType;
-        if (_selectValue_535 === 'node') {
+        _selectValue_1929 = prim.elType;
+        if (_selectValue_1929 === 'node') {
             if (evt.stopPropagation) {
                 evt.stopPropagation();
                 evt.preventDefault();
@@ -18033,10 +18882,10 @@ function doubleClick(widget, prim, pos, evt) {
                 startEditContent(widget, prim);
             }
         } else {
-            if (_selectValue_535 === 'free') {
+            if (_selectValue_1929 === 'free') {
                 startEditContent(widget, prim);
             } else {
-                if (_selectValue_535 === 'handle') {
+                if (_selectValue_1929 === 'handle') {
                     doubleClickHandle(widget, prim);
                 }
             }
@@ -18282,7 +19131,7 @@ function startEditAux2(widget, prim) {
     if (isFree(widget, prim)) {
         callback = widget.config.startEditAux2;
         if (callback) {
-            ro = isReadonly(widget);
+            ro = isReadonlyImpl(widget);
             delayed = function () {
                 callback(prim, ro);
             };
@@ -18297,7 +19146,7 @@ function startEditContent(widget, prim) {
     if (canEditNodeText(widget, prim)) {
         callback = widget.config.startEditContent;
         if (callback) {
-            ro = isReadonly(widget);
+            ro = isReadonlyImpl(widget);
             delayed = function () {
                 callback(prim, ro);
             };
@@ -18326,7 +19175,7 @@ function startEditLink(widget, prim) {
     if (canEditNodeText(widget, prim)) {
         callback = widget.config.startEditLink;
         if (callback) {
-            ro = isReadonly(widget);
+            ro = isReadonlyImpl(widget);
             delayed = function () {
                 callback(prim, ro);
             };
@@ -18341,7 +19190,7 @@ function startEditSecondary(widget, prim) {
     if (canEditNodeText(widget, prim)) {
         callback = widget.config.startEditSecondary;
         if (callback) {
-            ro = isReadonly(widget);
+            ro = isReadonlyImpl(widget);
             delayed = function () {
                 callback(prim, ro);
             };
@@ -18373,863 +19222,20 @@ function startEditStyle(widget) {
         }
     }
 }
-function DrakonCanvas() {
-    var self = { _type: 'DrakonCanvas' };
-    function DrakonCanvas_arrowDown() {
-        var first, node, nodes;
-        tracing.trace('DrakonCanvas.arrowDown');
-        if (self.visuals.config.canSelect) {
-            nodes = getNodesFromSelection(self);
-            if (nodes.length !== 0) {
-                first = nodes[0];
-                node = findNeighbour(first, 'down', 'tail');
-                if (node) {
-                    self.showItem(node.id);
-                } else {
-                    node = findClosestNode(self, function (n) {
-                        return n.y > first.y;
-                    }, first, true);
-                    if (node) {
-                        self.showItem(node.id);
-                    }
-                }
-            }
-        }
-    }
-    function DrakonCanvas_arrowLeft() {
-        var first, node, nodes;
-        tracing.trace('DrakonCanvas.arrowLeft');
-        if (self.visuals.config.canSelect) {
-            nodes = getNodesFromSelection(self);
-            if (nodes.length !== 0) {
-                first = nodes[0];
-                node = findNeighbour(first, 'left', 'head');
-                if (node) {
-                    self.showItem(node.id);
-                } else {
-                    node = findClosestNode(self, function (n) {
-                        return n.x < first.x;
-                    }, first, false);
-                    if (node) {
-                        self.showItem(node.id);
-                    }
-                }
-            }
-        }
-    }
-    function DrakonCanvas_arrowRight() {
-        var first, node, nodes;
-        tracing.trace('DrakonCanvas.arrowRight');
-        if (self.visuals.config.canSelect) {
-            nodes = getNodesFromSelection(self);
-            if (nodes.length !== 0) {
-                first = nodes[0];
-                node = findNeighbour(first, 'right', 'tail');
-                if (node) {
-                    self.showItem(node.id);
-                } else {
-                    node = findClosestNode(self, function (n) {
-                        return n.x > first.x;
-                    }, first, false);
-                    if (node) {
-                        self.showItem(node.id);
-                    }
-                }
-            }
-        }
-    }
-    function DrakonCanvas_arrowUp() {
-        var first, node, nodes;
-        tracing.trace('DrakonCanvas.arrowUp');
-        if (self.visuals.config.canSelect) {
-            nodes = getNodesFromSelection(self);
-            if (nodes.length !== 0) {
-                first = nodes[0];
-                node = findNeighbour(first, 'up', 'head');
-                if (node) {
-                    self.showItem(node.id);
-                } else {
-                    node = findClosestNode(self, function (n) {
-                        return n.y < first.y;
-                    }, first, true);
-                    if (node) {
-                        self.showItem(node.id);
-                    }
-                }
-            }
-        }
-    }
-    function DrakonCanvas_copySelection() {
-        tracing.trace('DrakonCanvas.copySelection');
-        copy(self);
-    }
-    function DrakonCanvas_cutSelection() {
-        tracing.trace('DrakonCanvas.cutSelection');
-        if (!isReadonly(self)) {
-            cut(self);
-        }
-    }
-    function DrakonCanvas_deleteSelection() {
-        tracing.trace('DrakonCanvas.deleteSelection');
-        if (!isReadonly(self)) {
-            deleteSelection(self);
-        }
-    }
-    function DrakonCanvas_editContent() {
-        var element, node, nodes, prim;
-        tracing.trace('DrakonCanvas.editContent');
-        element = getFreeFromSelection(self);
-        if (element) {
-            prim = freeToVisualItem(self, element);
-            startEditContent(self, prim);
-        } else {
-            nodes = getNodesFromSelection(self);
-            if (nodes.length === 1) {
-                node = nodes[0];
-                if (canEditNodeText(self, node)) {
-                    prim = nodeToVisualItem(self, node);
-                    startEditContent(self, prim);
-                }
-            }
-        }
-    }
-    function DrakonCanvas_exportCanvas(zoom100, watermark) {
-        var box, canvas, config, ctx, height, visuals, width, zoom;
-        tracing.trace('DrakonCanvas.exportCanvas', zoom100);
-        zoom = zoom100 / 10000;
-        visuals = self.visuals;
-        config = visuals.config;
-        box = calculateDiagramBox(visuals, false);
-        width = (box.right - box.left) * zoom;
-        height = (box.bottom - box.top) * zoom;
-        canvas = html.createElement('canvas', {
-            width: width,
-            height: height
-        });
-        ctx = canvas.getContext('2d');
-        exportCore(self, box, zoom, ctx, watermark);
-        return canvas;
-    }
-    function DrakonCanvas_exportJson() {
-        var _collection_537, copy, diagram, id, item, src;
-        tracing.trace('DrakonCanvas.exportJson');
-        diagram = {
-            items: {},
-            type: self.model.type
-        };
-        src = self.edit.diagram;
-        copyFieldsWithValue(diagram, src, [
-            'name',
-            'params',
-            'style',
-            'description'
-        ]);
-        _collection_537 = src.items;
-        for (id in _collection_537) {
-            item = _collection_537[id];
-            copy = utils.clone(item);
-            delete copy.id;
-            diagram.items[id] = copy;
-        }
-        return JSON.stringify(diagram, null, 4);
-    }
-    function DrakonCanvas_exportToContext(box, zoom100, ctx) {
-        var zoom;
-        tracing.trace('DrakonCanvas.exportToContext', zoom100);
-        zoom = zoom100 / 10000;
-        self.visuals.svg = true;
-        exportCore(self, box, zoom, ctx);
-        self.visuals.svg = false;
-    }
-    function DrakonCanvas_getDiagramBox() {
-        return calculateDiagramBox(self.visuals);
-    }
-    function DrakonCanvas_getDiagramProperties() {
-        var result;
-        result = { type: self.model.type };
-        utils.copyFieldsWithValue(result, self.model.doc, [
-            'name',
-            'params',
-            'description'
-        ]);
-        return result;
-    }
-    function DrakonCanvas_getLoadedImages() {
-        var _collection_540, id, image, result;
-        result = {};
-        _collection_540 = self.images;
-        for (id in _collection_540) {
-            image = _collection_540[id];
-            result[id] = { content: image.content };
-        }
-        return result;
-    }
-    function DrakonCanvas_getVersion() {
-        return '1.5.1';
-    }
-    function DrakonCanvas_getZoom() {
-        if (self.zoom) {
-            return self.zoom;
-        } else {
-            return 10000;
-        }
-    }
-    function DrakonCanvas_goHome() {
-        tracing.trace('DrakonCanvas.goHome');
-        delete self.origins[self.diagramId];
-        calculateDiagramBoxForEdit(self, self.visuals);
-        initScrollPos(self);
-        paint(self);
-    }
-    function DrakonCanvas_init() {
-        tracing.trace('DrakonCanvas.init');
-        unit.noSmooth = {
-            floor: true,
-            parceiling: true,
-            ceil: true,
-            'case': true,
-            parent: true
-        };
-        self.origins = {};
-        self.mindIcons = {
-            idea: true,
-            ridea: true,
-            conclusion: true,
-            header: true,
-            'graf-image': true
-        };
-        self.styleTag = html.createStyle();
-        self.myStyleId = Math.floor(Math.random() * 100000);
-        self.userMemory = { headStyle: 'arrow' };
-        self.zoom = 10000;
-        self.zoomFactor = 1;
-        initInsertFunctions(self);
-        initFreeFunctions(self);
-    }
-    async function DrakonCanvas_insertFree(type, evt, imageData) {
-        var edits, elementActions, images, item, pos;
-        tracing.trace('DrakonCanvas.insertFree', type);
-        elementActions = self.freeIcons[type];
-        if (elementActions) {
-            if (evt) {
-                pos = findFreePos(self, evt);
-            } else {
-                pos = getDiagramCenter(self);
-            }
-            item = elementActions.create(pos, edits);
-            edits = [];
-            insertFreeItem(self, edits, item);
-            images = {};
-            insertImageDataItem(imageData, edits, images);
-            await loadCreatedImages(self, edits, images);
-            resizeElementToImage(self, edits);
-            return doEdit(self, edits);
-        } else {
-            console.error('Unknown free icon type', type);
-        }
-    }
-    function DrakonCanvas_isReadonly() {
-        return isReadonly(self);
-    }
-    function DrakonCanvas_onChange(change) {
-        tracing.trace('DrakonCanvas.onChange', change);
-        self.edit.forcedChange(change);
-        self.redraw();
-    }
-    function DrakonCanvas_onContextMenu(evt) {
-        evt.preventDefault();
-        return false;
-    }
-    function DrakonCanvas_onMouseDown(evt) {
-        if (evt.pointerType !== 'touch') {
-            evt.target.setPointerCapture(evt.pointerId);
-            evt.preventDefault();
-            evt.stopPropagation();
-            if (self.mouseEvents) {
-                self.mouseEvents.mouseDown(evt);
-            }
-        }
-    }
-    function DrakonCanvas_onMouseLeave(evt) {
-        if (evt.pointerType !== 'touch' && self.mouseEvents) {
-            self.mouseEvents.mouseLeave(evt);
-        }
-    }
-    function DrakonCanvas_onMouseMove(evt) {
-        if (evt.pointerType !== 'touch' && self.mouseEvents) {
-            evt.preventDefault();
-            self.mouseEvents.mouseMove(evt);
-        }
-    }
-    function DrakonCanvas_onMouseUp(evt) {
-        if (evt.pointerType !== 'touch' && self.mouseEvents) {
-            evt.preventDefault();
-            self.mouseEvents.mouseUp(evt);
-        }
-    }
-    function DrakonCanvas_onTouchEnd(evt) {
-        evt.preventDefault();
-        evt.stopPropagation();
-        if (self.touchEvents) {
-            self.touchEvents.touchEnd(evt);
-        }
-    }
-    function DrakonCanvas_onTouchMove(evt) {
-        evt.preventDefault();
-        evt.stopPropagation();
-        if (self.touchEvents) {
-            self.touchEvents.touchMove(evt);
-        }
-    }
-    function DrakonCanvas_onTouchStart(evt) {
-        evt.preventDefault();
-        evt.stopPropagation();
-        if (self.touchEvents) {
-            self.touchEvents.touchStart(evt);
-        }
-    }
-    function DrakonCanvas_patchDiagramStyle(style) {
-        var change, newStyle, oldStyle, styleStr;
-        tracing.trace('DrakonCanvas.patchDiagramStyle', style);
-        if (!style) {
-            style = {};
-        }
-        oldStyle = self.model.doc.style;
-        newStyle = oldStyle || {};
-        Object.assign(newStyle, style);
-        styleStr = JSON.stringify(newStyle);
-        change = {
-            fields: { style: styleStr },
-            op: 'update'
-        };
-        return updateAndKeepSelection(self, [change]);
-    }
-    async function DrakonCanvas_redo() {
-        var selection;
-        tracing.trace('DrakonCanvas.redo');
-        if (!isReadonly(self) && self.edit) {
-            selection = self.edit.redoEdit();
-            if (selection) {
-                await loadImages(self);
-                onUndoRedo(self, selection);
-            }
-        }
-    }
-    function DrakonCanvas_redraw() {
-        var fonts;
-        buildDiagramModel(self, self.edit.diagram);
-        fonts = buildVisualsForEdit(self);
-        paint(self);
-        return fonts;
-    }
-    function DrakonCanvas_render(width, height, config) {
-        var canvas, container, factor, scrollable;
-        container = div({
-            display: 'inline-block',
-            position: 'relative',
-            left: '0px',
-            top: '0px',
-            width: '100%',
-            height: '100%',
-            overflow: 'hidden'
-        });
-        canvas = html.createElement('canvas');
-        factor = html.getRetinaFactor();
-        canvas.style.position = 'absolute';
-        canvas.style.display = 'inline-block';
-        canvas.style.left = '0px';
-        canvas.style.top = '0px';
-        canvas.style.width = width + 'px';
-        canvas.style.height = height + 'px';
-        canvas.width = width * factor;
-        canvas.height = height * factor;
-        self.width = width;
-        self.height = height;
-        self.canvas = canvas;
-        self.container = container;
-        html.add(container, canvas);
-        self.config = buildConfig(config);
-        createStyles(self);
-        if (!config.canvasIcons) {
-            self.contentContainer = div({
-                display: 'inline-block',
-                position: 'absolute',
-                left: '0px',
-                top: '0px',
-                width: '100vw',
-                height: '100vh',
-                'pointer-events': 'none'
-            });
-            html.add(container, self.contentContainer);
-        }
-        scrollable = 'drakon-scrollable-container' + self.myStyleId;
-        self.scrollableContainer = div(scrollable);
-        html.add(container, self.scrollableContainer);
-        registerEvent(self.scrollableContainer, 'pointerdown', self.onMouseDown);
-        registerEvent(self.scrollableContainer, 'pointermove', self.onMouseMove);
-        registerEvent(self.scrollableContainer, 'pointerup', self.onMouseUp);
-        registerEvent(self.scrollableContainer, 'pointerleave', self.onMouseLeave);
-        registerEvent(self.scrollableContainer, 'contextmenu', self.onContextMenu);
-        registerEvent(self.scrollableContainer, 'wheel', function (evt) {
-            onMouseWheel(self, evt);
-        });
-        registerEvent(self.scrollableContainer, 'touchstart', self.onTouchStart);
-        registerEvent(self.scrollableContainer, 'touchmove', self.onTouchMove);
-        registerEvent(self.scrollableContainer, 'touchcancel', self.onTouchEnd);
-        registerEvent(self.scrollableContainer, 'touchend', self.onTouchEnd);
-        if (self.config.showLog) {
-            unit.logDiv = div('full-screen', {
-                'position': 'fixed',
-                'width': '100vw',
-                'heigh': '100vh',
-                'left': '0px',
-                'top': '0px',
-                background: 'rgba(255, 200, 0, 0.5)',
-                'pointer-events': 'none',
-                'z-index': 5000
-            });
-            unit.debugLog = [];
-            html.add(container, unit.logDiv);
-        }
-        return container;
-    }
-    function DrakonCanvas_setAux2(itemId, aux2) {
-        var change;
-        tracing.trace('DrakonCanvas.setAux2', [
-            itemId,
-            aux2
-        ]);
-        checkNotReadonly(self);
-        change = {
-            id: itemId,
-            fields: { aux2: aux2 },
-            op: 'update'
-        };
-        return updateAndKeepSelection(self, [change]);
-    }
-    function DrakonCanvas_setContent(itemId, content) {
-        var change;
-        tracing.trace('DrakonCanvas.setContent', [
-            itemId,
-            content
-        ]);
-        checkNotReadonly(self);
-        if (itemId === 'header' || itemId === 'root') {
-            change = {
-                fields: { name: content },
-                op: 'update'
-            };
-            doEditNoRender(self, [change]);
-            return [];
-        } else {
-            if (itemId === 'params') {
-                change = {
-                    fields: { params: content },
-                    op: 'update'
-                };
-                if (content) {
-                    return updateAndKeepSelection(self, [change]);
-                } else {
-                    return doEdit(self, [change]);
-                }
-            } else {
-                change = {
-                    id: itemId,
-                    fields: { content: content },
-                    op: 'update'
-                };
-                return updateAndKeepSelection(self, [change]);
-            }
-        }
-    }
-    async function DrakonCanvas_setDiagram(diagramId, diagram, sender) {
-        var fonts;
-        stopMachine(self, 'mouseEvents');
-        self.edit = edit_tools.createUndoEdit(diagram, sender);
-        await loadImages(self);
-        self.diagramId = diagramId;
-        resetSelection(self);
-        fonts = self.redraw();
-        createEventBehavior(self);
-        return fonts;
-    }
-    function DrakonCanvas_setDiagramProperty(name, value) {
-        var change;
-        tracing.trace('DrakonCanvas.setDiagramProperty', [
-            name,
-            value
-        ]);
-        checkNotReadonly(self);
-        change = {
-            fields: {},
-            op: 'update'
-        };
-        change.fields[name] = value;
-        if (name === 'name') {
-            doEditNoRender(self, [change]);
-        } else {
-            if (name === 'params') {
-                return doEdit(self, [change]);
-            } else {
-                updateAndKeepSelection(self, [change]);
-            }
-        }
-    }
-    function DrakonCanvas_setDiagramStyle(style) {
-        var change, styleStr;
-        tracing.trace('DrakonCanvas.setDiagramStyle', style);
-        if (style) {
-            styleStr = JSON.stringify(style);
-        } else {
-            styleStr = '';
-        }
-        change = {
-            fields: { style: styleStr },
-            op: 'update'
-        };
-        return updateAndKeepSelection(self, [change]);
-    }
-    async function DrakonCanvas_setImage(itemId, imageData) {
-        var edits, fields, images, item, tempId;
-        tracing.trace('DrakonCanvas.setImage', itemId);
-        checkNotReadonly(self);
-        fields = {};
-        images = {};
-        if (imageData.id) {
-            item = self.model.items[itemId];
-            if (item.image === imageData.id) {
-                return [];
-            } else {
-                fields.image = imageData.id;
-                edits = [{
-                        id: itemId,
-                        fields: fields,
-                        op: 'update'
-                    }];
-                await loadCreatedImages(self, edits, images);
-                return updateAndKeepSelection(self, edits);
-            }
-        } else {
-            tempId = 'temp-image-id';
-            images[tempId] = { content: imageData.content };
-            fields.image = tempId;
-            edits = [{
-                    id: itemId,
-                    fields: fields,
-                    op: 'update'
-                }];
-            await loadCreatedImages(self, edits, images);
-            return updateAndKeepSelection(self, edits);
-        }
-    }
-    function DrakonCanvas_setLink(itemId, link) {
-        var change;
-        tracing.trace('DrakonCanvas.setLink', [
-            itemId,
-            link
-        ]);
-        checkNotReadonly(self);
-        change = {
-            id: itemId,
-            fields: { link: link },
-            op: 'update'
-        };
-        updateAndKeepSelection(self, [change]);
-    }
-    function DrakonCanvas_setSecondary(itemId, secondary) {
-        var change;
-        tracing.trace('DrakonCanvas.setSecondary', [
-            itemId,
-            secondary
-        ]);
-        checkNotReadonly(self);
-        change = {
-            id: itemId,
-            fields: { secondary: secondary },
-            op: 'update'
-        };
-        return updateAndKeepSelection(self, [change]);
-    }
-    function DrakonCanvas_setStyle(ids, style) {
-        var edit, edits, id, item, styleStr, type;
-        tracing.trace('DrakonCanvas.setStyle', [
-            ids,
-            style
-        ]);
-        if (style) {
-            if ('headStyle' in style) {
-                self.userMemory.headStyle = style.headStyle;
-            }
-            styleStr = JSON.stringify(style);
-        } else {
-            styleStr = '';
-        }
-        edits = [];
-        for (id of ids) {
-            if (id in self.model.items) {
-                updateItem(edits, id, { style: styleStr });
-            } else {
-                if (id === 'header' || id === 'root') {
-                    type = 'header';
-                } else {
-                    if (id !== 'params') {
-                        throw new Error('Unexpected case value: ' + id);
-                    }
-                    type = 'params';
-                }
-                item = {
-                    style: styleStr,
-                    type: type,
-                    id: id
-                };
-                edit = createInsert(item);
-                edits.push(edit);
-            }
-        }
-        return updateAndKeepSelection(self, edits);
-    }
-    function DrakonCanvas_setZoom(zoom) {
-        var clientX, clientY, distX, distX2, distY, distY2, hover, oldScrollX, oldScrollY, oldZoom, scrollX, scrollY;
-        tracing.trace('DrakonCanvas.setZoom', zoom);
-        self.zoom = Math.max(2500, Math.min(40000, zoom));
-        oldZoom = self.zoomFactor;
-        self.zoomFactor = self.zoom / 10000;
-        if (self.edit) {
-            updateExpandedBox(self, self.visuals);
-            oldScrollX = self.visuals.scrollX;
-            oldScrollY = self.visuals.scrollY;
-            hover = getHoverPos(self);
-            clientX = hover.x;
-            clientY = hover.y;
-            distX = clientX / oldZoom;
-            distY = clientY / oldZoom;
-            distX2 = clientX / self.zoomFactor;
-            distY2 = clientY / self.zoomFactor;
-            scrollX = oldScrollX + Math.round(distX - distX2);
-            scrollY = oldScrollY + Math.round(distY - distY2);
-            setScroll(self, scrollX, scrollY);
-            self.visuals.config.zoom = self.zoomFactor;
-            initScrollPos(self);
-            paintLater(self);
-        }
-    }
-    function DrakonCanvas_showInsertionSockets(type, imageData) {
-        var showInsert;
-        tracing.trace('DrakonCanvas.showInsertionSockets', type);
-        if (!isReadonly(self)) {
-            clearSockets(self.visuals);
-            if (type in self.mindIcons) {
-                showMindInsertSockets(self, 'insert', type, imageData);
-            } else {
-                if (type === 'case') {
-                    showInsert = function (visuals, node) {
-                        showCaseSockets(visuals, node, 'insert');
-                    };
-                    forType(self.visuals, 'case', showInsert);
-                } else {
-                    if (type === 'branch') {
-                        showAllBranchSockets(self.visuals, 'insert');
-                    } else {
-                        if (type === 'par') {
-                            showAllParSockets(self.visuals, 'insert');
-                        } else {
-                            if (type === 'duration') {
-                                showDurationSockets(self.visuals, 'insert');
-                            } else {
-                                showBlockInsertSockets(self.visuals, 'insert', type, imageData);
-                            }
-                        }
-                    }
-                }
-            }
-            paint(self);
-        }
-    }
-    function DrakonCanvas_showItem(itemId) {
-        var box, halfHeight, halfWidth, height, node, nodeBottom, nodeBox, nodeLeft, nodeRight, nodeTop, nodeX, nodeY, scroll, scrollX, scrollY, visuals, width, zoom;
-        tracing.trace('DrakonCanvas.showItem', itemId);
-        visuals = self.visuals;
-        box = visuals.box;
-        zoom = self.zoomFactor;
-        width = self.width / zoom;
-        height = self.height / zoom;
-        node = getFree(visuals, itemId);
-        if (!node) {
-            node = getNode(visuals, itemId);
-        }
-        nodeBox = node.box;
-        nodeLeft = diagramToWidgetX(self, nodeBox.left);
-        nodeTop = diagramToWidgetY(self, nodeBox.top);
-        nodeRight = diagramToWidgetX(self, nodeBox.left + nodeBox.width);
-        nodeBottom = diagramToWidgetY(self, nodeBox.top + nodeBox.height);
-        nodeX = nodeBox.left + nodeBox.width / 2;
-        nodeY = nodeBox.top + nodeBox.height / 2;
-        if (nodeLeft >= 0 && nodeRight < self.width) {
-            scrollX = visuals.scrollX;
-        } else {
-            halfWidth = Math.floor(width / 2);
-            scrollX = nodeX - halfWidth;
-        }
-        if (nodeTop >= 0 && nodeBottom < self.height) {
-            scrollY = visuals.scrollY;
-        } else {
-            halfHeight = Math.floor(height / 2);
-            scrollY = nodeY - halfHeight;
-        }
-        scroll = setScroll(self, scrollX, scrollY);
-        selectPrim(self, itemId);
-        paint(self);
-    }
-    function DrakonCanvas_showPaste() {
-        var _selectValue_543, clipboard;
-        tracing.trace('DrakonCanvas.showPaste');
-        if (!isReadonly(self)) {
-            clipboard = getClipboardClone(self);
-            if (clipboard) {
-                _selectValue_543 = clipboard.type;
-                if (_selectValue_543 === 'case' || _selectValue_543 === 'branch' || _selectValue_543 === 'block' || _selectValue_543 === 'mind') {
-                    self.showPasteSockets(clipboard.type);
-                } else {
-                    if (_selectValue_543 === 'free') {
-                        pasteFree(self, clipboard);
-                    }
-                }
-            }
-        }
-    }
-    function DrakonCanvas_showPasteSockets(type) {
-        var showInsert;
-        tracing.trace('DrakonCanvas.showPasteSockets', type);
-        if (!isReadonly(self)) {
-            clearSockets(self.visuals);
-            if (type) {
-                deselectAll(self);
-                if (type === 'case') {
-                    showInsert = function (visuals, node) {
-                        showCaseSockets(visuals, node, 'paste');
-                    };
-                    forType(self.visuals, 'case', showInsert);
-                } else {
-                    if (type === 'branch') {
-                        showAllBranchSockets(self.visuals, 'paste');
-                    } else {
-                        if (type === 'block') {
-                            showBlockInsertSockets(self.visuals, 'paste', type);
-                        } else {
-                            if (type === 'duration') {
-                                showDurationSockets(self.visuals, 'paste');
-                            } else {
-                                if (type === 'mind' && isMind(self)) {
-                                    showMindInsertSockets(self, 'paste', undefined);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            paint(self);
-        }
-    }
-    function DrakonCanvas_swapYesNo(id) {
-        var change, node;
-        tracing.trace('swapYesNo', id);
-        checkNotReadonly(self);
-        node = getNode(self.visuals, id);
-        change = {
-            id: id,
-            fields: {},
-            op: 'update'
-        };
-        if (node.flag1) {
-            change.fields.flag1 = 0;
-        } else {
-            change.fields.flag1 = 1;
-        }
-        return updateAndKeepSelection(self, [change]);
-    }
-    function DrakonCanvas_toggleSilhouette() {
-        var edits;
-        tracing.trace('DrakonCanvas.toggleSilhouette');
-        if (!isReadonly(self)) {
-            if (isSilhouette(self.visuals)) {
-                edits = toPrimitive(self);
-            } else {
-                edits = toSilhouette(self);
-            }
-            return doEdit(self, edits);
-        }
-    }
-    async function DrakonCanvas_undo() {
-        var selection;
-        tracing.trace('DrakonCanvas.undo');
-        if (!isReadonly(self) && self.edit) {
-            selection = self.edit.undoEdit();
-            if (selection) {
-                await loadImages(self);
-                onUndoRedo(self, selection);
-            }
-        }
-    }
-    self.arrowDown = DrakonCanvas_arrowDown;
-    self.arrowLeft = DrakonCanvas_arrowLeft;
-    self.arrowRight = DrakonCanvas_arrowRight;
-    self.arrowUp = DrakonCanvas_arrowUp;
-    self.copySelection = DrakonCanvas_copySelection;
-    self.cutSelection = DrakonCanvas_cutSelection;
-    self.deleteSelection = DrakonCanvas_deleteSelection;
-    self.editContent = DrakonCanvas_editContent;
-    self.exportCanvas = DrakonCanvas_exportCanvas;
-    self.exportJson = DrakonCanvas_exportJson;
-    self.exportToContext = DrakonCanvas_exportToContext;
-    self.getDiagramBox = DrakonCanvas_getDiagramBox;
-    self.getDiagramProperties = DrakonCanvas_getDiagramProperties;
-    self.getLoadedImages = DrakonCanvas_getLoadedImages;
-    self.getVersion = DrakonCanvas_getVersion;
-    self.getZoom = DrakonCanvas_getZoom;
-    self.goHome = DrakonCanvas_goHome;
-    self.init = DrakonCanvas_init;
-    self.insertFree = DrakonCanvas_insertFree;
-    self.isReadonly = DrakonCanvas_isReadonly;
-    self.onChange = DrakonCanvas_onChange;
-    self.onContextMenu = DrakonCanvas_onContextMenu;
-    self.onMouseDown = DrakonCanvas_onMouseDown;
-    self.onMouseLeave = DrakonCanvas_onMouseLeave;
-    self.onMouseMove = DrakonCanvas_onMouseMove;
-    self.onMouseUp = DrakonCanvas_onMouseUp;
-    self.onTouchEnd = DrakonCanvas_onTouchEnd;
-    self.onTouchMove = DrakonCanvas_onTouchMove;
-    self.onTouchStart = DrakonCanvas_onTouchStart;
-    self.patchDiagramStyle = DrakonCanvas_patchDiagramStyle;
-    self.redo = DrakonCanvas_redo;
-    self.redraw = DrakonCanvas_redraw;
-    self.render = DrakonCanvas_render;
-    self.setAux2 = DrakonCanvas_setAux2;
-    self.setContent = DrakonCanvas_setContent;
-    self.setDiagram = DrakonCanvas_setDiagram;
-    self.setDiagramProperty = DrakonCanvas_setDiagramProperty;
-    self.setDiagramStyle = DrakonCanvas_setDiagramStyle;
-    self.setImage = DrakonCanvas_setImage;
-    self.setLink = DrakonCanvas_setLink;
-    self.setSecondary = DrakonCanvas_setSecondary;
-    self.setStyle = DrakonCanvas_setStyle;
-    self.setZoom = DrakonCanvas_setZoom;
-    self.showInsertionSockets = DrakonCanvas_showInsertionSockets;
-    self.showItem = DrakonCanvas_showItem;
-    self.showPaste = DrakonCanvas_showPaste;
-    self.showPasteSockets = DrakonCanvas_showPasteSockets;
-    self.swapYesNo = DrakonCanvas_swapYesNo;
-    self.toggleSilhouette = DrakonCanvas_toggleSilhouette;
-    self.undo = DrakonCanvas_undo;
-    return self;
-}
 function main() {
 }
 function Ears_create(widget, element) {
-    var _topGen_, _topReject_, _topResolve_, me;
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
     me = {
         _type: 'Ears',
         _busy: true,
         state: 'created'
+    };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
     };
     function* Ears_main() {
         var _branch_, _eventType_, _event_, box, config, dx, dy, ear, evt, left, role, startBoxLeft, startBoxTop, startX, startY, top, zoom;
@@ -19290,6 +19296,7 @@ function Ears_create(widget, element) {
                 }
                 break;
             default:
+                _topResolve_();
                 return;
             }
         }
@@ -19302,6 +19309,9 @@ function Ears_create(widget, element) {
         me.state = 'started';
         _topGen_ = Ears_main();
         _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
         return new Promise((resolve, reject) => {
             _topResolve_ = resolve;
             _topReject_ = reject;
@@ -19365,11 +19375,17 @@ function Ears_create(widget, element) {
     return me;
 }
 function InnerCrawler_create(visuals, sub) {
-    var _topGen_, _topReject_, _topResolve_, me;
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
     me = {
         _type: 'InnerCrawler',
         _busy: true,
         state: 'created'
+    };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
     };
     function* InnerCrawler_main() {
         var _branch_, _eventType_, _event_, caseNode, edge, left, output, tail;
@@ -19471,6 +19487,7 @@ function InnerCrawler_create(visuals, sub) {
                 _branch_ = undefined;
                 break;
             default:
+                _topResolve_();
                 return;
             }
         }
@@ -19483,6 +19500,9 @@ function InnerCrawler_create(visuals, sub) {
         me.state = 'started';
         _topGen_ = InnerCrawler_main();
         _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
         return new Promise((resolve, reject) => {
             _topResolve_ = resolve;
             _topReject_ = reject;
@@ -19547,11 +19567,17 @@ function InnerCrawler_create(visuals, sub) {
     return me;
 }
 function MarkDown_create(target) {
-    var _topGen_, _topReject_, _topResolve_, me;
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
     me = {
         _type: 'MarkDown',
         _busy: true,
         state: 'created'
+    };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
     };
     function* MarkDown_main() {
         var _branch_, _eventType_, _event_, ch;
@@ -19723,6 +19749,7 @@ function MarkDown_create(target) {
                 }
                 break;
             default:
+                _topResolve_();
                 return;
             }
         }
@@ -19735,6 +19762,9 @@ function MarkDown_create(target) {
         me.state = 'started';
         _topGen_ = MarkDown_main();
         _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
         return new Promise((resolve, reject) => {
             _topResolve_ = resolve;
             _topReject_ = reject;
@@ -19832,11 +19862,17 @@ function MarkDown_create(target) {
     return me;
 }
 function NoSelectBehavior_create(widget) {
-    var _topGen_, _topReject_, _topResolve_, me;
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
     me = {
         _type: 'NoSelectBehavior',
         _busy: true,
         state: 'created'
+    };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
     };
     function* NoSelectBehavior_main() {
         var _branch_, _eventType_, _event_, dragTarget, evt, pos, scroll, scroller;
@@ -19907,6 +19943,7 @@ function NoSelectBehavior_create(widget) {
                 }
                 break;
             default:
+                _topResolve_();
                 return;
             }
         }
@@ -19919,6 +19956,9 @@ function NoSelectBehavior_create(widget) {
         me.state = 'started';
         _topGen_ = NoSelectBehavior_main();
         _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
         return new Promise((resolve, reject) => {
             _topResolve_ = resolve;
             _topReject_ = reject;
@@ -20002,14 +20042,20 @@ function NoSelectBehavior_create(widget) {
     return me;
 }
 function OuterCrawler_create(visuals, sub) {
-    var _topGen_, _topReject_, _topResolve_, me;
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
     me = {
         _type: 'OuterCrawler',
         _busy: true,
         state: 'created'
     };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
+    };
     function* OuterCrawler_main() {
-        var _branch_, _event_, _selectValue_393, edge, head, leftMost, next, output, tail;
+        var _branch_, _event_, _selectValue_1787, edge, head, leftMost, next, output, tail;
         _branch_ = 'Init';
         while (true) {
             switch (_branch_) {
@@ -20041,14 +20087,14 @@ function OuterCrawler_create(visuals, sub) {
                         _branch_ = 'down';
                     } else {
                         if (tail.right) {
-                            _selectValue_393 = tail.type;
-                            if (_selectValue_393 === 'arrow-loop') {
+                            _selectValue_1787 = tail.type;
+                            if (_selectValue_1787 === 'arrow-loop') {
                                 addEdgeToSub(sub, edge);
                                 planSpace(me, tail);
                                 output.next = tail.right;
                                 _branch_ = 'rightLoop';
                             } else {
-                                if (_selectValue_393 === 'question') {
+                                if (_selectValue_1787 === 'question') {
                                     addEdgeToSub(sub, edge);
                                     planSpace(me, tail);
                                     output.next = tail.right;
@@ -20174,6 +20220,7 @@ function OuterCrawler_create(visuals, sub) {
                 _branch_ = undefined;
                 break;
             default:
+                _topResolve_();
                 return;
             }
         }
@@ -20186,6 +20233,9 @@ function OuterCrawler_create(visuals, sub) {
         me.state = 'started';
         _topGen_ = OuterCrawler_main();
         _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
         return new Promise((resolve, reject) => {
             _topResolve_ = resolve;
             _topReject_ = reject;
@@ -20221,14 +20271,20 @@ function OuterCrawler_create(visuals, sub) {
     return me;
 }
 function SelectBehavior_create(widget) {
-    var _topGen_, _topReject_, _topResolve_, me;
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
     me = {
         _type: 'SelectBehavior',
         _busy: true,
         state: 'created'
     };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
+    };
     function* SelectBehavior_main() {
-        var _branch_, _eventType_, _event_, _selectValue_102, currentSocket, cursor, deltaX, deltaY, dragTarget, ear, evt, pos, prim, scroller, startX, startY;
+        var _branch_, _eventType_, _event_, _selectValue_1496, currentSocket, cursor, deltaX, deltaY, dragTarget, ear, evt, pos, prim, scroller, startX, startY;
         _branch_ = 'Idle';
         while (true) {
             switch (_branch_) {
@@ -20240,8 +20296,8 @@ function SelectBehavior_create(widget) {
                 if (_eventType_ === 'mouseDown') {
                     evt = _event_[1];
                     clearMouseHover(widget);
-                    _selectValue_102 = evt.button;
-                    if (_selectValue_102 === 0) {
+                    _selectValue_1496 = evt.button;
+                    if (_selectValue_1496 === 0) {
                         if (evt.ctrlKey) {
                             pos = toDiagram(widget, evt);
                             handleRightClick(widget, pos, evt);
@@ -20262,11 +20318,11 @@ function SelectBehavior_create(widget) {
                             }
                         }
                     } else {
-                        if (_selectValue_102 === 1) {
+                        if (_selectValue_1496 === 1) {
                             scroller = createMouseScroll(widget, evt);
                             _branch_ = 'Scroll';
                         } else {
-                            if (_selectValue_102 === 2) {
+                            if (_selectValue_1496 === 2) {
                                 pos = toDiagram(widget, evt);
                                 handleRightClick(widget, pos, evt);
                             }
@@ -20453,6 +20509,7 @@ function SelectBehavior_create(widget) {
                 }
                 break;
             default:
+                _topResolve_();
                 return;
             }
         }
@@ -20465,6 +20522,9 @@ function SelectBehavior_create(widget) {
         me.state = 'started';
         _topGen_ = SelectBehavior_main();
         _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
         return new Promise((resolve, reject) => {
             _topResolve_ = resolve;
             _topReject_ = reject;
@@ -20559,11 +20619,17 @@ function SelectBehavior_create(widget) {
     return me;
 }
 function SpanBuilder_create() {
-    var _topGen_, _topReject_, _topResolve_, me;
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
     me = {
         _type: 'SpanBuilder',
         _busy: true,
         state: 'created'
+    };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
     };
     function* SpanBuilder_main() {
         var _branch_, _eventType_, _event_, ch, current, line, type;
@@ -20738,6 +20804,7 @@ function SpanBuilder_create() {
                 }
                 break;
             default:
+                _topResolve_();
                 return;
             }
         }
@@ -20750,6 +20817,9 @@ function SpanBuilder_create() {
         me.state = 'started';
         _topGen_ = SpanBuilder_main();
         _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
         return new Promise((resolve, reject) => {
             _topResolve_ = resolve;
             _topReject_ = reject;
@@ -20876,11 +20946,17 @@ function SpanBuilder_create() {
     return me;
 }
 function TouchBehavior_create(widget) {
-    var _topGen_, _topReject_, _topResolve_, me;
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
     me = {
         _type: 'TouchBehavior',
         _busy: true,
         state: 'created'
+    };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
     };
     function* TouchBehavior_main() {
         var _branch_, _eventType_, _event_, dir, evt, evt2, pos, prim, scroller, startX, startX2, startY, startY2, timer, x, y, zoomer;
@@ -21041,6 +21117,7 @@ function TouchBehavior_create(widget) {
                 }
                 break;
             default:
+                _topResolve_();
                 return;
             }
         }
@@ -21053,6 +21130,9 @@ function TouchBehavior_create(widget) {
         me.state = 'started';
         _topGen_ = TouchBehavior_main();
         _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
         return new Promise((resolve, reject) => {
             _topResolve_ = resolve;
             _topReject_ = reject;
@@ -21141,11 +21221,17 @@ function TouchBehavior_create(widget) {
     return me;
 }
 function loadImage_create(image) {
-    var _topGen_, _topReject_, _topResolve_, me;
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
     me = {
         _type: 'loadImage',
         _busy: true,
         state: 'created'
+    };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
     };
     function* loadImage_main() {
         var _event_, imageObj;
@@ -21165,6 +21251,9 @@ function loadImage_create(image) {
         me.state = 'started';
         _topGen_ = loadImage_main();
         _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
         return new Promise((resolve, reject) => {
             _topResolve_ = resolve;
             _topReject_ = reject;
@@ -21199,6 +21288,7 @@ unit.createDummyCanvas = createDummyCanvas;
 unit.createTextBlock = createTextBlock;
 unit.flowTextBlock = flowTextBlock;
 unit.renderFlowBlock = renderFlowBlock;
+unit.DrakonCanvas = DrakonCanvas;
 unit.LeftDrakonResizeHandle = LeftDrakonResizeHandle;
 unit.RightDrakonResizeHandle = RightDrakonResizeHandle;
 unit.GroupBottomHandle = GroupBottomHandle;
@@ -21241,7 +21331,6 @@ unit.Text = Text;
 unit.DefaultIconCore = DefaultIconCore;
 unit.LeftMindResizeHandle = LeftMindResizeHandle;
 unit.RightMindResizeHandle = RightMindResizeHandle;
-unit.DrakonCanvas = DrakonCanvas;
 unit.main = main;
 Object.defineProperty(unit, 'edit_tools', {
     get: function () {

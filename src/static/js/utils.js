@@ -25,12 +25,12 @@ function comparerDesc(property, left, right) {
     return -1 * comp;
 }
 function deepCloneCore(visited, obj) {
-    var _selectValue_2, array, copy, item, key, value;
+    var _selectValue_38, array, copy, item, key, value;
     if (obj === undefined || obj === null) {
         return undefined;
     } else {
-        _selectValue_2 = typeof obj;
-        if (_selectValue_2 === 'number' || (_selectValue_2 === 'boolean' || _selectValue_2 === 'string' || _selectValue_2 === 'bigint' || _selectValue_2 === 'function' || _selectValue_2 === 'symbol' || obj instanceof RegExp || obj instanceof Date)) {
+        _selectValue_38 = typeof obj;
+        if (_selectValue_38 === 'number' || (_selectValue_38 === 'boolean' || _selectValue_38 === 'string' || _selectValue_38 === 'bigint' || _selectValue_38 === 'function' || _selectValue_38 === 'symbol' || obj instanceof RegExp || obj instanceof Date)) {
             return obj;
         } else {
             if (visited.has(obj)) {
@@ -65,14 +65,14 @@ function addRange(from, to) {
 }
 function FilenameChecker() {
     var self = { _type: 'FilenameChecker' };
-    function FilenameChecker_isGoodChar(ch) {
+    function isGoodChar(ch) {
         if (ch in self.bad) {
             return false;
         } else {
             return true;
         }
     }
-    self.isGoodChar = FilenameChecker_isGoodChar;
+    self.isGoodChar = isGoodChar;
     return self;
 }
 function clone(src) {
@@ -331,11 +331,17 @@ function take(array, count) {
     return array.slice(0, count);
 }
 function debounce_create(action, delay) {
-    var _topGen_, _topReject_, _topResolve_, me;
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
     me = {
         _type: 'debounce',
         _busy: true,
         state: 'created'
+    };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
     };
     function* debounce_main() {
         var _branch_, _eventType_, _event_, msg, tobj;
@@ -370,6 +376,7 @@ function debounce_create(action, delay) {
                 }
                 break;
             default:
+                _topResolve_();
                 return;
             }
         }
@@ -382,6 +389,9 @@ function debounce_create(action, delay) {
         me.state = 'started';
         _topGen_ = debounce_main();
         _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
         return new Promise((resolve, reject) => {
             _topResolve_ = resolve;
             _topReject_ = reject;
@@ -428,11 +438,17 @@ function debounce_create(action, delay) {
     return me;
 }
 function debounceAsync_create(action, delay) {
-    var _topGen_, _topReject_, _topResolve_, me;
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
     me = {
         _type: 'debounceAsync',
         _busy: true,
         state: 'created'
+    };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
     };
     function* debounceAsync_main() {
         var _branch_, _eventType_, _event_, msg, nextRequested, tobj;
@@ -489,6 +505,7 @@ function debounceAsync_create(action, delay) {
                 }
                 break;
             default:
+                _topResolve_();
                 return;
             }
         }
@@ -501,6 +518,9 @@ function debounceAsync_create(action, delay) {
         me.state = 'started';
         _topGen_ = debounceAsync_main();
         _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
         return new Promise((resolve, reject) => {
             _topResolve_ = resolve;
             _topReject_ = reject;
@@ -564,11 +584,17 @@ function debounceAsync_create(action, delay) {
     return me;
 }
 function forceDebounce_create(action, delay) {
-    var _topGen_, _topReject_, _topResolve_, me;
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
     me = {
         _type: 'forceDebounce',
         _busy: true,
         state: 'created'
+    };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
     };
     function* forceDebounce_main() {
         var _branch_, _eventType_, _event_, msg, tobj;
@@ -623,6 +649,7 @@ function forceDebounce_create(action, delay) {
                 }
                 break;
             default:
+                _topResolve_();
                 return;
             }
         }
@@ -635,6 +662,9 @@ function forceDebounce_create(action, delay) {
         me.state = 'started';
         _topGen_ = forceDebounce_main();
         _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
         return new Promise((resolve, reject) => {
             _topResolve_ = resolve;
             _topReject_ = reject;
