@@ -1,27 +1,34 @@
-# DrakonHub for desktop
+# DrakonHub
 
-The desktop version of the DrakonHub diagram editor
+DrakonHub is diagram editor for Desktop, Mobile, and Browser
 
-## What is DrakonHub for desktop
-
-DrakonHub for desktop is a diagram editor that supports three types of diagrams.
+DrakonHub supports three types of diagrams.
 
 - Drakon-charts, flowcharts from the aerospace industry that visualize algorithms.
 - Mind-maps.
 - Free-form diagrams.
 
-The downloadable version of DrakonHub runs on Windows, Linux, and Mac. The installable browser version runs on anything.
 
 DrakonHub for desktop is based on [DrakonWidget library](https://github.com/stepan-mitkin/drakonwidget)
 
 ![Drakon example: Should I make art?](assets/images/should_i_make_art.png)
 
+[DrakonHub's homepage](https://drakonhub.com/)
+
 ## Download DrakonHub
 
 - [Download DrakonHub from GitHub releases](https://github.com/stepan-mitkin/drakonhub_desktop/releases)
 
-## Run this app in the browser without downloading
+## Download DrakonHub for phones and tablets
 
+<a href="https://apps.apple.com/app/drakonhub-flowcharts/id6763764413" target="_blank" rel="noopener">
+    <img style="height:64px" src="assets/images/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg" alt="Download on the App Store">
+</a>
+<a href="https://play.google.com/store/apps/details?id=com.drakonhub.mobile" target="_blank" rel="noopener">
+    <img style="height:64px" src="assets/images/GetItOnGooglePlay_Badge_Web_color_English.svg" alt="Get it on Google Play">
+</a>
+
+## Run this app in the browser without downloading
 
 - [Run DrakonHub in the browser](https://stepan-mitkin.github.io/drakonhub_desktop/drakonhub)
 
@@ -44,5 +51,5 @@ DrakonHub takes care of the routine:
 
 ## Example diagrams
 
-- [Drakon examples](https://github.com/stepan-mitkin/drakonhub_desktop/tree/main/drakon_examples)
-- [Mind-map examples](https://github.com/stepan-mitkin/drakonhub_desktop/tree/main/mind-map_examples)
+- [Drakon examples](https://drakonhub.com/en/drakon-on-simple-examples)
+- [Mind-map examples](https://drakonhub.com/en/mind-map-in-simple-examples)
