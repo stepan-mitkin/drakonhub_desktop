@@ -355,10 +355,10 @@ function DoubleClick_create() {
 function MultiWidget() {
     var self = { _type: 'MultiWidget' };
     function getCurrent() {
-        var _collection_170, child, id;
-        _collection_170 = self.children;
-        for (id in _collection_170) {
-            child = _collection_170[id];
+        var _collection_171, child, id;
+        _collection_171 = self.children;
+        for (id in _collection_171) {
+            child = _collection_171[id];
             if (id === self.current) {
                 return child.widget;
             }
@@ -366,12 +366,12 @@ function MultiWidget() {
         throw new Error('getCurrent: current not found');
     }
     function init(content) {
-        var _collection_173, child, id;
+        var _collection_174, child, id;
         self.children = {};
         self.current = content.current;
-        _collection_173 = content.children;
-        for (id in _collection_173) {
-            child = _collection_173[id];
+        _collection_174 = content.children;
+        for (id in _collection_174) {
+            child = _collection_174[id];
             self.children[id] = {
                 widget: child,
                 container: undefined,
@@ -390,21 +390,21 @@ function MultiWidget() {
         onShowChildWidget(current);
     }
     function redraw(container) {
-        var _collection_176, child, id;
-        _collection_176 = self.children;
-        for (id in _collection_176) {
-            child = _collection_176[id];
+        var _collection_177, child, id;
+        _collection_177 = self.children;
+        for (id in _collection_177) {
+            child = _collection_177[id];
             child.container = buildWidgetDom(container, child.widget);
             stretchElement(child.container);
         }
         self.setCurrent(self.current);
     }
     function setCurrent(childId) {
-        var _collection_179, child, id;
+        var _collection_180, child, id;
         self.current = childId;
-        _collection_179 = self.children;
-        for (id in _collection_179) {
-            child = _collection_179[id];
+        _collection_180 = self.children;
+        for (id in _collection_180) {
+            child = _collection_180[id];
             if (id === self.current) {
                 if (!child.visible) {
                     display(child.container, 'inline-block');
@@ -687,7 +687,7 @@ function checkEmail(email) {
     }
 }
 function checkJsonContent(jsonString) {
-    var _collection_151, diagram, error, id, item, limit, limitBytes, obj;
+    var _collection_152, diagram, error, id, item, limit, limitBytes, obj;
     if (gconfig.maxImageSizeMb) {
         limitBytes = gconfig.maxImageSizeMb * 1024 * 1014;
         limit = limitBytes * 3;
@@ -726,12 +726,13 @@ function checkJsonContent(jsonString) {
                                         'style',
                                         'description'
                                     ]);
-                                    _collection_151 = obj.items;
-                                    for (id in _collection_151) {
-                                        item = _collection_151[id];
+                                    _collection_152 = obj.items;
+                                    for (id in _collection_152) {
+                                        item = _collection_152[id];
                                         if (id) {
                                             if (item && typeof item === 'object') {
-                                                if (ensureOptionalString(item, 'content')) {
+                                                if (ensureOptionalString(item, 'text') && ensureOptionalString(item, 'content')) {
+                                                    fixTextContent(item);
                                                     if (ensureOptionalString(item, 'secondary')) {
                                                         if (ensureOptionalJsonString(item, 'style')) {
                                                             diagram.items[id] = item;
@@ -1439,7 +1440,7 @@ function downloadTextDataAsFile(filename, data, mime) {
     window.URL.revokeObjectURL(url);
 }
 function drakonToInternal(diagram) {
-    var _collection_154, diagram2, id, item;
+    var _collection_155, diagram2, id, item;
     diagram2 = {
         items: [],
         type: diagram.type
@@ -1450,9 +1451,9 @@ function drakonToInternal(diagram) {
         'style',
         'description'
     ]);
-    _collection_154 = diagram.items;
-    for (id in _collection_154) {
-        item = _collection_154[id];
+    _collection_155 = diagram.items;
+    for (id in _collection_155) {
+        item = _collection_155[id];
         item.id = id;
         if (item.content) {
             item.text = item.content;
@@ -1521,6 +1522,12 @@ async function fetchUserSettings() {
     }
     unit.globals.userSettings = settings;
     return settings;
+}
+function fixTextContent(item) {
+    if (item.text && !item.content) {
+        item.content = item.text;
+        delete item.text;
+    }
 }
 function generateRandomString() {
     var number;
@@ -1620,7 +1627,7 @@ function img(src, className) {
     }, [className]);
 }
 async function importDiagram(jsonString, filename, parentId, tr) {
-    var _selectValue_157, folder, id, internal, parsed, parsedFilename, payload, url;
+    var _selectValue_158, folder, id, internal, parsed, parsedFilename, payload, url;
     parsed = checkDiagram(jsonString);
     if (parsed.error) {
         widgets.showErrorSnack(parsed.error);
@@ -1630,8 +1637,8 @@ async function importDiagram(jsonString, filename, parentId, tr) {
         parsedFilename = stripExtension(filename);
         internal.name = parsedFilename.name;
         internal.type = parsedFilename.extension;
-        _selectValue_157 = internal.type;
-        if (_selectValue_157 === 'drakon' || (_selectValue_157 === 'free' || _selectValue_157 === 'graf')) {
+        _selectValue_158 = internal.type;
+        if (_selectValue_158 === 'drakon' || (_selectValue_158 === 'free' || _selectValue_158 === 'graf')) {
             folder = await sendCreateFolder(parentId, internal.type, internal.name);
             id = folder.id;
             payload = {
@@ -1913,15 +1920,15 @@ function initShortcuts(callbacks) {
     }, callbacks);
 }
 async function invokeWindowResize() {
-    var _collection_148, action, id;
+    var _collection_149, action, id;
     if (window.padBridge && window.padBridge.setUpStatusBar) {
         await window.padBridge.setUpStatusBar();
         await pause(200);
     }
     setRootStyle();
-    _collection_148 = unit.resizables;
-    for (id in _collection_148) {
-        action = _collection_148[id];
+    _collection_149 = unit.resizables;
+    for (id in _collection_149) {
+        action = _collection_149[id];
         action();
     }
 }
