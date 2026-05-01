@@ -20,6 +20,7 @@ _inst_drakon_canvas.edit_tools = _inst_edit_tools;
 _inst_drakon_canvas.html = _inst_html_0_1;
 _inst_drakon_canvas.tracing = _inst_drcore;
 _inst_drakon_canvas.utils = _inst_utils;
+_inst_drakon_canvas.gconfig = _inst_drconfig;
 _inst_drakonhubwidget_10.drakon_canvas = _inst_drakon_canvas;
 _inst_drakonhubwidget_10.gconfig = _inst_drconfig;
 _inst_drakonhubwidget_10.html = _inst_html_0_1;

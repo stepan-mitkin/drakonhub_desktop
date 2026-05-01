@@ -7,11 +7,41 @@ function add(parent, child) {
 function addAfter(referenceNode, newNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
+function addClass() {
+    var body, content, i, lines, name, style;
+    if (!unit.styleElement) {
+        unit.styleElement = createStyle();
+    }
+    style = unit.styleElement;
+    name = arguments[0];
+    lines = [];
+    for (i = 1; i < arguments.length; i++) {
+        lines.push(arguments[i]);
+    }
+    body = lines.map(addSemi).join('\n');
+    content = '\n' + name + ' {\n' + body + '\n}\n';
+    style.innerHTML += content;
+}
+function addClassToStyle() {
+    var body, content, i, lines, name, style;
+    style = arguments[0];
+    name = arguments[1];
+    lines = [];
+    for (i = 2; i < arguments.length; i++) {
+        lines.push(arguments[i]);
+    }
+    body = lines.map(addSemi).join('\n');
+    content = '\n' + name + ' {\n' + body + '\n}\n';
+    style.innerHTML += content;
+}
 function addOption(select, value, text) {
     var option;
     option = createElement('option', { value: value });
     addText(option, text);
     add(select, option);
+}
+function addSemi(line) {
+    return '    ' + line.trim() + ';';
 }
 function addText(element, text) {
     var newNode;
@@ -49,7 +79,7 @@ function createElement(tagName, properties, args) {
         if (key === 'text') {
             addText(element, value);
         } else {
-            if (key !== 'tid') {
+            if (!(key === 'tid')) {
                 element.style.setProperty(key, value);
             }
         }
@@ -59,6 +89,13 @@ function createElement(tagName, properties, args) {
     }
     return element;
 }
+function createStyle() {
+    var styleSheet;
+    styleSheet = document.createElement('style');
+    styleSheet.type = 'text/css';
+    document.head.appendChild(styleSheet);
+    return styleSheet;
+}
 function get(id) {
     var element;
     element = document.getElementById(id);
@@ -66,6 +103,13 @@ function get(id) {
         return element;
     } else {
         throw new Error('get: Element with id not found: ' + id);
+    }
+}
+function getRetinaFactor() {
+    if (window.devicePixelRatio) {
+        return window.devicePixelRatio;
+    } else {
+        return 1;
     }
 }
 function goTo(url) {
@@ -80,50 +124,6 @@ function reload() {
 function remove(element) {
     element.parentNode.removeChild(element);
 }
-function setText(element, text) {
-    clear(element);
-    addText(element, text);
-}
-function setTitle(title) {
-    document.title = title;
-}
-function addClass() {
-    var body, content, i, lines, name, style;
-    if (!unit.styleElement) {
-        unit.styleElement = createStyle();
-    }
-    style = unit.styleElement;
-    name = arguments[0];
-    lines = [];
-    for (i = 1; i < arguments.length; i++) {
-        lines.push(arguments[i]);
-    }
-    body = lines.map(addSemi).join('\n');
-    content = '\n' + name + ' {\n' + body + '\n}\n';
-    style.innerHTML += content;
-}
-function addClassToStyle() {
-    var body, content, i, lines, name, style;
-    style = arguments[0];
-    name = arguments[1];
-    lines = [];
-    for (i = 2; i < arguments.length; i++) {
-        lines.push(arguments[i]);
-    }
-    body = lines.map(addSemi).join('\n');
-    content = '\n' + name + ' {\n' + body + '\n}\n';
-    style.innerHTML += content;
-}
-function addSemi(line) {
-    return '    ' + line.trim() + ';';
-}
-function createStyle() {
-    var styleSheet;
-    styleSheet = document.createElement('style');
-    styleSheet.type = 'text/css';
-    document.head.appendChild(styleSheet);
-    return styleSheet;
-}
 function resetStyle() {
     if (unit.styleElement) {
         removeElement(unit.styleElement);
@@ -131,30 +131,30 @@ function resetStyle() {
     unit.styleElement = createStyle();
     return unit.styleElement;
 }
-function getRetinaFactor() {
-    if (window.devicePixelRatio) {
-        return window.devicePixelRatio;
-    } else {
-        return 1;
-    }
+function setText(element, text) {
+    clear(element);
+    addText(element, text);
+}
+function setTitle(title) {
+    document.title = title;
 }
 unit.add = add;
 unit.addAfter = addAfter;
+unit.addClass = addClass;
+unit.addClassToStyle = addClassToStyle;
 unit.addOption = addOption;
 unit.addText = addText;
 unit.clear = clear;
 unit.createElement = createElement;
+unit.createStyle = createStyle;
 unit.get = get;
+unit.getRetinaFactor = getRetinaFactor;
 unit.goTo = goTo;
 unit.openTab = openTab;
 unit.reload = reload;
 unit.remove = remove;
+unit.resetStyle = resetStyle;
 unit.setText = setText;
 unit.setTitle = setTitle;
-unit.addClass = addClass;
-unit.addClassToStyle = addClassToStyle;
-unit.createStyle = createStyle;
-unit.resetStyle = resetStyle;
-unit.getRetinaFactor = getRetinaFactor;
 return unit;
 }

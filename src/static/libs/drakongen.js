@@ -14,7 +14,7 @@ function htmlToString(html) {
 
     root.childNodes.forEach((node) => {
         if (node.tagName === 'P') {
-            output.push(node.textContent.trim());
+            output.push(node.textContent);
         } else if (node.tagName === 'UL') {
             node.childNodes.forEach((item) => {
                 if (item.tagName === 'LI') {

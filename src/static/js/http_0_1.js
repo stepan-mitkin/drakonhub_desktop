@@ -38,11 +38,6 @@ function sendRequest(method, url, body, headers) {
     _obj_ = sendRequest_create(method, url, body, headers);
     return _obj_.run();
 }
-function uploadFileToServer(url, name, file) {
-    var _obj_;
-    _obj_ = uploadFileToServer_create(url, name, file);
-    return _obj_.run();
-}
 function sendRequest_create(method, url, body, headers) {
     var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
     me = {
@@ -114,6 +109,11 @@ function sendRequest_create(method, url, body, headers) {
         }
     };
     return me;
+}
+function uploadFileToServer(url, name, file) {
+    var _obj_;
+    _obj_ = uploadFileToServer_create(url, name, file);
+    return _obj_.run();
 }
 function uploadFileToServer_create(url, name, file) {
     var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
@@ -195,8 +195,8 @@ unit.isNetworkError = isNetworkError;
 unit.isSuccess = isSuccess;
 unit.main = main;
 unit.sendRequest = sendRequest;
-unit.uploadFileToServer = uploadFileToServer;
 unit.sendRequest_create = sendRequest_create;
+unit.uploadFileToServer = uploadFileToServer;
 unit.uploadFileToServer_create = uploadFileToServer_create;
 return unit;
 }

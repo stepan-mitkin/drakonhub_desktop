@@ -11,7 +11,7 @@ function UndoEdit() {
         };
         for (name in changedFields) {
             value = changedFields[name];
-            if (name !== 'id') {
+            if (!(name === 'id')) {
                 action.fields[name] = value;
             }
         }
@@ -91,7 +91,7 @@ function applyChange(diagram, change) {
                 item = diagram.items[change.id];
                 Object.assign(item, change.fields);
             } else {
-                if (_selectValue_22 !== 'delete') {
+                if (!(_selectValue_22 === 'delete')) {
                     throw new Error('Unexpected case value: ' + _selectValue_22);
                 }
                 delete diagram.items[change.id];
@@ -141,7 +141,7 @@ function createEditStep(diagramId) {
 }
 function createInitialEdit(diagram) {
     var step;
-    if (diagram.initial && diagram.initial.length !== 0) {
+    if (diagram.initial && !(diagram.initial.length === 0)) {
         step = createEditStep(diagram.id);
         step.changes = diagram.initial;
         diagram.initial = undefined;
@@ -169,7 +169,7 @@ function createUndoChange(diagram, change) {
                 item = diagram.items[change.id];
                 getOldValues(item, change.fields, undoChange.fields);
             } else {
-                if (_selectValue_26 !== 'delete') {
+                if (!(_selectValue_26 === 'delete')) {
                     throw new Error('Unexpected case value: ' + _selectValue_26);
                 }
                 item = diagram.items[change.id];
@@ -187,6 +187,15 @@ function createUndoChange(diagram, change) {
         return undoChange;
     }
 }
+function createUndoEdit(diagram, sender) {
+    var self;
+    self = UndoEdit();
+    self.diagram = diagram;
+    self.edit = sender;
+    self.currentUndo = -1;
+    self.undo = [];
+    return self;
+}
 function getOldValues(obj, changedFields, output) {
     var name, oldValue, value;
     for (name in changedFields) {
@@ -201,15 +210,6 @@ function getOldValues(obj, changedFields, output) {
 }
 function sendEditToServer(obj, edit) {
     obj.edit.pushEdit(edit);
-}
-function createUndoEdit(diagram, sender) {
-    var self;
-    self = UndoEdit();
-    self.diagram = diagram;
-    self.edit = sender;
-    self.currentUndo = -1;
-    self.undo = [];
-    return self;
 }
 unit.UndoEdit = UndoEdit;
 unit.createUndoEdit = createUndoEdit;
