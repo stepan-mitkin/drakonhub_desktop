@@ -1,6 +1,6 @@
 # DrakonHub
 
-DrakonHub is diagram editor for Desktop, Mobile, and Browser
+DrakonHub is diagram editor for desktop, mobile, and the browser.
 
 DrakonHub supports three types of diagrams.
 
