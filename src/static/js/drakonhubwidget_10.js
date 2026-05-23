@@ -111,7 +111,7 @@ function DrakonHubWidget() {
         var zoom;
         unit.darkColor = 'green';
         unit.middleColor = 'rgb(226, 237, 245)';
-        self.iconWidth = 250;
+        self.iconWidth = 350;
         createStyles();
         self.widgetSettings = widgetSettings;
         self.userSettings = {};
@@ -2162,7 +2162,6 @@ function editHtml_create(left, top, header, oldContent, ro, path, tr) {
                 return;
             }
         }
-        _topResolve_();
     }
     function editHtml_run() {
         if (me.state !== 'created') {
@@ -3198,7 +3197,6 @@ function readFileAsBase64_create(file) {
             _topReject_(error);
             return;
         }
-        _topResolve_();
     }
     function readFileAsBase64_run() {
         if (me.state !== 'created') {
@@ -3608,7 +3606,6 @@ function showChooseImage_create(widget, existing, current) {
                 return;
             }
         }
-        _topResolve_();
     }
     function showChooseImage_run() {
         if (me.state !== 'created') {
@@ -4482,7 +4479,6 @@ function uploadImage_create(widget, output, total) {
                 return;
             }
         }
-        _topResolve_();
     }
     function uploadImage_run() {
         if (me.state !== 'created') {

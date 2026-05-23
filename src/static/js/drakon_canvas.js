@@ -548,7 +548,7 @@ function DrakonCanvas() {
         return result;
     }
     function getVersion() {
-        return '1.5.3';
+        return '1.5.4';
     }
     function getZoom() {
         if (self.zoom) {
@@ -1287,7 +1287,6 @@ function Ears_create(widget, element) {
                 return;
             }
         }
-        _topResolve_();
     }
     function Ears_run() {
         if (me.state !== 'created') {
@@ -2540,7 +2539,6 @@ function InnerCrawler_create(visuals, sub) {
                 return;
             }
         }
-        _topResolve_();
     }
     function InnerCrawler_run() {
         if (me.state !== 'created') {
@@ -3071,7 +3069,6 @@ function MarkDown_create(target) {
                 return;
             }
         }
-        _topResolve_();
     }
     function MarkDown_run() {
         if (me.state !== 'created') {
@@ -3270,7 +3267,6 @@ function NoSelectBehavior_create(widget) {
                 return;
             }
         }
-        _topResolve_();
     }
     function NoSelectBehavior_run() {
         if (me.state !== 'created') {
@@ -3552,7 +3548,6 @@ function OuterCrawler_create(visuals, sub) {
                 return;
             }
         }
-        _topResolve_();
     }
     function OuterCrawler_run() {
         if (me.state !== 'created') {
@@ -4404,7 +4399,6 @@ function SelectBehavior_create(widget) {
                 return;
             }
         }
-        _topResolve_();
     }
     function SelectBehavior_run() {
         if (me.state !== 'created') {
@@ -4715,7 +4709,6 @@ function SimpleTouchBehavior_create(widget) {
                 return;
             }
         }
-        _topResolve_();
     }
     function SimpleTouchBehavior_run() {
         if (me.state !== 'created') {
@@ -5005,7 +4998,6 @@ function SpanBuilder_create() {
                 return;
             }
         }
-        _topResolve_();
     }
     function SpanBuilder_run() {
         if (me.state !== 'created') {
@@ -5177,8 +5169,6 @@ function Text() {
         return buildTextContent(visuals, element, options, element.width);
     }
     function getAccepted() {
-        var accepted;
-        accepted = getStandardProps();
         return [
             'iconBack',
             'color',
@@ -5186,7 +5176,6 @@ function Text() {
             'verticalAlign',
             'textAlign'
         ];
-        return accepted;
     }
     function hit(element, pos) {
         return true;
@@ -5398,7 +5387,6 @@ function TouchBehavior_create(widget) {
                 return;
             }
         }
-        _topResolve_();
     }
     function TouchBehavior_run() {
         if (me.state !== 'created') {
@@ -7530,12 +7518,13 @@ function buildDurationCoords(left, top, width, height, padding) {
     ];
 }
 function buildFinalConfig(widget) {
-    var config, fontObj, model, wconfig;
+    var config, drakonRecenter, fontObj, model, wconfig;
+    drakonRecenter = false;
     model = widget.model;
     wconfig = utils.clone(widget.config);
     if (!('centerContent' in wconfig)) {
         if (model.type === 'drakon') {
-            wconfig.centerContent = true;
+            wconfig.centerContent = drakonRecenter;
         } else {
             wconfig.centerContent = false;
         }
@@ -15915,8 +15904,6 @@ function isOnScrollbars(widget, evt) {
             } else {
                 return false;
             }
-            _branch_ = 'Exit';
-            break;
         case 'Exit':
             _branch_ = undefined;
             break;
