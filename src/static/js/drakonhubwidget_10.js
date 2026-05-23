@@ -111,7 +111,7 @@ function DrakonHubWidget() {
         var zoom;
         unit.darkColor = 'green';
         unit.middleColor = 'rgb(226, 237, 245)';
-        self.iconWidth = 350;
+        self.iconWidth = 310;
         createStyles();
         self.widgetSettings = widgetSettings;
         self.userSettings = {};
