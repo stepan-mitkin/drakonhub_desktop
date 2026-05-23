@@ -1279,7 +1279,7 @@ function checkGoodFilename(name, tr) {
     }
 }
 function chooseTheme(widget, evt) {
-    var black, blt, brown, bt, cgreen, classic, cln, config, coolGreen, darkBlue, darkGreen, darkRed, deepBlue, deepGreen, dialog, dr, egg, gblue, gblue2, gg, grayBlue, grayBlue2, grayGrey, greys, iconRound, light, linesRound, paleGreen, path, raisin, raisinGreen, rb, rect, redBlue, rg, roundSection, rtimer, tegg, theme, tr, white, wtimer;
+    var black, blt, blueGrey, brown, bt, cgreen, classic, cln, config, coolGreen, darkBlue, darkGreen, darkGrey, darkRed, deepBlue, deepGreen, dialog, dr, egg, gblue, gblue2, gg, grayBlue, grayBlue2, grayGrey, greys, iconRound, light, linesRound, paleGreen, path, raisin, raisinGreen, rb, rect, redBlue, rg, roundSection, rtimer, sepia, tegg, theme, tr, white, wtimer;
     cln = utils.clone;
     theme = widget.userSettings.theme2 || {};
     config = buildDwConfig(widget);
@@ -1364,6 +1364,62 @@ function chooseTheme(widget, evt) {
         }
     };
     addThemeRow(widget, dialog.client, classic, white, light, greys);
+    sepia = {
+        name: 'Sepia',
+        theme: {
+            lineWidth: 1,
+            lines: '#6b604c',
+            background: '#ecddb4',
+            iconBorder: '#afa084',
+            iconBack: '#fbf1c7',
+            shadowColor: 'rgba(0, 0, 50, 0.15)',
+            borderWidth: 1
+        }
+    };
+    darkGrey = {
+        name: 'Black on grey',
+        theme: {
+            lineWidth: 1,
+            lines: '#dddd90',
+            background: '#202020',
+            iconBorder: '#877b3d',
+            iconBack: '#000000',
+            backText: '#ffffcc',
+            color: '#ffffcc',
+            borderWidth: 1,
+            shadowColor: ''
+        }
+    };
+    darkBlue = {
+        name: 'Black on blue',
+        theme: {
+            lineWidth: 1,
+            lines: '#7070c0',
+            background: '#000040',
+            iconBorder: '#5050b0',
+            iconBack: '#000000',
+            backText: '#BCD5FF',
+            color: '#BCD5FF',
+            borderWidth: 1,
+            shadowColor: ''
+        }
+    };
+    blueGrey = {
+        name: 'Blue chocolate',
+        theme: {
+            lineWidth: 1,
+            lines: '#909090',
+            background: '#000040',
+            iconBorder: '#808030',
+            iconBack: '#000000',
+            iconBack2: '#303030',
+            backText: '#ffffcc',
+            color: '#ffffcc',
+            borderWidth: 1,
+            shadowColor: ''
+        }
+    };
+    addThemeRow(widget, dialog.client, sepia, darkGrey, darkBlue, blueGrey);
     paleGreen = {
         name: 'Pale green',
         theme: {

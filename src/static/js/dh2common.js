@@ -93,7 +93,6 @@ function ClickerTapper_create() {
                 return;
             }
         }
-        _topResolve_();
     }
     function ClickerTapper_run() {
         if (me.state !== 'created') {
@@ -275,7 +274,6 @@ function DoubleClick_create() {
                 return;
             }
         }
-        _topResolve_();
     }
     function DoubleClick_run() {
         if (me.state !== 'created') {
@@ -466,18 +464,25 @@ function PanicScreen() {
     return self;
 }
 function addChangeLanguageBlock(form) {
-    var changeLanguage;
-    if (getSettingsObj().language === 'en-us') {
-        changeLanguage = widgets.createSimpleButton('Русский', function () {
-            saveLanguage('ru');
-        });
-    } else {
-        changeLanguage = widgets.createSimpleButton('English', function () {
-            saveLanguage('en-us');
-        });
-    }
-    html.add(form, div({ height: '30px' }));
-    html.add(form, changeLanguage);
+    var language, ui;
+    html.add(form, div({ height: '20px' }));
+    language = getSettingsObj().language || gconfig.defaultLanguage;
+    ui = html.createElement('select');
+    html.add(form, ui);
+    html.addOption(ui, 'en-us', 'English');
+    html.addOption(ui, 'de', 'Deutsch');
+    html.addOption(ui, 'es', 'Español');
+    html.addOption(ui, 'fr', 'Français');
+    html.addOption(ui, 'lt', 'Lietuvių');
+    html.addOption(ui, 'no', 'Norsk');
+    html.addOption(ui, 'ru', 'Русский');
+    ui.value = language;
+    ui.addEventListener('change', event => {
+        var selectedValue;
+        selectedValue = event.target.value;
+        saveLanguage(selectedValue);
+    });
+    html.add(form, div({ height: '20px' }));
 }
 function addDiagramType(parent, imageSrc, header, description, action) {
     var container, containerStyle, descDiv, headerDiv, icon, textBlock;
@@ -1541,7 +1546,7 @@ function getAppRoot() {
     return gconfig.appRoot;
 }
 function getAppVersion() {
-    return '2026.04.29';
+    return '2026.05.23';
 }
 function getBaseUrl() {
     return gconfig.baseUrl;
@@ -1634,9 +1639,11 @@ async function importDiagram(jsonString, filename, parentId, tr) {
         return undefined;
     } else {
         internal = drakonToInternal(parsed.diagram);
-        parsedFilename = stripExtension(filename);
-        internal.name = parsedFilename.name;
-        internal.type = parsedFilename.extension;
+        if (filename) {
+            parsedFilename = stripExtension(filename);
+            internal.name = parsedFilename.name;
+            internal.type = parsedFilename.extension;
+        }
         _selectValue_158 = internal.type;
         if (_selectValue_158 === 'drakon' || (_selectValue_158 === 'free' || _selectValue_158 === 'graf')) {
             folder = await sendCreateFolder(parentId, internal.type, internal.name);
@@ -1657,6 +1664,7 @@ async function importDiagram(jsonString, filename, parentId, tr) {
             await sendRequestRaw('POST', url, payload);
             return id;
         } else {
+            console.error(internal.type);
             widgets.showErrorSnack(translate('Unknown document type'));
             return undefined;
         }
@@ -2399,7 +2407,7 @@ function showConfirmEmail_create(email, allowCancel, changeEmail) {
             case 'Send pin':
                 confirmPayload = { pin: pin };
                 showWaitBlock();
-                sendRequestRaw('POST', '/api/confirm_email', confirmPayload).then(onResponse);
+                sendRequestRaw('POST', '/api/confirm_email', confirmPayload).then(me.onResponse);
                 me.state = '48';
                 me._busy = false;
                 _event_ = yield;
@@ -2419,8 +2427,10 @@ function showConfirmEmail_create(email, allowCancel, changeEmail) {
                 allowResend = false;
                 showWaitBlock();
                 setTimeout(me.onTimeout, 2000);
-                onTimeout();
-                sendRequestRaw('POST', '/api/resend_confirm_email', {}).then(onResponse);
+                me.state = '52';
+                me._busy = false;
+                _event_ = yield;
+                sendRequestRaw('POST', '/api/resend_confirm_email', {}).then(me.onResponse);
                 me.state = '51';
                 me._busy = false;
                 _event_ = yield;
@@ -2441,7 +2451,6 @@ function showConfirmEmail_create(email, allowCancel, changeEmail) {
                 return;
             }
         }
-        _topResolve_();
     }
     function showConfirmEmail_run() {
         if (me.state !== 'created') {
@@ -2538,6 +2547,22 @@ function showConfirmEmail_create(email, allowCancel, changeEmail) {
             _args_ = [];
             _args_.push('onResponse');
             _args_.push(response);
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    me.onTimeout = function () {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '52':
+            _args_ = [];
+            _args_.push('onTimeout');
             me._busy = true;
             _topGen_.next(_args_);
             break;
