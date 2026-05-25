@@ -189,7 +189,6 @@ function debounceAsync_create(action, delay) {
                 return;
             }
         }
-        _topResolve_();
     }
     function debounceAsync_run() {
         if (me.state !== 'created') {
@@ -313,7 +312,6 @@ function debounce_create(action, delay) {
                 return;
             }
         }
-        _topResolve_();
     }
     function debounce_run() {
         if (me.state !== 'created') {
@@ -512,7 +510,6 @@ function forceDebounce_create(action, delay) {
                 return;
             }
         }
-        _topResolve_();
     }
     function forceDebounce_run() {
         if (me.state !== 'created') {

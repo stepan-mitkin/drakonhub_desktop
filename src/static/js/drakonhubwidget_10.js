@@ -1385,6 +1385,7 @@ function chooseTheme(widget, evt) {
             iconBorder: '#877b3d',
             iconBack: '#000000',
             backText: '#ffffcc',
+            internalLine: '#877b3d',
             color: '#ffffcc',
             borderWidth: 1,
             shadowColor: ''
@@ -1399,6 +1400,7 @@ function chooseTheme(widget, evt) {
             iconBorder: '#5050b0',
             iconBack: '#000000',
             backText: '#BCD5FF',
+            internalLine: '#5050b0',
             color: '#BCD5FF',
             borderWidth: 1,
             shadowColor: ''
@@ -1414,6 +1416,7 @@ function chooseTheme(widget, evt) {
             iconBack: '#000000',
             iconBack2: '#303030',
             backText: '#ffffcc',
+            internalLine: '#808030',
             color: '#ffffcc',
             borderWidth: 1,
             shadowColor: ''

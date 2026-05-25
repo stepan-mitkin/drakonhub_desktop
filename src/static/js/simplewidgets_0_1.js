@@ -168,7 +168,6 @@ function Tooltip_create(text) {
                 return;
             }
         }
-        _topResolve_();
     }
     function Tooltip_run() {
         if (me.state !== 'created') {
@@ -703,7 +702,7 @@ function createSomething_create(config) {
                     _event_ = yield;
                     response = _event_[1];
                     if (response.error) {
-                        html.setText(response.error);
+                        html.setText(error, response.error);
                         error.style.display = '';
                         _branch_ = 'Get name from user';
                     } else {
@@ -728,7 +727,6 @@ function createSomething_create(config) {
             console.error(_handlerData_);
             showErrorSnack(tr('An error has occurred'));
         }
-        _topResolve_();
     }
     function createSomething_run() {
         if (me.state !== 'created') {
@@ -876,7 +874,6 @@ function criticalQuestion_create(title, okText, cancelText) {
             _topResolve_(false);
             return;
         }
-        _topResolve_();
     }
     function criticalQuestion_run() {
         if (me.state !== 'created') {
@@ -1523,7 +1520,6 @@ function neutralQuestion_create(title, okText, cancelText) {
             _topResolve_(false);
             return;
         }
-        _topResolve_();
     }
     function neutralQuestion_run() {
         if (me.state !== 'created') {
@@ -2148,7 +2144,6 @@ function uploadFileWithButton_create(prompt, accept, onStartedLoading) {
             _topResolve_(result);
             return;
         }
-        _topResolve_();
     }
     function uploadFileWithButton_run() {
         if (me.state !== 'created') {
@@ -2313,7 +2308,6 @@ function uploadFile_create(prompt, accept, onStartedLoading, skipUpload) {
                 return;
             }
         }
-        _topResolve_();
     }
     function uploadFile_run() {
         if (me.state !== 'created') {
