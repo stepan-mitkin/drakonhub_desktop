@@ -666,7 +666,7 @@ function checkDrakonIntegrity(diagram) {
     };
     ok = false;
     try {
-        tmpDrakon.setDiagram('hello', diagram, fakeSender);
+        tmpDrakon.setDiagram('hello', diagram, fakeSender, false);
         ok = true;
     } catch (ex) {
         console.error(ex);

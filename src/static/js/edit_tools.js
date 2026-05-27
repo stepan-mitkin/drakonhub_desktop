@@ -36,6 +36,9 @@ function UndoEdit() {
             sendEditToServer(self, change);
         }
     }
+    function setEditSink(sender) {
+        self.edit = sender;
+    }
     function undoEdit() {
         var edit;
         if (self.currentUndo >= 0 && self.currentUndo < self.undo.length) {
@@ -49,12 +52,12 @@ function UndoEdit() {
         }
     }
     function updateDocument(changes, before, after) {
-        var _collection_20, change, changesToSave, initial, undoRecord;
+        var _collection_21, change, changesToSave, initial, undoRecord;
         changesToSave = [];
         initial = createInitialEdit(self.diagram);
         if (initial) {
-            _collection_20 = initial.changes;
-            for (change of _collection_20) {
+            _collection_21 = initial.changes;
+            for (change of _collection_21) {
                 applyChange(self.diagram, change);
             }
             changesToSave.push(initial);
@@ -68,6 +71,7 @@ function UndoEdit() {
     self.forcedChange = forcedChange;
     self.redoEdit = redoEdit;
     self.save = save;
+    self.setEditSink = setEditSink;
     self.undoEdit = undoEdit;
     self.updateDocument = updateDocument;
     return self;
@@ -80,19 +84,19 @@ function addChangeToEdit(diagram, change, undo, redo) {
     applyChange(diagram, change);
 }
 function applyChange(diagram, change) {
-    var _selectValue_22, item;
+    var _selectValue_23, item;
     if (change.id) {
-        _selectValue_22 = change.op;
-        if (_selectValue_22 === 'insert') {
+        _selectValue_23 = change.op;
+        if (_selectValue_23 === 'insert') {
             item = utils.clone(change.fields);
             diagram.items[change.id] = item;
         } else {
-            if (_selectValue_22 === 'update') {
+            if (_selectValue_23 === 'update') {
                 item = diagram.items[change.id];
                 Object.assign(item, change.fields);
             } else {
-                if (!(_selectValue_22 === 'delete')) {
-                    throw new Error('Unexpected case value: ' + _selectValue_22);
+                if (!(_selectValue_23 === 'delete')) {
+                    throw new Error('Unexpected case value: ' + _selectValue_23);
                 }
                 delete diagram.items[change.id];
             }
@@ -102,14 +106,14 @@ function applyChange(diagram, change) {
     }
 }
 function applyEdit(diagram, edit) {
-    var _collection_24, changes;
-    _collection_24 = edit.changes;
-    for (changes of _collection_24) {
+    var _collection_25, changes;
+    _collection_25 = edit.changes;
+    for (changes of _collection_25) {
         applyChange(diagram, changes);
     }
 }
 function createEdit(obj, changes) {
-    var change, diagram, edit, redo, undo;
+    var MaxUndo, change, diagram, edit, redo, undo;
     diagram = obj.diagram;
     undo = createEditStep(diagram.id);
     redo = createEditStep(diagram.id);
@@ -131,6 +135,14 @@ function createEdit(obj, changes) {
         obj.currentUndo = 0;
     }
     obj.undo.push(edit);
+    MaxUndo = 50;
+    while (true) {
+        if (obj.undo.length > MaxUndo) {
+            obj.undo.shift();
+        } else {
+            break;
+        }
+    }
     return edit;
 }
 function createEditStep(diagramId) {
@@ -151,16 +163,16 @@ function createInitialEdit(diagram) {
     }
 }
 function createUndoChange(diagram, change) {
-    var _selectValue_26, item, undoChange;
+    var _selectValue_27, item, undoChange;
     if (change.id) {
-        _selectValue_26 = change.op;
-        if (_selectValue_26 === 'insert') {
+        _selectValue_27 = change.op;
+        if (_selectValue_27 === 'insert') {
             undoChange = {
                 id: change.id,
                 op: 'delete'
             };
         } else {
-            if (_selectValue_26 === 'update') {
+            if (_selectValue_27 === 'update') {
                 undoChange = {
                     id: change.id,
                     op: 'update',
@@ -169,8 +181,8 @@ function createUndoChange(diagram, change) {
                 item = diagram.items[change.id];
                 getOldValues(item, change.fields, undoChange.fields);
             } else {
-                if (!(_selectValue_26 === 'delete')) {
-                    throw new Error('Unexpected case value: ' + _selectValue_26);
+                if (!(_selectValue_27 === 'delete')) {
+                    throw new Error('Unexpected case value: ' + _selectValue_27);
                 }
                 item = diagram.items[change.id];
                 undoChange = {

@@ -36,7 +36,7 @@ function DesktopEditorScreen() {
     }
     async function setFolder(folder, userSettings) {
         folder.id = folder.name + '.' + folder.type;
-        await self.drakon.setDiagram(folder, userSettings);
+        await self.drakon.setDiagram(folder, userSettings, false);
     }
     function showItem(itemId) {
         if (itemId && self.client.current === 'drakon') {
