@@ -548,7 +548,7 @@ function DrakonCanvas() {
         return result;
     }
     function getVersion() {
-        return '1.5.6';
+        return '1.5.7';
     }
     function getZoom() {
         if (self.zoom) {
@@ -21706,4 +21706,9 @@ Object.defineProperty(unit, 'utils', {
     configurable: true
 });
 return unit;
+}
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        drakon_canvas
+    };
 }

@@ -2725,7 +2725,7 @@ function getLocalizedStrings(language) {
       Date: "Dato",
       "No payments": "Ingen betalinger",
       Amount: "Beløp",
-      "If the email with the PIN is not in your inbox, check the 'Spam' folder":
+      'If the email with the PIN is not in your inbox, check the "Spam" folder':
         "Hvis e-posten med PIN-koden ikke er i innboksen din, sjekk 'Søppelpost'-mappen",
       "PIN-code, 6 digits": "PIN-kode, 6 sifre",
       Funnel: "Trakt",

@@ -1546,7 +1546,7 @@ function getAppRoot() {
     return gconfig.appRoot;
 }
 function getAppVersion() {
-    return '2026.05.25';
+    return '2026.06.05';
 }
 function getBaseUrl() {
     return gconfig.baseUrl;
@@ -2860,4 +2860,9 @@ Object.defineProperty(unit, 'widgets', {
     configurable: true
 });
 return unit;
+}
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        dh2common
+    };
 }

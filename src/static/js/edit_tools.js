@@ -135,9 +135,10 @@ function createEdit(obj, changes) {
         obj.currentUndo = 0;
     }
     obj.undo.push(edit);
-    MaxUndo = 50;
+    MaxUndo = 100;
     while (true) {
         if (obj.undo.length > MaxUndo) {
+            obj.currentUndo--;
             obj.undo.shift();
         } else {
             break;
@@ -236,4 +237,9 @@ Object.defineProperty(unit, 'utils', {
     configurable: true
 });
 return unit;
+}
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        edit_tools
+    };
 }
