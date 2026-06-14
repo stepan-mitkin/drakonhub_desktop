@@ -2333,20 +2333,36 @@ function generateByType(diagram, language) {
     name = diagram.name;
     type = diagram.type;
     if (type === 'drakon') {
-        try {
-            content = drakongen.toPseudocode(json, name, name + '.drakon', language);
-        } catch (ex) {
-            return buildGenError(ex);
-        }
-    } else {
-        if (type === 'graf') {
+        if (language === 'json') {
             try {
-                content = drakongen.toMindTree(json, name, name + '.graf', language);
+                content = drakongen.toTree(json, name, name + '.drakon', language);
             } catch (ex) {
                 return buildGenError(ex);
             }
         } else {
-            if (type === 'free') {
+            try {
+                content = drakongen.toPseudocode(json, name, name + '.drakon', language);
+            } catch (ex) {
+                return buildGenError(ex);
+            }
+        }
+    } else {
+        if (type === 'graf') {
+            if (language === 'json') {
+                try {
+                    content = drakongen.toMindTreeJson(json, name, name + '.graf', language);
+                } catch (ex) {
+                    return buildGenError(ex);
+                }
+            } else {
+                try {
+                    content = drakongen.toMindTree(json, name, name + '.graf', language);
+                } catch (ex) {
+                    return buildGenError(ex);
+                }
+            }
+        } else {
+            if (type === 'free' && !(language === 'json')) {
                 try {
                     content = drakongen.freeToText(json, name, name + '.free', language);
                 } catch (ex) {
@@ -3414,7 +3430,11 @@ function regenerateMany(docs, language) {
         pseudo = generateByType(doc, language);
         generated.push(pseudo.content);
     }
-    prompt = generated.join('\n\n\n');
+    if (language === 'json') {
+        prompt = '[\n' + generated.join(',\n') + '\n]';
+    } else {
+        prompt = generated.join('\n\n\n');
+    }
     return {
         ok: true,
         content: prompt
@@ -3937,7 +3957,12 @@ function showPseudocode(widget, generated, docs) {
     combo.style.padding = '5px';
     combo.style.marginLeft = '5px';
     combo.style.maxWidth = '130px';
+    html.addOption(combo, 'json', 'JSON');
     html.addOption(combo, 'en', 'English');
+    html.addOption(combo, 'de', 'Deutsch');
+    html.addOption(combo, 'es', 'Español');
+    html.addOption(combo, 'fr', 'Français');
+    html.addOption(combo, 'lt', 'Lietuvių');
     html.addOption(combo, 'no', 'Norsk');
     html.addOption(combo, 'ru', 'Русский');
     combo.value = language;
@@ -4706,4 +4731,9 @@ Object.defineProperty(unit, 'widgets', {
     configurable: true
 });
 return unit;
+}
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        drakonhubwidget_10
+    };
 }

@@ -1238,3 +1238,8 @@ Object.defineProperty(unit, 'widgets', {
 });
 return unit;
 }
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        drcore
+    };
+}

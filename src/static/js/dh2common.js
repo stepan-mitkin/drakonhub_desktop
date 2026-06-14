@@ -353,10 +353,10 @@ function DoubleClick_create() {
 function MultiWidget() {
     var self = { _type: 'MultiWidget' };
     function getCurrent() {
-        var _collection_171, child, id;
-        _collection_171 = self.children;
-        for (id in _collection_171) {
-            child = _collection_171[id];
+        var _collection_174, child, id;
+        _collection_174 = self.children;
+        for (id in _collection_174) {
+            child = _collection_174[id];
             if (id === self.current) {
                 return child.widget;
             }
@@ -364,12 +364,12 @@ function MultiWidget() {
         throw new Error('getCurrent: current not found');
     }
     function init(content) {
-        var _collection_174, child, id;
+        var _collection_177, child, id;
         self.children = {};
         self.current = content.current;
-        _collection_174 = content.children;
-        for (id in _collection_174) {
-            child = _collection_174[id];
+        _collection_177 = content.children;
+        for (id in _collection_177) {
+            child = _collection_177[id];
             self.children[id] = {
                 widget: child,
                 container: undefined,
@@ -388,21 +388,21 @@ function MultiWidget() {
         onShowChildWidget(current);
     }
     function redraw(container) {
-        var _collection_177, child, id;
-        _collection_177 = self.children;
-        for (id in _collection_177) {
-            child = _collection_177[id];
+        var _collection_180, child, id;
+        _collection_180 = self.children;
+        for (id in _collection_180) {
+            child = _collection_180[id];
             child.container = buildWidgetDom(container, child.widget);
             stretchElement(child.container);
         }
         self.setCurrent(self.current);
     }
     function setCurrent(childId) {
-        var _collection_180, child, id;
+        var _collection_183, child, id;
         self.current = childId;
-        _collection_180 = self.children;
-        for (id in _collection_180) {
-            child = _collection_180[id];
+        _collection_183 = self.children;
+        for (id in _collection_183) {
+            child = _collection_183[id];
             if (id === self.current) {
                 if (!child.visible) {
                     display(child.container, 'inline-block');
@@ -692,7 +692,7 @@ function checkEmail(email) {
     }
 }
 function checkJsonContent(jsonString) {
-    var _collection_152, diagram, error, id, item, limit, limitBytes, obj;
+    var _collection_155, diagram, error, id, item, limit, limitBytes, obj;
     if (gconfig.maxImageSizeMb) {
         limitBytes = gconfig.maxImageSizeMb * 1024 * 1014;
         limit = limitBytes * 3;
@@ -731,9 +731,9 @@ function checkJsonContent(jsonString) {
                                         'style',
                                         'description'
                                     ]);
-                                    _collection_152 = obj.items;
-                                    for (id in _collection_152) {
-                                        item = _collection_152[id];
+                                    _collection_155 = obj.items;
+                                    for (id in _collection_155) {
+                                        item = _collection_155[id];
                                         if (id) {
                                             if (item && typeof item === 'object') {
                                                 if (ensureOptionalString(item, 'text') && ensureOptionalString(item, 'content')) {
@@ -1067,6 +1067,27 @@ function copyIfMissing(target, source, name) {
         target[name] = source[name];
     }
 }
+function createCheckboxOnForm(widget, container, value, widgetName, text) {
+    var check, label;
+    label = html.createElement('label', {}, [{
+            'line-height': '30px',
+            'margin-left': '5px',
+            'display': 'inline-block',
+            'white-space': 'normal'
+        }]);
+    html.add(container, label);
+    check = html.createElement('input', { type: 'checkbox' }, [{
+            width: '20px',
+            height: '20px',
+            'margin-right': '5px',
+            'vertical-align': 'middle'
+        }]);
+    check.checked = value;
+    html.add(label, check);
+    html.addText(label, text);
+    widget[widgetName] = check;
+    return label;
+}
 function createLogonScreen(widget, onSuccessCallback, goToRegisterCallback, onCancel, accountUrl) {
     var createAccountButton, error, forgotLab, form, formClass, formStyle, inputStyle, logonButt, noAccountLab, passLab, password, reset, spacer, spacer2, title, user, userLab;
     inputStyle = {
@@ -1181,7 +1202,7 @@ function createMenuSection(name, lines, forceNarrow) {
     return container;
 }
 function createRegisterScreen(widget, signupSource, onSuccessCallback, goToLogonCallback, onCancel, hideCheckbox) {
-    var buttons, cancel, check, checkDiv, email, emailLab, error, form, formClass, formStyle, hasAccount, inputStyle, label, logon, signupButt, spacer, spacer2, title, user, userLab;
+    var buttons, cancel, checkDiv, email, emailLab, error, form, formClass, formStyle, hasAccount, inputStyle, logon, privacyLabel, signupButt, spacer, spacer2, title, user, userLab;
     inputStyle = {
         width: 'calc(100% - 20px)',
         'margin-bottom': '10px'
@@ -1211,24 +1232,9 @@ function createRegisterScreen(widget, signupSource, onSuccessCallback, goToLogon
     widget.error = error;
     checkDiv = div();
     if (gconfig.privacy && !hideCheckbox) {
-        label = html.createElement('label', {}, [{
-                'line-height': '30px',
-                'margin-left': '5px',
-                'display': 'inline-block',
-                'white-space': 'normal'
-            }]);
-        html.add(checkDiv, label);
-        check = html.createElement('input', { type: 'checkbox' }, [{
-                width: '20px',
-                height: '20px',
-                'margin-right': '5px',
-                'vertical-align': 'middle'
-            }]);
-        check.checked = false;
-        html.add(label, check);
-        html.addText(label, translate('I agree to') + ' ');
-        html.add(label, widgets.makeLink(gconfig.privacy, translate('the privacy policy'), true));
-        widget.privacyCheck = check;
+        privacyLabel = createCheckboxOnForm(widget, checkDiv, false, 'privacyCheck', translate('I agree to') + ' ');
+        html.add(privacyLabel, widgets.makeLink(gconfig.privacy, translate('the privacy policy'), true));
+        createCheckboxOnForm(widget, checkDiv, false, 'marketingCheck', translate('I agree to receive marketing emails.'));
     }
     buttons = div();
     signupButt = widgets.createDefaultButton(translate('Create account'), function () {
@@ -1377,7 +1383,7 @@ async function doLogon(widget, onSuccessCallback) {
     }
 }
 async function doRegister(widget, signupSource, onSuccessCallback) {
-    var email, error, payload, response, settings, user;
+    var email, error, errorObj, marketing, message, payload, response, settings, user;
     html.clear(widget.error);
     user = widget.user.value.trim();
     email = widget.email.value.trim();
@@ -1389,12 +1395,14 @@ async function doRegister(widget, signupSource, onSuccessCallback) {
                 widget.user.focus();
             } else {
                 if (checkEmail(email)) {
-                    if (!widget.privacyCheck || widget.privacyCheck.checked) {
+                    marketing = getFormCheckbox(widget, 'marketingCheck');
+                    if (getFormCheckbox(widget, 'privacyCheck')) {
                         settings = getSettingsObj();
                         showWaitBlock();
                         payload = {
                             name: user,
                             email: email,
+                            marketing: marketing,
                             language: settings.language,
                             signup_url: window.location.href,
                             signup_source: signupSource
@@ -1404,7 +1412,12 @@ async function doRegister(widget, signupSource, onSuccessCallback) {
                         if (response.status === 200) {
                             onSuccessCallback();
                         } else {
-                            html.addText(widget.error, translate('Could not create account. ' + 'This user name or email are already in use.'));
+                            errorObj = JSON.parse(response.responseText);
+                            message = getSupportedDomainError(errorObj);
+                            if (!message) {
+                                message = translate('Could not create account. ' + 'This user name or email are already in use.');
+                            }
+                            html.addText(widget.error, message);
                         }
                     } else {
                         html.addText(widget.error, translate('Please agree to the privacy policy'));
@@ -1445,7 +1458,7 @@ function downloadTextDataAsFile(filename, data, mime) {
     window.URL.revokeObjectURL(url);
 }
 function drakonToInternal(diagram) {
-    var _collection_155, diagram2, id, item;
+    var _collection_158, diagram2, id, item;
     diagram2 = {
         items: [],
         type: diagram.type
@@ -1456,9 +1469,9 @@ function drakonToInternal(diagram) {
         'style',
         'description'
     ]);
-    _collection_155 = diagram.items;
-    for (id in _collection_155) {
-        item = _collection_155[id];
+    _collection_158 = diagram.items;
+    for (id in _collection_158) {
+        item = _collection_158[id];
         item.id = id;
         if (item.content) {
             item.text = item.content;
@@ -1546,13 +1559,22 @@ function getAppRoot() {
     return gconfig.appRoot;
 }
 function getAppVersion() {
-    return '2026.06.05';
+    return '2026.06.14';
 }
 function getBaseUrl() {
     return gconfig.baseUrl;
 }
 function getDiagramLabels() {
     return unit.globals.labels;
+}
+function getFormCheckbox(widget, widgetName) {
+    var check;
+    check = widget[widgetName];
+    if (check) {
+        return check.checked;
+    } else {
+        return false;
+    }
 }
 function getHeader1Size() {
     return gconfig.fontSize + 4 + 'px';
@@ -1605,6 +1627,13 @@ function getSettingsObj() {
     addLabelsToSettings(settings);
     return settings;
 }
+function getSupportedDomainError(errorObj) {
+    if (errorObj.error == 'ERR_UNSUPPORTED_DOMAIN') {
+        return translate('This email domain is not supported. Here is the list of supported domains:') + ' ' + errorObj.domains.join(', ');
+    } else {
+        return undefined;
+    }
+}
 function getTraces() {
     return unit.traces;
 }
@@ -1632,7 +1661,7 @@ function img(src, className) {
     }, [className]);
 }
 async function importDiagram(jsonString, filename, parentId, tr) {
-    var _selectValue_158, folder, id, internal, parsed, parsedFilename, payload, url;
+    var _selectValue_161, folder, id, internal, parsed, parsedFilename, payload, url;
     parsed = checkDiagram(jsonString);
     if (parsed.error) {
         widgets.showErrorSnack(parsed.error);
@@ -1644,8 +1673,8 @@ async function importDiagram(jsonString, filename, parentId, tr) {
             internal.name = parsedFilename.name;
             internal.type = parsedFilename.extension;
         }
-        _selectValue_158 = internal.type;
-        if (_selectValue_158 === 'drakon' || (_selectValue_158 === 'free' || _selectValue_158 === 'graf')) {
+        _selectValue_161 = internal.type;
+        if (_selectValue_161 === 'drakon' || (_selectValue_161 === 'free' || _selectValue_161 === 'graf')) {
             folder = await sendCreateFolder(parentId, internal.type, internal.name);
             id = folder.id;
             payload = {
@@ -1928,15 +1957,15 @@ function initShortcuts(callbacks) {
     }, callbacks);
 }
 async function invokeWindowResize() {
-    var _collection_149, action, id;
+    var _collection_152, action, id;
     if (window.padBridge && window.padBridge.setUpStatusBar) {
         await window.padBridge.setUpStatusBar();
         await pause(200);
     }
     setRootStyle();
-    _collection_149 = unit.resizables;
-    for (id in _collection_149) {
-        action = _collection_149[id];
+    _collection_152 = unit.resizables;
+    for (id in _collection_152) {
+        action = _collection_152[id];
         action();
     }
 }
@@ -2737,6 +2766,7 @@ unit.checkProjectName = checkProjectName;
 unit.chooseDocumentType = chooseDocumentType;
 unit.chooseDocumentType_create = chooseDocumentType_create;
 unit.copyIfMissing = copyIfMissing;
+unit.createCheckboxOnForm = createCheckboxOnForm;
 unit.createLogonScreen = createLogonScreen;
 unit.createLongClicker = createLongClicker;
 unit.createMenuSection = createMenuSection;
@@ -2753,10 +2783,12 @@ unit.getAccountObj = getAccountObj;
 unit.getAppRoot = getAppRoot;
 unit.getAppVersion = getAppVersion;
 unit.getDiagramLabels = getDiagramLabels;
+unit.getFormCheckbox = getFormCheckbox;
 unit.getLabelsByCode = getLabelsByCode;
 unit.getLargeObj = getLargeObj;
 unit.getQuery = getQuery;
 unit.getSettingsObj = getSettingsObj;
+unit.getSupportedDomainError = getSupportedDomainError;
 unit.getTraces = getTraces;
 unit.hideWaitBlock = hideWaitBlock;
 unit.importDiagram = importDiagram;

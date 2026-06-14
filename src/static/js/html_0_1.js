@@ -158,3 +158,8 @@ unit.setText = setText;
 unit.setTitle = setTitle;
 return unit;
 }
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        html_0_1
+    };
+}

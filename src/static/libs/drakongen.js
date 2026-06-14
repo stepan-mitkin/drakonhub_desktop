@@ -39,8 +39,8 @@ const {drakonToStruct} = require("./drakonToStruct");
 const {printPseudo, printWithIndent, makeIndent} = require('./printPseudo');
 const {addRange, sortByProperty} = require("./tools")
 
-function drakonToPseudocode(drakonJson, name, filename, htmlToString, translate) {    
-    var diagram = drakonToStruct(drakonJson, name, filename, translate, htmlToString)
+function drakonToPseudocode(drakonJson, name, filename, htmlToString, translate, options) {    
+    var diagram = drakonToStruct(drakonJson, name, filename, translate, htmlToString, options)
     var lines = []
 
     lines.push("## " + translate("Procedure") + " \"" + diagram.name + "\"")
@@ -81,7 +81,7 @@ function drakonToPseudocode(drakonJson, name, filename, htmlToString, translate)
 }
 
 
-function mindToTree(drakonJson, name, filename, htmlToString) {
+function mindToTree(drakonJson, name, filename, htmlToString, outputToJson) {
     let drakonGraph;
     try {
         drakonJson = drakonJson || ""
@@ -94,14 +94,40 @@ function mindToTree(drakonJson, name, filename, htmlToString) {
     }
 
     const nodes = drakonGraph.items || {};
-    var root = createMindNode("## " + name)
-    nodes["root"] = root
-    connectMindNodesToParent(nodes)
-    sortMindChildren(nodes)
-    var lines = []
-    printMindNode(root, 0, lines, htmlToString, true)
-    lines.push("")
-    var text = lines.join("\n")
+    for (var id in nodes) {
+        var node = nodes[id]
+        node.id = id
+        delete node.type
+        delete node.treeType
+        if (node.content) {
+            node.content = htmlToString(node.content).join("\n")
+        }
+    }
+
+    var text;
+    if (outputToJson) {
+        var root = createMindNode(name)
+        root.name = root.content
+        delete root.content
+        nodes["root"] = root
+        connectMindNodesToParent(nodes)
+        sortMindChildren(nodes)
+        for (var id in nodes) {
+            var node = nodes[id]
+            delete node.parent
+            delete node.ordinal
+        }
+        text = JSON.stringify(root, null, 4)
+    } else {
+        var root = createMindNode("## " + name)
+        nodes["root"] = root
+        connectMindNodesToParent(nodes)
+        sortMindChildren(nodes)
+        var lines = []
+        printMindNode(root, 0, lines, htmlToString, true)
+        lines.push("")
+        text = lines.join("\n")
+    }
     return {text:text}
 }
 
@@ -145,16 +171,15 @@ function printMindNode(node, depth, lines, htmlToString, first) {
 
 function createMindNode(name) {
     return {
-        "type": "idea",
-        "content": "<p>" + name + "</p>",
+        "type": "graf",
+        "content": name,
         "parent": undefined,
-        "treeType": "treeview",
         "ordinal": 0
     }
 }
 
 module.exports = { drakonToPseudocode, mindToTree };
-},{"./drakonToStruct":3,"./printPseudo":6,"./tools":9}],3:[function(require,module,exports){
+},{"./drakonToStruct":3,"./printPseudo":7,"./tools":10}],3:[function(require,module,exports){
 const { structFlow, redirectNode } = require("./structFlow");
 const { createError, remove } = require("./tools");
 
@@ -184,19 +209,24 @@ function drakonToStruct(
   const nodes = drakonGraph.items || {};
 
   var branches = [];
-  var firstNodeId = findStartNode(nodes, filename, branches);
+  var firstNodeId = findStartNode(nodes, filename, branches, htmlToString);
+  var params = decodeContent(drakonGraph.params, htmlToString);
+  var description = decodeContent(drakonGraph.description, htmlToString);
+
+  var result = {
+    name: name,
+    type: "drakon",
+    params:  params,
+    description: description,
+    branches: []
+  };
 
   if (!firstNodeId) {
-    return {
-      name: name,
-      params: drakonGraph.params || "",
-      description: drakonGraph.description || "",
-      branches: [],
-    };
+    return result
   }
 
   handleParallel(nodes, undefined, firstNodeId, {}, undefined);
-  buildTwoWayConnections(nodes, firstNodeId, htmlToString);
+  buildTwoWayConnections(nodes, firstNodeId);
 
   rewireSelectsMarkLoops(nodes, filename);
   branches.forEach((branch) =>
@@ -204,29 +234,25 @@ function drakonToStruct(
       branch,
       firstNodeId,
       filename,
-      options,
-      htmlToString,
+      options
     ),
   );
   rewireShortcircuit(nodes, filename);
   branches.forEach((branch) => cutOffBranch(nodes, branch));
-  var branchTrees = structFlow(nodes, branches, filename, translate);
-  return {
-    name: name,
-    params: drakonGraph.params || "",
-    description: drakonGraph.description || "",
-    branches: branchTrees,
-    secondary: findSecondary(branchTrees, options, htmlToString),
-  };
+  var branchTrees = structFlow(nodes, branches, filename, translate, options);
+
+  result.branches = branchTrees
+  result.secondary = findSecondary(branchTrees, options)
+  return result
 }
 
-function findSecondary(branchTrees, options, htmlToString) {
+function findSecondary(branchTrees, options) {
   if (!options || !options.secondary) {
     return undefined;
   }
   var ordinal = 0;
   for (var branch of branchTrees) {
-    var name = htmlToString(branch.name)[0];
+    var name = branch.name;
     if (name === options.secondary) {
       return ordinal;
     }
@@ -349,14 +375,13 @@ function checkBranchIsReferenced(
   branch,
   firstNodeId,
   filename,
-  options,
-  htmlToString,
+  options  
 ) {
   if (branch.id === firstNodeId) {
     return;
   }
-  if (options && htmlToString) {
-    var branchName = htmlToString(branch.content)[0];
+  if (options) {
+    var branchName = branch.content;
     if (branchName === options.secondary) {
       if (branch.prev.length > 0) {
         throw createError(
@@ -450,7 +475,7 @@ function addFakeEnd(nodes, prev, node, end, addresses) {
   node.prev = remove(node.prev, prev.id);
 }
 
-function buildTwoWayConnections(nodes, firstNodeId, htmlToString) {
+function buildTwoWayConnections(nodes, firstNodeId) {
   for (var id in nodes) {
     var node = nodes[id];
     node.id = id;
@@ -458,17 +483,18 @@ function buildTwoWayConnections(nodes, firstNodeId, htmlToString) {
   }
 
   var visitor = function (nodes, node) {
-    return connectBack(nodes, node, htmlToString);
+    return connectBack(nodes, node);
   };
 
   traverse(nodes, firstNodeId, {}, visitor);
 }
 
-function findStartNode(nodes, filename, branches) {
+function findStartNode(nodes, filename, branches, htmlToString) {
   var firstNodeId = undefined;
   var minBranchId = 10000;
   for (var id in nodes) {
     var node = nodes[id];
+    decodeNodeContent(node, htmlToString);
     if (node.type === "branch") {
       if (node.branchId < minBranchId) {
         firstNodeId = id;
@@ -500,10 +526,31 @@ function findStartNode(nodes, filename, branches) {
           id,
         );
       }
+    } else if (node.final) {
+      delete node.one
+      delete node.two
     }
   }
 
   return firstNodeId;
+}
+
+function decodeNodeContent(node, htmlToString) {
+  if (node.content && typeof node.content === "string") {
+    node.content = decodeContent(node.content, htmlToString);
+  }
+
+  if (node.secondary && typeof node.secondary === "string") {
+    node.secondary = decodeContent(node.secondary, htmlToString);
+  }
+}
+
+function decodeContent(content, htmlToString) {
+  if (!content) {
+    return ""
+  }
+  var lines = htmlToString(content);
+  return lines.join("\n");
 }
 
 function rewireSelectsMarkLoops(nodes, filename) {
@@ -744,7 +791,7 @@ function traverse(nodes, nodeId, visited, action) {
   }
 }
 
-function connectBack(nodes, node, htmlToString) {
+function connectBack(nodes, node) {
   if (node.one) {
     var one = nodes[node.one];
     one.prev.push(node.id);
@@ -757,20 +804,18 @@ function connectBack(nodes, node, htmlToString) {
   if (node.side) {
     var side = nodes[node.side].content;
     if (side) {
-      node.side = decodeSide(side, htmlToString);
+      node.side = decodeSide(side);
     } else {
       delete node.side;
     }
   }
 }
 
-function decodeSide(content, htmlToString) {
-  var text = htmlToString(content);
-  var oneLine = text.join(" ");
-  if (oneLine.indexOf("=") === -1) {
-    return translate("Do for") + " " + oneLine;
+function decodeSide(content) {
+  if (content.indexOf("=") === -1) {
+    return translate("Do for") + " " + content;
   } else {
-    return translate("Start at") + " " + oneLine;
+    return translate("Start at") + " " + content;
   }
 }
 
@@ -794,7 +839,7 @@ function markLoopBody(nodes, start, filename) {
 
 module.exports = { drakonToStruct, drakonToGraph };
 
-},{"./structFlow":7,"./tools":9}],4:[function(require,module,exports){
+},{"./structFlow":8,"./tools":10}],4:[function(require,module,exports){
 const { drakonToPseudocode, mindToTree } = require("./drakonToPromptStruct");
 const { htmlToString } = require("./browserTools");
 const { setUpLanguage, translate } = require("./translate");
@@ -815,7 +860,13 @@ window.drakongen = {
 
   toMindTree: function (mindJson, name, filename, language) {
     setUpLanguage(language);
-    var result = mindToTree(mindJson, name, filename, htmlToString);
+    var result = mindToTree(mindJson, name, filename, htmlToString, false);
+    return result.text;
+  },
+
+  toMindTreeJson: function (mindJson, name, filename, language) {
+    setUpLanguage(language);
+    var result = mindToTree(mindJson, name, filename, htmlToString, true);
     return result.text;
   },
 
@@ -845,7 +896,7 @@ window.drakongen = {
   },
 };
 
-},{"./browserTools":1,"./drakonToPromptStruct":2,"./drakonToStruct":3,"./free":5,"./translate":10}],5:[function(require,module,exports){
+},{"./browserTools":1,"./drakonToPromptStruct":2,"./drakonToStruct":3,"./free":5,"./translate":11}],5:[function(require,module,exports){
 var {addRange} = require("./tools")
 const { createError } = require("./tools");
 
@@ -915,7 +966,143 @@ function freeDiagramToText(freeJson, name, filename, translateFunction, htmlToSt
 }
 
 module.exports = {freeDiagramToText}
-},{"./tools":9}],6:[function(require,module,exports){
+},{"./tools":10}],6:[function(require,module,exports){
+function decrement_arrow_count(context, node) {
+    var algonode;
+    algonode = context.nodes[node.arrow];
+    algonode.branching--;
+}
+function decrement_if_count(context, node) {
+    var _collection_12, if_id, if_node;
+    _collection_12 = node.stack;
+    for (if_id of _collection_12) {
+        if_node = context.nodes[if_id];
+        if_node.branching--;
+    }
+}
+function flow_no_loop(nodes, start_node_id) {
+    var context;
+    context = { nodes: nodes };
+    traverse_node(context, start_node_id, []);
+}
+function group_stack_by_id(stack) {
+    var counts_by_id, element, existing;
+    counts_by_id = {};
+    for (element of stack) {
+        if (element in counts_by_id) {
+            existing = counts_by_id[element];
+        } else {
+            existing = 0;
+        }
+        counts_by_id[element] = existing + 1;
+    }
+    return counts_by_id;
+}
+function increment_if_count(context, node) {
+    var _collection_14, if_id, if_node;
+    _collection_14 = node.stack;
+    for (if_id of _collection_14) {
+        if_node = context.nodes[if_id];
+        if_node.branching++;
+    }
+}
+function is_in_map(map, key) {
+    if (map) {
+        return key in map;
+    } else {
+        return false;
+    }
+}
+function merge_converging_branches(context, node_id, node, stack) {
+    var algonode, algonode_id, common, count, counts_by_id, processed_stack, stub;
+    common = node.stack.concat(stack);
+    counts_by_id = group_stack_by_id(common);
+    for (algonode_id in counts_by_id) {
+        count = counts_by_id[algonode_id];
+        algonode = context.nodes[algonode_id];
+        if (!algonode.next && algonode.type == 'arrow-loop') {
+            algonode.branching -= count - 1;
+            if (!(algonode.branching > 1 || is_in_map(node.astack, algonode_id))) {
+                stub = context.nodes[algonode.stub];
+                decrement_if_count(context, stub);
+                stub.one = node_id;
+                algonode.next = node_id;
+            }
+        }
+    }
+    processed_stack = [];
+    for (algonode_id in counts_by_id) {
+        count = counts_by_id[algonode_id];
+        algonode = context.nodes[algonode_id];
+        if (!algonode.next) {
+            if (algonode.type == 'question') {
+                algonode.branching -= count - 1;
+                if (algonode.branching > 1) {
+                    processed_stack.push(algonode_id);
+                } else {
+                    algonode.next = node_id;
+                }
+            } else {
+                processed_stack.push(algonode_id);
+            }
+        }
+    }
+    node.stack = processed_stack;
+}
+function recurse_traversal(context, node_id, node) {
+    var _collection_20, _selectValue_18, proc, stack1, stack2;
+    _selectValue_18 = node.type;
+    if (_selectValue_18 === 'question') {
+        increment_if_count(context, node);
+        stack1 = node.stack.slice();
+        stack1.push(node_id);
+        stack2 = node.stack.slice();
+        stack2.push(node_id);
+        traverse_node(context, node.two, stack2);
+        traverse_node(context, node.one, stack1);
+    } else {
+        if (_selectValue_18 === 'arrow-loop') {
+            stack1 = node.stack.slice();
+            stack1.push(node_id);
+            traverse_node(context, node.one, stack1);
+        } else {
+            if (_selectValue_18 === 'arrow-stub') {
+                decrement_arrow_count(context, node);
+            } else {
+                if (_selectValue_18 === 'parbegin') {
+                    _collection_20 = node.procs;
+                    for (proc of _collection_20) {
+                        flow_no_loop(context.nodes, proc.start);
+                    }
+                } else {
+                    if (node.final) {
+                        decrement_if_count(context, node);
+                    } else {
+                        stack1 = node.stack.slice();
+                        traverse_node(context, node.one, stack1);
+                    }
+                }
+            }
+        }
+    }
+}
+function traverse_node(context, node_id, stack) {
+    var node;
+    if (node_id) {
+        node = context.nodes[node_id];
+        if (!node.stack) {
+            node.stack = [];
+            node.refs = node.prev.length;
+        }
+        node.refs--;
+        merge_converging_branches(context, node_id, node, stack);
+        if (!(node.refs > 0)) {
+            recurse_traversal(context, node_id, node);
+        }
+    }
+}
+module.exports = { flow_no_loop };
+},{}],7:[function(require,module,exports){
 var {addRange} = require("./tools")
 
 function makeIndent(depth) {
@@ -1100,10 +1287,11 @@ function printPseudo(algorithm, translate, output, htmlToString) {
 }
 
 module.exports = {printPseudo, printWithIndent, makeIndent}
-},{"./tools":9}],7:[function(require,module,exports){
+},{"./tools":10}],8:[function(require,module,exports){
 var { buildTree } = require("./technicalTree");
 const { createError, sortByProperty } = require("./tools");
 const { optimizeTree } = require("./treeTools");
+const { flow_no_loop } = require("./noloop")
 
 function redirectNode(nodes, node, from, to) {
   if (node.one === from) {
@@ -1123,148 +1311,7 @@ function redirectNode(nodes, node, from, to) {
   }
 }
 
-function structFlow(nodes, branches, filename, translate) {
-  function flowGraph(nodes, nodeId, branchingStack) {
-    if (!nodeId) {
-      return;
-    }
-
-    const node = nodes[nodeId];
-
-    if (!node.stack) {
-      node.stack = [];
-      node.remaining = node.prev.length;
-    }
-    node.remaining--;
-
-    mergeBranchingStack(nodes, node, branchingStack);
-    if (node.remaining > 0) {
-      return;
-    }
-
-    if (node.type === "question") {
-      for (let i = 0; i < node.stack.length; i++) {
-        const questionId = node.stack[i];
-        const question = nodes[questionId];
-        question.branching++;
-      }
-
-      const stackOne = node.stack.slice();
-      const stackTwo = node.stack.slice();
-      stackOne.push(nodeId);
-      stackTwo.push(nodeId);
-
-      flowGraph(nodes, node.two, stackTwo);
-      flowGraph(nodes, node.one, stackOne);
-    } else if (node.type === "arrow-loop") {
-      const stackOne = node.stack.slice();
-      stackOne.push(nodeId);
-      flowGraph(nodes, node.one, stackOne);
-    } else if (node.type === "arrow-stub") {
-      decrementBranchingForArrow(nodes, node);
-    } else if (node.type === "parbegin") {
-      for (var proc of node.procs) {
-        flowGraph(nodes, proc.start, []);
-      }
-      flowGraph(nodes, node.one, node.stack);
-    } else {
-      flowGraph(nodes, node.one, node.stack);
-    }
-  }
-
-  function decrementBranchingForArrow(nodes, node) {
-    var algonode = nodes[node.arrow];
-    algonode.branching--;
-  }
-
-  function decrementQuestions(nodes, algonode, dictionary) {
-    var stub = nodes[algonode.stub];
-    for (var id of stub.stack) {
-      var snode = nodes[id];
-      if (id !== algonode.id) {
-        if (id in dictionary) {
-          snode.branching--;
-        }
-      }
-    }
-    return stub;
-  }
-
-  function mergeBranchingStack(nodes, node, branchingStack) {
-    // Append all elements of the branching stack to node.stack
-    addRange(node.stack, branchingStack);
-
-    // Build a dictionary of occurrences
-    const dictionary = buildDictionaryOfOccurences(node);
-
-    // Merge all nodes
-    mergeAll(nodes, node, dictionary);
-
-    // Rebuild the stack
-    node.stack = buildStackFromDictionary(dictionary);
-  }
-
-  function addRange(dst, src) {
-    for (let i = 0; i < src.length; i++) {
-      dst.push(src[i]);
-    }
-  }
-
-  function buildStackFromDictionary(dictionary) {
-    const rebuiltStack = [];
-    for (const id in dictionary) {
-      if (dictionary[id] > 0) {
-        rebuiltStack.push(id);
-      }
-    }
-    return rebuiltStack;
-  }
-
-  function buildDictionaryOfOccurences(node) {
-    const dictionary = {};
-    for (let i = 0; i < node.stack.length; i++) {
-      const id = node.stack[i];
-      dictionary[id] = (dictionary[id] || 0) + 1;
-    }
-    return dictionary;
-  }
-
-  function mergeAll(nodes, node, dictionary) {
-    for (const id in dictionary) {
-      const occurrences = dictionary[id];
-      const algonode = nodes[id];
-      if (occurrences > 1) {
-        algonode.branching--;
-        dictionary[id] = occurrences - 1;
-      }
-      if (algonode.branching === 1) {
-        if (algonode.type === "arrow-loop" && !algonode.next) {
-          if (!isInMap(node.astack, id)) {
-            algonode.next = node.id;
-            dictionary[algonode.id] = 0;
-            var stub = decrementQuestions(nodes, algonode, dictionary);
-            stub.one = node.id;
-          }
-        }
-      }
-    }
-
-    for (const id in dictionary) {
-      const algonode = nodes[id];
-      if (algonode.branching === 1) {
-        if (algonode.type === "question") {
-          algonode.next = node.id;
-          dictionary[algonode.id] = 0;
-        }
-      }
-    }
-  }
-  function isInMap(map, key) {
-    if (!map) {
-      return false;
-    }
-    return key in map;
-  }
+function structFlow(nodes, branches, filename, translate, options) {
 
   function prepareQuestions(nodes) {
     for (const nodeId in nodes) {
@@ -1366,157 +1413,33 @@ function structFlow(nodes, branches, filename, translate) {
     return stub;
   }
 
-  function copySide(dst, src) {
-    if (src.side) {
-      dst.side = src.side;
-    }
-  }
-
-  function rewriteTree(body, index, endId, output) {
-    while (index < body.length) {
-      var node = body[index];
-      index++;
-      if (endId && node.id === endId) {
-        return index;
-      }
-      if (node.type === "question") {
-        var transformed = rewriteQuestionTree(node, output);
-        copySide(transformed, node);
-        if (endId) {
-          var breakYes = findLoopEnd(transformed.yes, endId);
-          var breakNo = findLoopEnd(transformed.no, endId);
-          if (breakYes || breakNo) {
-            var toBreak = [];
-            findPlacesToBreak(transformed.yes, endId, toBreak);
-            findPlacesToBreak(transformed.no, endId, toBreak);
-            addBreaks(toBreak);
-            return index;
-          }
-        }
-      } else if (node.type === "loopbegin") {
-        var body2 = [];
-        index = rewriteTree(body, index, node.end, body2);
-        output.push({
-          id: node.id,
-          type: "loop",
-          content: node.content,
-          body: body2,
-        });
-      } else if (node.type === "parbegin") {
-        var copy = {
-          id: node.id,
-          type: node.type,
-          procs: [],
-        };
-        for (var proc of node.procs) {
-          var procCopy = {
-            ordinal: proc.ordinal,
-            body: [],
-          };
-          copy.procs.push(procCopy);
-          rewriteTree(proc.body, 0, undefined, procCopy.body);
-        }
-        output.push(copy);
-      } else {
-        output.push(node);
-      }
-    }
-  }
-
-  function findPlacesToBreak(body, endId, output) {
-    if (body.length === 0) {
-      output.push(body);
-      return;
-    }
-    var last = body[body.length - 1];
-    if (last.id === endId) {
-      return;
-    }
-    if (last.type === "question") {
-      var qends = [];
-      findPlacesToBreak(last.yes, endId, qends);
-      findPlacesToBreak(last.no, endId, qends);
-      if (qends.length === 2 && qends[0] === last.yes && qends[1] === last.no) {
-        output.push(body);
-      } else {
-        addRange(output, qends);
-      }
-    } else {
-      output.push(body);
-    }
-  }
-
-  function findLoopEnd(body, endId) {
-    for (var i = 0; i < body.length; i++) {
-      var node = body[i];
-      if (node.id === endId) {
-        if (i === body.length - 1) {
-          return true;
-        } else {
-          throw createError(
-            translate(
-              "An exit from the loop must lead to the point right after the loop end",
-            ),
-            filename,
-            node.id,
-          );
-        }
-      }
-      if (node.type === "question") {
-        if (findLoopEnd(node.yes, endId)) {
-          return true;
-        }
-        if (findLoopEnd(node.no, endId)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  function addBreaks(toBreak) {
-    for (var body of toBreak) {
-      body.push({
-        type: "break",
-      });
-    }
-  }
-
-  function rewriteQuestionTree(question, output) {
-    var yes = [];
-    var no = [];
-    rewriteTree(question.yes, 0, undefined, yes);
-    rewriteTree(question.no, 0, undefined, no);
-    var transformed = {
-      type: "question",
-      id: question.id,
-      content: question.content,
-      yes: yes,
-      no: no,
-    };
-    output.push(transformed);
-    return transformed;
+  function onError(message, nodeId) {
+    throw createError(
+      translate(message),
+      filename,
+      nodeId
+    );
   }
 
   function structMain() {
     rewireArrows(nodes, branches);
     prepareQuestions(nodes);
     var result = [];
+
     for (var branch of branches) {
-      flowGraph(nodes, branch.next, []);
+      flow_no_loop(nodes, branch.next, []);
     }
 
     for (var branch of branches) {
       var body = [];
-      buildTree(nodes, branch.next, body, "<dummy id>");
-      var body2 = [];
-      rewriteTree(body, 0, undefined, body2);
+      buildTree(nodes, branch.next, body, "<dummy id>", undefined, onError);
+
       result.push({
         name: branch.content,
         branchId: branch.branchId,
-        start: branch.next,
+        id: branch.id,        
         refs: branch.prev.length,
-        body: optimizeTree(body2),
+        body: optimizeTree(body),
       });
     }
 
@@ -1527,17 +1450,23 @@ function structFlow(nodes, branches, filename, translate) {
 }
 module.exports = { structFlow, redirectNode };
 
-},{"./technicalTree":8,"./tools":9,"./treeTools":11}],8:[function(require,module,exports){
-function buildTree(nodes, nodeId, body, stopId) {
+},{"./noloop":6,"./technicalTree":9,"./tools":10,"./treeTools":12}],9:[function(require,module,exports){
+function buildTree(nodes, nodeId, body, stopId, afterLoop, onError) {
     while (nodeId) {
-        if (nodeId === stopId) {return;}
+        if (nodeId === afterLoop) {
+            body.push({type: "break"}) 
+            return
+        }
+        if (nodeId === stopId) {
+            return;
+        }
         const node = nodes[nodeId];
         let transformed;
         let next;
 
         if (node.type === "question") {
             next = reserveNext(nodes, node)
-
+            
             transformed = {
                 id: node.id,
                 type: "question",
@@ -1549,25 +1478,43 @@ function buildTree(nodes, nodeId, body, stopId) {
             const yesNodeId = node.flag1 === 1 ? node.one : node.two;
             const noNodeId = node.flag1 === 1 ? node.two : node.one;
 
-            buildTree(nodes, yesNodeId, transformed.yes, node.next);
-            buildTree(nodes, noNodeId, transformed.no, node.next);
+            buildTree(nodes, yesNodeId, transformed.yes, node.next, afterLoop, onError);
+            buildTree(nodes, noNodeId, transformed.no, node.next, afterLoop, onError);
+            if (next === afterLoop) {
+                next = undefined
+            }
+        } else if (node.type == "loopbegin") {
+            transformed = {
+                id: node.id,
+                type: "loopbegin",
+                content: node.content,
+                end: node.end,
+                body: []
+            };
+            var end = nodes[node.end]
+            buildTree(nodes, node.one, transformed.body, node.end, end.one, onError)
+            next = node.next;   
+        } else if (node.type == "loopend") {
+            if (stopId !== afterLoop) {
+                onError(
+                    "An exit from the loop must lead to the point right after the loop end",
+                    node.id
+                )
+            }
+            return            
         } else if (node.type === "arrow-loop") {
             transformed = {
                 id: node.id,
                 type: "loopbegin",
                 content: "",
-                end: node.stub
+                end: node.stub,
+                body: []
             };
-
-            next = node.one;
+            var end = nodes[node.stub]
+            buildTree(nodes, node.one, transformed.body, node.stub, end.one, onError)
+            next = node.next;  
         } else if (node.type === "arrow-stub") {
-            transformed = {
-                id: node.id,
-                type: "loopend",
-                start: node.arrow
-            };
-
-            next = node.one;
+            return
         } else if (node.type === "parbegin") {
             transformed = {
                 id: node.id,
@@ -1580,7 +1527,7 @@ function buildTree(nodes, nodeId, body, stopId) {
                     body: []
                 }
                 transformed.procs.push(childProc)
-                buildTree(nodes, proc.start, childProc.body, undefined)
+                buildTree(nodes, proc.start, childProc.body, undefined, undefined, buildTree)
             }
             next = node.one;
         } else {
@@ -1600,6 +1547,9 @@ function buildTree(nodes, nodeId, body, stopId) {
                 ]
             )
             next = node.one;
+            if (node.final) {
+                next = undefined
+            }
         }
         if (node.side) {
             transformed.side = node.side
@@ -1619,6 +1569,9 @@ function copyFields(dst, src, fields) {
 }
 
 function reserveNext(nodes, node) {
+    if (!node.next) {
+        return undefined
+    }
     const target = nodes[node.next];
     if (target.targetTaken) {
         return undefined;
@@ -1630,7 +1583,7 @@ function reserveNext(nodes, node) {
 
 module.exports = {buildTree}
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 
 function createError(message, filename, nodeId) {
     var error = new Error(message)
@@ -1671,7 +1624,7 @@ function addRange(to, from) {
     }
 }
 module.exports = { createError, sortByProperty, addRange, remove }
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var translationsRu = {
     "error": "ОШИБКА",
     "not": "не",
@@ -1783,6 +1736,153 @@ var translationsNo = {
     "Start timer": "Start tidtaker"
 };
 
+var translationsFr = {
+    error: 'Erreur',
+    not: 'non',
+    break: 'quitter la boucle',
+    and: 'et',
+    or: 'ou',
+    if: 'Si',
+    else: 'Sinon',
+    empty: 'Vide',
+    'loop forever': 'Boucler indéfiniment',
+    pass: 'Ignorer',
+    'Only the rightmost Case icon can be empty': "Seule l'icône Case la plus à droite peut être vide",
+    'Error parsing JSON': "Erreur lors de l'analyse du JSON",
+    'A Loop begin icon must have content': "Une icône de début de boucle doit avoir un contenu",
+    'A Question icon must have content': "Une icône Question doit avoir un contenu",
+    'A Select icon must have content': "Une icône Select doit avoir un contenu",
+    'Unexpected case value': 'Valeur de cas inattendue',
+    'Loop end expected here': 'Fin de boucle attendue ici',
+    'An exit from the loop must lead to the point right after the loop end': 'Une sortie de boucle doit mener au point situé juste après la fin de la boucle',
+    'A silhouette branch is not referenced': "Une branche de silhouette n'est pas référencée",
+    'Call subroutine': 'Appeler la sous-routine',
+    Procedure: 'Procédure',
+    'End of procedure': 'Fin de la procédure',
+    Subroutine: 'Sous-routine',
+    'End of subroutine': 'Fin de la sous-routine',
+    Description: 'Description',
+    Algorithm: 'Algorithme',
+    Remarks: 'Remarques',
+    Parameters: 'Paramètres',
+    'Group of parallel processes': 'Groupe de processus parallèles',
+    'Parallel process': 'Processus parallèle',
+    'Start at': 'Commencer à',
+    'Do for': 'Exécuter pendant',
+    'Pause': 'Pause',
+    'Start timer': 'Démarrer le minuteur'
+};
+
+var translationsDe = {
+    error: 'Fehler',
+    not: 'nicht',
+    break: 'Schleife beenden',
+    and: 'und',
+    or: 'oder',
+    if: 'Wenn',
+    else: 'Sonst',
+    empty: 'Leer',
+    'loop forever': 'Endlos wiederholen',
+    pass: 'Überspringen',
+    'Only the rightmost Case icon can be empty': 'Nur das äußerste rechte Case-Symbol darf leer sein',
+    'Error parsing JSON': 'Fehler beim Parsen von JSON',
+    'A Loop begin icon must have content': 'Ein Schleifenstart-Symbol muss Inhalt haben',
+    'A Question icon must have content': 'Ein Frage-Symbol muss Inhalt haben',
+    'A Select icon must have content': 'Ein Auswahl-Symbol muss Inhalt haben',
+    'Unexpected case value': 'Unerwarteter Fallwert',
+    'Loop end expected here': 'Schleifenende wird hier erwartet',
+    'An exit from the loop must lead to the point right after the loop end': 'Ein Ausgang aus der Schleife muss direkt hinter das Schleifenende führen',
+    'A silhouette branch is not referenced': 'Ein Silhouettenzweig wird nicht referenziert',
+    'Call subroutine': 'Unterprogramm aufrufen',
+    Procedure: 'Prozedur',
+    'End of procedure': 'Ende der Prozedur',
+    Subroutine: 'Unterprogramm',
+    'End of subroutine': 'Ende des Unterprogramms',
+    Description: 'Beschreibung',
+    Algorithm: 'Algorithmus',
+    Remarks: 'Bemerkungen',
+    Parameters: 'Parameter',
+    'Group of parallel processes': 'Gruppe paralleler Prozesse',
+    'Parallel process': 'Paralleler Prozess',
+    'Start at': 'Starten bei',
+    'Do for': 'Ausführen für',
+    'Pause': 'Pause',
+    'Start timer': 'Timer starten'
+};
+
+var translationsEs = {
+    error: 'Error',
+    not: 'no',
+    break: 'salir del bucle',
+    and: 'y',
+    or: 'o',
+    if: 'Si',
+    else: 'De lo contrario',
+    empty: 'Vacío',
+    'loop forever': 'Repetir para siempre',
+    pass: 'Omitir',
+    'Only the rightmost Case icon can be empty': 'Solo el icono Case más a la derecha puede estar vacío',
+    'Error parsing JSON': 'Error al analizar JSON',
+    'A Loop begin icon must have content': 'Un icono de inicio de bucle debe tener contenido',
+    'A Question icon must have content': 'Un icono de Pregunta debe tener contenido',
+    'A Select icon must have content': 'Un icono de Selección debe tener contenido',
+    'Unexpected case value': 'Valor de caso inesperado',
+    'Loop end expected here': 'Se esperaba el final del bucle aquí',
+    'An exit from the loop must lead to the point right after the loop end': 'Una salida del bucle debe conducir al punto inmediatamente después del final del bucle',
+    'A silhouette branch is not referenced': 'Una rama de silueta no está referenciada',
+    'Call subroutine': 'Llamar subrutina',
+    Procedure: 'Procedimiento',
+    'End of procedure': 'Fin del procedimiento',
+    Subroutine: 'Subrutina',
+    'End of subroutine': 'Fin de la subrutina',
+    Description: 'Descripción',
+    Algorithm: 'Algoritmo',
+    Remarks: 'Observaciones',
+    Parameters: 'Parámetros',
+    'Group of parallel processes': 'Grupo de procesos paralelos',
+    'Parallel process': 'Proceso paralelo',
+    'Start at': 'Comenzar en',
+    'Do for': 'Ejecutar durante',
+    'Pause': 'Pausa',
+    'Start timer': 'Iniciar temporizador'
+};
+
+var translationsLt = {
+    error: 'Klaida',
+    not: 'ne',
+    break: 'nutraukti ciklą',
+    and: 'ir',
+    or: 'arba',
+    if: 'Jei',
+    else: 'Kitaip',
+    empty: 'Tuščias',
+    'loop forever': 'Kartoti amžinai',
+    pass: 'Praleisti',
+    'Only the rightmost Case icon can be empty': 'Tik dešiniausia Case piktograma gali būti tuščia',
+    'Error parsing JSON': 'Klaida analizuojant JSON',
+    'A Loop begin icon must have content': 'Ciklo pradžios piktograma turi turėti turinį',
+    'A Question icon must have content': 'Klausimo piktograma turi turėti turinį',
+    'A Select icon must have content': 'Pasirinkimo piktograma turi turėti turinį',
+    'Unexpected case value': 'Netikėta atvejo reikšmė',
+    'Loop end expected here': 'Čia tikimasi ciklo pabaigos',
+    'An exit from the loop must lead to the point right after the loop end': 'Išėjimas iš ciklo turi vesti į tašką iškart po ciklo pabaigos',
+    'A silhouette branch is not referenced': 'Silueto šaka nėra susieta',
+    'Call subroutine': 'Kviesti paprogramę',
+    Procedure: 'Procedūra',
+    'End of procedure': 'Procedūros pabaiga',
+    Subroutine: 'Paprogramė',
+    'End of subroutine': 'Paprogramės pabaiga',
+    Description: 'Aprašymas',
+    Algorithm: 'Algoritmas',
+    Remarks: 'Pastabos',
+    Parameters: 'Parametrai',
+    'Group of parallel processes': 'Lygiagrečių procesų grupė',
+    'Parallel process': 'Lygiagretus procesas',
+    'Start at': 'Pradėti nuo',
+    'Do for': 'Vykdyti',
+    'Pause': 'Pauzė',
+    'Start timer': 'Paleisti laikmatį'
+};
 
 var translations = translationsEn
 
@@ -1797,14 +1897,21 @@ function setUpLanguage(language) {
         translations = translationsNo
     } else if (language === "en") {
         translations = translationsEn
+    } else if (language === "fr") {
+        translations = translationsFr
+    } else if (language === "de") {
+        translations = translationsDe
+    } else if (language === "es") {
+        translations = translationsEs
+    } else if (language === "lt") {
+        translations = translationsLt
     } else {
         translations = {}
     }
 }
 
-
 module.exports = { setUpLanguage, translate };
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 
 function optimizeTree(steps) {
     var result = []
@@ -1812,23 +1919,21 @@ function optimizeTree(steps) {
     for (var step of steps) {
         if (step.type === "end" || step.type === "branch" || step.type === "loopend") { continue }
         if ((step.type === "action" || step.type === "comment") && !step.content) { continue }
-        var copy
         if (step.type === "question") {
-            copy = optimizeQuestion(step)
+            optimizeQuestion(step, result)
         } else if (step.type === "parbegin") {
-            copy = optimizeParbegin(step)
-        } else if (step.type === "loop") {
-            copy = optimizeLoop(step)
+            optimizeParbegin(step, result)
+        } else if (step.type === "loop" || step.type === "loopbegin") {
+            optimizeLoop(step, result)
         } else {
-            copy = step
+            result.push(step)
         }
-        result.push(copy)
     }
 
     return result
 }
 
-function optimizeParbegin(step) {
+function optimizeParbegin(step, output) {
     var procs = []
     for (var proc of step.procs) {
         var procCopy = {
@@ -1837,50 +1942,62 @@ function optimizeParbegin(step) {
         }
         procs.push(procCopy)
     }
-    return {
+    output.push({
         id: step.id,
         type: step.type,
         procs: procs
-    }
+    })
 }
 
-function optimizeLoop(step) {
-    return {
+function optimizeLoop(step, output) {
+    output.push({
         id: step.id,
-        type: step.type,
+        type: "loop",
         content: step.content,
         body: optimizeTree(step.body)
-    }
+    })
 }
 
-function optimizeQuestion(step) {
+function endsWithBreak(body) {
+    if (body.length === 0) {
+        return false
+    }
+    var lastId = body.length - 1
+    return body[lastId].type === "break"
+}
+
+function optimizeQuestion(step, output) {
     var yes = optimizeTree(step.yes)
     var no = optimizeTree(step.no)
-    if (yes.length === 0 && no.length === 0) {
-        return {
-            side: step.side,
-            type: step.type,
-            content: step.content,
-            yes: [],
-            no: []
-        }    
-    }
-    if (yes.length === 0) {
-        return {
-            side: step.side,
-            type: step.type,
-            content: {operator:"not",operand:step.content},
-            yes: no,
-            no: []
-        }
-    }
-    return {
+    var breakYes = endsWithBreak(yes)
+    var breakNo = endsWithBreak(no)
+
+    var result = {
+        id: step.id,
         side: step.side,
-        type: step.type,
-        content: step.content,
-        yes: yes,
-        no: no
+        type: step.type
+    }
+    if (breakYes && breakNo) {
+        yes.pop()
+        no.pop()
     }    
+    if (yes.length === 0 && no.length === 0) {
+        result.content = step.content
+        result.yes = []
+        result.no = []
+    } else if (yes.length === 0) {
+        result.content = {operator:"not",operand:step.content}
+        result.yes = no
+        result.no = []
+    } else {
+        result.content = step.content,
+        result.yes = yes,
+        result.no = no
+    }
+    output.push(result)
+    if (breakYes && breakNo) {
+        output.push({type: "break"})
+    }
 }
 
 

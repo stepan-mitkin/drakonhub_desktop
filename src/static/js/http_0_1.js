@@ -141,3 +141,8 @@ unit.sendRequest_create = sendRequest_create;
 unit.uploadFileToServer = uploadFileToServer;
 return unit;
 }
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        http_0_1
+    };
+}

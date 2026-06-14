@@ -785,3 +785,8 @@ unit.subtractArrays = subtractArrays;
 unit.take = take;
 return unit;
 }
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        utils
+    };
+}

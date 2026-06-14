@@ -2458,3 +2458,8 @@ Object.defineProperty(unit, 'utils', {
 });
 return unit;
 }
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        simplewidgets_0_1
+    };
+}
