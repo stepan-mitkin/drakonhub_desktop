@@ -1,55 +1,57 @@
 <!doctype html>
-<html lang="en">
+<html>
     <head>
         <meta charset="UTF-8" />
         <meta
             http-equiv="Content-Security-Policy"
             content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline' 'self'; img-src 'self' data:"
         />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta
+            name="viewport"
+            content="width=device-width,initial-scale=1,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"
+        />
         <link
             rel="icon"
             type="image/png"
-            href="src/static/images/drakonpro-logo-256.png"
+            href="src/src/static/images/drakosha98b.png"
         />
-        <link rel="stylesheet" href="src/static/styles/reset.css" />
-        <link rel="stylesheet" href="src/static/libs/quill.snow.css" />
-        <link rel="stylesheet" href="src/static/styles/main.css" />
-        <link rel="manifest" href="app.webmanifest" />
+        <link rel="stylesheet" href="src/src/static/styles/reset.css" />
+        <link rel="stylesheet" href="src/src/static/libs/quill.snow.css" />
+        <link rel="stylesheet" href="src/src/static/styles/main.css" />
         <title>DrakonHub</title>
     </head>
 
     <body style="overflow: hidden">
         <div id="main">
             <div id="loading">
-                <img
-                    src="src/static/images/drakonpro-logo-256.png"
-                    alt="DrakonHub logo"
-                />
+                <img src="src/src/static/images/drakosha-loading.png" />
             </div>
             <div id="snack-root"></div>
             <div id="question-root"></div>
             <div id="popup-root"></div>
         </div>
-        <script src="src/static/libs/quill2.min.js"></script>
-        <script src="src/static/libs/mousetrap.min.js"></script>
-        <script src="src/static/libs/rounded.js"></script>
-        <script src="src/static/libs/drakongen.js"></script>
 
-        <script src="src/static/js/client_config_github.js"></script>
-        <script src="src/static/strings/localization.js"></script>
+        <script src="src/src/static/js/indexed.js"></script>
 
-        <script src="src/static/js/drcore.js"></script>
-        <script src="src/static/js/utils.js"></script>
-        <script src="src/static/js/dh2common.js"></script>
-        <script src="src/static/js/drakon_canvas.js"></script>
-        <script src="src/static/js/drakonhubwidget_10.js"></script>
-        <script src="src/static/js/edit_tools.js"></script>
-        <script src="src/static/js/html_0_1.js"></script>
-        <script src="src/static/js/http_0_1.js"></script>
-        <script src="src/static/js/simplewidgets_0_1.js"></script>
+        <script src="src/src/static/libs/jszip.min.js"></script>
+        <script src="src/src/static/libs/quill2.min.js"></script>
+        <script src="src/src/static/libs/mousetrap.min.js"></script>
+        <script src="src/src/static/libs/canvas2svg.js"></script>
+        <script src="src/src/static/libs/rounded.js"></script>
+        <script src="src/src/static/libs/drakongen.js"></script>
 
-        <script src="src/static/js/standalone.js"></script>
-        <script src="src/static/js/local.js"></script>
+        <script src="src/src/static/js/client_config_github.js"></script>
+        <script src="src/src/static/strings/localization.js"></script>
+
+        <script src="src/src/static/js/utils.js"></script>
+        <script src="src/src/static/js/dh2common.js"></script>
+        <script src="src/src/static/js/drakon_canvas.js"></script>
+        <script src="src/src/static/js/drakonhubwidget_10.js"></script>
+        <script src="src/src/static/js/edit_tools.js"></script>
+        <script src="src/src/static/js/html_0_1.js"></script>
+        <script src="src/src/static/js/localserver.js"></script>
+        <script src="src/src/static/js/simplewidgets_0_1.js"></script>
+        <script src="src/src/static/js/dh2core.js"></script>
+        <script src="src/src/static/js/pad.js"></script>
     </body>
 </html>

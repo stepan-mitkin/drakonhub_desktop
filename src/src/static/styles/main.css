@@ -1,0 +1,91 @@
+*,
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+input,
+textarea,
+[contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@font-face {
+  font-family: "Arimo";
+  src: url("../fonts/Arimo-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Arimo";
+  src: url("../fonts/Arimo-Italic.ttf") format("truetype");
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Arimo";
+  src: url("../fonts/Arimo-Bold.ttf") format("truetype");
+  font-weight: bold;
+}
+
+@font-face {
+  src: url("../fonts/Arimo-BoldItalic.ttf") format("truetype");
+  font-family: "Arimo";
+  font-style: italic;
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "UbuntuMono";
+  src: url("../fonts/UbuntuMono-Regular.ttf") format("truetype");
+}
+
+#loading {
+  display: inline-block;
+  position: fixed;
+  overflow: hidden;
+  left: 0px;
+  top: 0px;
+  width: 100vw;
+  height: 100vh;
+  background: white;
+}
+
+#loading img {
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 256px;
+}
+
+#main {
+  height: calc(100vh);
+  position: relative;
+}
+
+.column-2-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+@media (min-width: 500px) {
+  .column-2-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
