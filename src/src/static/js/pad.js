@@ -8,7 +8,7 @@
     var _inst_html_0_1 = html_0_1();
     var _inst_simplewidgets_0_1 = simplewidgets_0_1();
     var _inst_utils = utils();
-    var _inst_http_0_1 = localserver(_inst_utils);
+    var _inst_http_0_1 = localserver(_inst_utils, _inst_dh2config);
     _inst_dh2common.drakon_canvas = _inst_drakon_canvas;
     _inst_dh2common.gconfig = _inst_dh2config;
     _inst_dh2common.html = _inst_html_0_1;

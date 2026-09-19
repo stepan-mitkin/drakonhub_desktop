@@ -607,6 +607,46 @@ function forceDebounce_create(action, delay) {
     };
     return me;
 }
+function fsMapChildToInternal(fsEntry) {
+    var parsed, path;
+    path = normalizePath(fsEntry.path);
+    parsed = getNameFromPath(path);
+    if (fsEntry.type === 'folder') {
+        return {
+            name: parsed.last,
+            type: 'folder',
+            path: path
+        };
+    } else {
+        return {
+            name: parsed.name,
+            type: parsed.type,
+            path: path
+        };
+    }
+}
+function getNameFromPath(path) {
+    var last, lastParts, parts, type;
+    parts = path.split('/');
+    last = parts[parts.length - 1];
+    lastParts = last.split('.');
+    if (lastParts.length === 1) {
+        return {
+            last: last,
+            filename: last,
+            name: last,
+            type: undefined
+        };
+    } else {
+        type = lastParts.pop();
+        return {
+            last: last,
+            filename: last,
+            name: lastParts.join('.'),
+            type: type
+        };
+    }
+}
 function getNowMs() {
     var date;
     date = new Date();
@@ -638,6 +678,15 @@ function isSubset(larger, smaller) {
                 return false;
             }
         }
+        return true;
+    } else {
+        return false;
+    }
+}
+function isTypeAllowed(item) {
+    var _selectValue_2;
+    _selectValue_2 = item.type;
+    if (_selectValue_2 === 'folder' || (_selectValue_2 === 'drakon' || (_selectValue_2 === 'graf' || _selectValue_2 === 'free'))) {
         return true;
     } else {
         return false;
@@ -780,11 +829,13 @@ unit.findFromEnd = findFromEnd;
 unit.findIndex = findIndex;
 unit.forceDebounce = forceDebounce;
 unit.forceDebounce_create = forceDebounce_create;
+unit.fsMapChildToInternal = fsMapChildToInternal;
 unit.getNowMs = getNowMs;
 unit.hasValue = hasValue;
 unit.hexByteToString = hexByteToString;
 unit.isSpace = isSpace;
 unit.isSubset = isSubset;
+unit.isTypeAllowed = isTypeAllowed;
 unit.last = last;
 unit.multiMapAdd = multiMapAdd;
 unit.normalizePath = normalizePath;

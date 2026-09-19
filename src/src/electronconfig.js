@@ -4,11 +4,11 @@ function dh2config() {
         unit.debug = true;
         unit.showBackButton = false;
         unit.pad = true;
-        unit.imagePath = "/static/images/";
+        unit.imagePath = "./static/images/";
 	    unit.wideMenuIcon = "start_menu_drakosha.png"
-        unit.fontPath = "/static/fonts/";
-        unit.stringsPath = "/static/strings/";
-        unit.examplesPath = "/static/examples/";
+        unit.fontPath = "./static/fonts/";
+        unit.stringsPath = "./static/strings/";
+        unit.examplesPath = "./static/examples/";
         unit.appName = "DrakonHub";
         unit.canChangeLanguage = true;
         unit.defaultLanguage = "en-us";
@@ -26,6 +26,13 @@ function dh2config() {
         unit.maxImageSizeMb = 3;
         unit.desktop = true;
         unit.showToolTips = true;
+        unit.getInvoke = function() {
+            return {
+                invoke: window.electronBackend.invoke,
+                listen: window.electronBackend.listen
+            }
+        }
+
         return;
     }
     unit.main = main;

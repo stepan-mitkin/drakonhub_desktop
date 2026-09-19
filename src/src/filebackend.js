@@ -1,8 +1,6 @@
 window.FileBackend = FileBackend;
-function FileBackend(utils) {
+function FileBackend(utils, host) {
     var self = { _type: 'FileBackend' };
-    const invoke = window.__TAURI__.core.invoke;
-    const listen = window.__TAURI__.event.listen;
     const ROOTID = '1';
     const SPACEID = 'my-diagrams';
     const USERID = 'local-user';
@@ -123,7 +121,7 @@ function FileBackend(utils) {
             parent = getNode(parentId);
             if (parent) {
                 needle = normalizeStringForSearch(name);
-                siblings = await readFolder(parent.path);
+                siblings = await host.readFolder(parent.path);
                 if (siblings) {
                     for (sibling of siblings) {
                         sname = normalizeStringForSearch(sibling.name);
@@ -185,18 +183,6 @@ function FileBackend(utils) {
             }
         }
     }
-    async function copyFile(oldPath, newPath) {
-        try {
-            await invoke('copy_file', {
-                oldPath: oldPath,
-                newPath: newPath
-            });
-            return true;
-        } catch (_handlerData_) {
-            console.error(_handlerData_);
-            return false;
-        }
-    }
     async function copyPaste(body) {
         var _collection_2, item, ok;
         ok = checkCycle(body.target, body.items);
@@ -222,7 +208,7 @@ function FileBackend(utils) {
                     name = node.name;
                 }
                 path = buildPath(parent.path, name, node.type);
-                ok = await copyFile(node.path, path);
+                ok = await host.copyFile(node.path, path);
                 if (ok) {
                     id = nextId();
                     createNode(targetId, id, name, path, node.type);
@@ -254,9 +240,9 @@ function FileBackend(utils) {
                 if (nameOk) {
                     path = buildPath(parent.path, name, type);
                     if (type === 'folder') {
-                        ok = await createFsFolder(path);
+                        ok = await host.createFsFolder(path);
                     } else {
-                        ok = await writeTextFile(path, '{}');
+                        ok = await host.writeTextFile(path, '{}');
                     }
                     if (ok) {
                         id = nextId();
@@ -281,15 +267,6 @@ function FileBackend(utils) {
         var node;
         node = createNode(parent, id, name, path, 'folder');
         return node;
-    }
-    async function createFsFolder(path) {
-        try {
-            await invoke('create_folder', { path: path });
-            return true;
-        } catch (_handlerData_) {
-            console.error(_handlerData_);
-            return false;
-        }
     }
     function createItemSearch(needleRaw, accurate) {
         var needle, self;
@@ -358,15 +335,6 @@ function FileBackend(utils) {
             node.children = [];
         }
     }
-    async function deleteFile(path) {
-        try {
-            await invoke('delete_file', { path: path });
-            return true;
-        } catch (_handlerData_) {
-            console.error(_handlerData_);
-            return false;
-        }
-    }
     function deleteFromChildren(parent, childId) {
         parent.children = parent.children.filter(id => id !== childId);
     }
@@ -418,7 +386,7 @@ function FileBackend(utils) {
         for (item of gDeleteItems) {
             node = getNode(item.id);
             if (node) {
-                ok = await deleteFile(node.path);
+                ok = await host.deleteFile(node.path);
             }
         }
         gDeleteTimer = undefined;
@@ -467,7 +435,7 @@ function FileBackend(utils) {
                                 'description'
                             ]);
                             json = JSON.stringify(diagram, null, 4);
-                            ok = await writeTextFile(node.path, json);
+                            ok = await host.writeTextFile(node.path, json);
                             if (ok) {
                                 node.tag = body.tag;
                                 if (body.name) {
@@ -533,7 +501,7 @@ function FileBackend(utils) {
                         'description'
                     ]);
                     json = JSON.stringify(diagram, null, 4);
-                    ok = await writeTextFile(node.path, json);
+                    ok = await host.writeTextFile(node.path, json);
                     if (ok) {
                         node.tag = body.tag;
                         if (body.name) {
@@ -619,24 +587,6 @@ function FileBackend(utils) {
             found.push(foundItem);
         }
         return false;
-    }
-    function fsMapChildToInternal(fsEntry) {
-        var parsed, path;
-        path = utils.normalizePath(fsEntry.path);
-        parsed = getNameFromPath(path);
-        if (fsEntry.type === 'folder') {
-            return {
-                name: parsed.last,
-                type: 'folder',
-                path: path
-            };
-        } else {
-            return {
-                name: parsed.name,
-                type: parsed.type,
-                path: path
-            };
-        }
     }
     async function getFolder(url) {
         var _branch_, diagram, id, node, path, refresh, result;
@@ -726,28 +676,6 @@ function FileBackend(utils) {
             modified: Object.keys(modifiedSet),
             other: Object.keys(otherSet)
         };
-    }
-    function getNameFromPath(path) {
-        var last, lastParts, parts, type;
-        parts = path.split('/');
-        last = parts[parts.length - 1];
-        lastParts = last.split('.');
-        if (lastParts.length === 1) {
-            return {
-                last: last,
-                filename: last,
-                name: last,
-                type: undefined
-            };
-        } else {
-            type = lastParts.pop();
-            return {
-                last: last,
-                filename: last,
-                name: lastParts.join('.'),
-                type: type
-            };
-        }
     }
     function getNode(folderId) {
         return gNodesById[folderId];
@@ -900,7 +828,7 @@ function FileBackend(utils) {
         gFolderEvents = [];
         gFolderDebounce = utils.debounce_create(processFolderChanged, FOLDER_DEBOUNCE_MS);
         gFolderDebounce.run();
-        gUnlistenFolder = await watchFolder(gRootPath, onFolderChanged);
+        gUnlistenFolder = await host.watchFolder(gRootPath, onFolderChanged);
         gLatestEdits = {};
     }
     function isEditedRecently(path) {
@@ -923,15 +851,6 @@ function FileBackend(utils) {
             return text in gPunctuation;
         } else {
             return true;
-        }
-    }
-    function isTypeAllowed(item) {
-        var _selectValue_2;
-        _selectValue_2 = item.type;
-        if (_selectValue_2 === 'folder' || (_selectValue_2 === 'drakon' || (_selectValue_2 === 'graf' || _selectValue_2 === 'free'))) {
-            return true;
-        } else {
-            return false;
         }
     }
     function lineContainsName(line, name) {
@@ -976,18 +895,6 @@ function FileBackend(utils) {
         }
         return map;
     }
-    async function moveFile(oldPath, newPath) {
-        try {
-            await invoke('move_file', {
-                oldPath: oldPath,
-                newPath: newPath
-            });
-            return true;
-        } catch (_handlerData_) {
-            console.error(_handlerData_);
-            return false;
-        }
-    }
     async function moveSubfolder(item, targetId) {
         var id, name, newParent, node, ok, oldParent, path;
         id = item.id;
@@ -1003,7 +910,7 @@ function FileBackend(utils) {
                         name = node.name;
                     }
                     path = buildPath(newParent.path, name, node.type);
-                    ok = await moveFile(node.path, path);
+                    ok = await host.moveFile(node.path, path);
                     if (ok) {
                         addToChildren(newParent, id);
                         deleteFromChildren(oldParent, id);
@@ -1064,20 +971,9 @@ function FileBackend(utils) {
             await refreshCache();
         }
     }
-    async function readFolder(path) {
-        var children, result;
-        try {
-            children = await invoke('read_folder', { path: path });
-            result = children.map(fsMapChildToInternal);
-            return result.filter(isTypeAllowed);
-        } catch (_handlerData_) {
-            console.error(_handlerData_);
-            return undefined;
-        }
-    }
     async function readJson(path) {
         var body;
-        body = await readTextFile(path);
+        body = await host.readTextFile(path);
         if (body === undefined) {
             return undefined;
         } else {
@@ -1093,16 +989,6 @@ function FileBackend(utils) {
             }
         }
     }
-    async function readTextFile(path) {
-        var result;
-        try {
-            result = await invoke('read_text_file', { path: path });
-            return result;
-        } catch (_handlerData_) {
-            console.error(_handlerData_);
-            return undefined;
-        }
-    }
     async function refreshCache() {
         var changes;
         changes = [];
@@ -1113,7 +999,7 @@ function FileBackend(utils) {
     }
     async function refreshChildren(node) {
         var _, _collection_3, added, childId, children2, created, fchildren, id, nodeInfo, removed, toDelete, toInsert;
-        fchildren = await readFolder(node.path);
+        fchildren = await host.readFolder(node.path);
         if (fchildren) {
             toDelete = {};
             toInsert = [];
@@ -1153,23 +1039,11 @@ function FileBackend(utils) {
     async function renameCore(id, node, newName) {
         var newPath, ok;
         newPath = renamePath(node.path, newName, node.type);
-        ok = await renameFile(node.path, newPath);
+        ok = await host.renameFile(node.path, newPath);
         if (ok) {
             renameInCache(id, newName, newPath);
             return true;
         } else {
-            return false;
-        }
-    }
-    async function renameFile(oldPath, newPath) {
-        try {
-            await invoke('rename_file', {
-                oldPath: oldPath,
-                newPath: newPath
-            });
-            return true;
-        } catch (_handlerData_) {
-            console.error(_handlerData_);
             return false;
         }
     }
@@ -1391,32 +1265,6 @@ function FileBackend(utils) {
             }
         } else {
             createError(400, 'Unknown update');
-        }
-    }
-    async function watchFolder(path, callback) {
-        var unlisten;
-        try {
-            console.log('watching folder', path);
-            unlisten = await listen('folder-changed', function (event) {
-                callback(event.payload);
-            });
-            await invoke('watch_folder', { path: path });
-            return unlisten;
-        } catch (_handlerData_) {
-            console.error(_handlerData_);
-            return undefined;
-        }
-    }
-    async function writeTextFile(path, content) {
-        try {
-            await invoke('write_text_file', {
-                path: path,
-                content: content
-            });
-            return true;
-        } catch (_handlerData_) {
-            console.error(_handlerData_);
-            return false;
         }
     }
     self.copyPaste = copyPaste;

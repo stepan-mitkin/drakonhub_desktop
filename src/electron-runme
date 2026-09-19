@@ -1,0 +1,2 @@
+#!/bin/bash
+electron src/main.js

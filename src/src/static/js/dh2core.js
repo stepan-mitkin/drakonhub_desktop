@@ -3864,8 +3864,8 @@ function buildAppRoot() {
     root = dh2common.createRootElement();
     html.clear(root);
     account = dh2common.getAccountObj();
-    if (account.license_expired) {
-        banner = createTopBanner(tr('Your license has expired.' + ' To enable editing of diagrams, renew your license.'), tr('Buy license'), gconfig.pricesPage + '?bsource=banner');
+    if (gconfig.dead) {
+        banner = createTopBanner('Сохраните ваши диаграммы на компьютер! ДраконПро будет отключен 1 октября 2026.', tr('Как сохранить'), gconfig.dead, '#ff9d87');
         mainDiv = div({
             height: 'calc(100% - 50px)',
             position: 'relative'
@@ -3874,7 +3874,18 @@ function buildAppRoot() {
         html.add(root, mainDiv);
         return mainDiv;
     } else {
-        return root;
+        if (account.license_expired) {
+            banner = createTopBanner(tr('Your license has expired.' + ' To enable editing of diagrams, renew your license.'), tr('Buy license'), gconfig.pricesPage + '?bsource=banner');
+            mainDiv = div({
+                height: 'calc(100% - 50px)',
+                position: 'relative'
+            });
+            html.add(root, banner);
+            html.add(root, mainDiv);
+            return mainDiv;
+        } else {
+            return root;
+        }
     }
 }
 function buildBaseUrl() {
@@ -4968,7 +4979,7 @@ function createTimeRandomId() {
     random = Math.random().toString(36).slice(2, 10);
     return now + '-' + random;
 }
-function createTopBanner(prompt, buttonText, url) {
+function createTopBanner(prompt, buttonText, url, background) {
     var banner, button, text;
     button = html.createElement('a', { href: url }, [
         'generic-button default-button',
@@ -4977,9 +4988,10 @@ function createTopBanner(prompt, buttonText, url) {
     button.style.height = '39px';
     button.style.width = '140px';
     button.style.textAlign = 'center';
+    background = background || '#ffffa0';
     banner = div({
         padding: '5px',
-        background: '#ffffa0',
+        background: background,
         height: '50px',
         position: 'relative',
         'border-bottom': 'solid 1px #a0a0a0',
