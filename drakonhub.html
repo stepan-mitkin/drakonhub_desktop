@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta
             http-equiv="Content-Security-Policy"
-            content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline' 'self'; img-src 'self' data:"
+            content="default-src 'self'; connect-src 'self' https://api.openai.com https://api.anthropic.com; script-src 'self'; style-src 'unsafe-inline' 'self'; img-src 'self' data:"
         />
         <meta
             name="viewport"
@@ -43,6 +43,7 @@
         <script src="src/src/static/js/client_config_github.js"></script>
         <script src="src/src/static/strings/localization.js"></script>
 
+        <script src="src/src/static/js/prompts.js"></script>
         <script src="src/src/static/js/utils.js"></script>
         <script src="src/src/static/js/dh2common.js"></script>
         <script src="src/src/static/js/drakon_canvas.js"></script>
