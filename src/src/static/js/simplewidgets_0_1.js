@@ -242,6 +242,102 @@ function Tooltip_create(text) {
     };
     return me;
 }
+function addButtonBlock(parent) {
+    var block;
+    block = div({ 'margin-top': '10px' });
+    html.add(parent, block);
+    return block;
+}
+function addLabel(parent, label) {
+    var labelDiv;
+    labelDiv = div({
+        text: label,
+        'margin-top': '10px'
+    });
+    html.add(parent, labelDiv);
+}
+function addMiddleCombo(parent, label, options, value) {
+    var combo, container, lspan, option;
+    container = div({ 'margin-top': '10px' });
+    html.add(parent, container);
+    lspan = span({
+        text: label,
+        'margin-right': '5px'
+    });
+    html.add(container, lspan);
+    combo = html.createElement('select');
+    combo.style.padding = '5px';
+    combo.style.width = '150px';
+    for (option of options) {
+        html.addOption(combo, option.id, option.text);
+    }
+    if (value) {
+        combo.value = value;
+    }
+    html.add(container, combo);
+    return combo;
+}
+function addMiddleError(parent) {
+    var error;
+    error = div({
+        color: 'darkred',
+        'margin-top': '10px'
+    });
+    html.add(parent, error);
+    return error;
+}
+function addMiddleHeader(parent, text, size) {
+    var header;
+    header = div({
+        text: text,
+        'text-align': 'center',
+        'font-weight': 'bold',
+        'margin-bottom': '10px',
+        'font-size': size
+    });
+    html.add(parent, header);
+    return header;
+}
+function addMiddleInput(parent, label, value) {
+    var input;
+    addLabel(parent, label);
+    input = document.createElement('input');
+    input.type = 'text';
+    input.value = value || '';
+    html.add(parent, input);
+    return input;
+}
+function addMiddleSecretInput(parent, label, value) {
+    var input;
+    input = addMiddleInput(parent, label, value);
+    input.type = 'password';
+    return input;
+}
+function addMiddleTextArea(parent, label, value) {
+    var textarea;
+    addLabel(parent, label);
+    textarea = document.createElement('textarea');
+    textarea.value = value || '';
+    textarea.style.height = '100px';
+    html.add(parent, textarea);
+    return textarea;
+}
+function addMiddleTwoButtons(parent, leftText, leftAction, defaultText, defaultAction) {
+    var container, left, right;
+    container = div({
+        display: 'block',
+        position: 'relative'
+    });
+    html.add(parent, container);
+    left = createSimpleButton(leftText, leftAction);
+    html.add(container, left);
+    right = createDefaultButton(defaultText, defaultAction);
+    right.style.position = 'absolute';
+    right.style.top = '0px';
+    right.style.right = '0px';
+    right.style.marginRight = '0px';
+    html.add(container, right);
+}
 function addTooltip(element, text) {
     var logic;
     if (gconfig.showToolTips) {
@@ -2032,6 +2128,12 @@ function snackProc_create(snackDiv) {
     };
     return me;
 }
+function span() {
+    var args, properties;
+    args = Array.prototype.slice.call(arguments);
+    properties = {};
+    return html.createElement('span', properties, args);
+}
 function startMoveMovable(moverLogic, popup, barMover, evt) {
     var rect;
     setActiveMoverStyle(barMover);
@@ -2367,6 +2469,14 @@ unit.DummyWidget = DummyWidget;
 unit.LoadingScreen = LoadingScreen;
 unit.MoverLogic = MoverLogic;
 unit.PlainList = PlainList;
+unit.addButtonBlock = addButtonBlock;
+unit.addMiddleCombo = addMiddleCombo;
+unit.addMiddleError = addMiddleError;
+unit.addMiddleHeader = addMiddleHeader;
+unit.addMiddleInput = addMiddleInput;
+unit.addMiddleSecretInput = addMiddleSecretInput;
+unit.addMiddleTextArea = addMiddleTextArea;
+unit.addMiddleTwoButtons = addMiddleTwoButtons;
 unit.addTooltip = addTooltip;
 unit.calculateSafeArea = calculateSafeArea;
 unit.closePopup = closePopup;
@@ -2412,6 +2522,7 @@ unit.showContextMenuExact = showContextMenuExact;
 unit.showErrorSnack = showErrorSnack;
 unit.showGoodSnack = showGoodSnack;
 unit.showUndoSnack = showUndoSnack;
+unit.span = span;
 unit.uploadFile = uploadFile;
 unit.uploadFileWithButton = uploadFileWithButton;
 unit.uploadFileWithButton_create = uploadFileWithButton_create;

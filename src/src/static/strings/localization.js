@@ -1,9 +1,20 @@
 function getLocalizedStrings(language) {
   if (language === "ru") {
     return {
+      "Model": "Модель",
+      "Model is empty": "Модель не указана",      
+      "AI provider": "Провайдер ИИ",
+      "API key": "Ключ API",
+      "Clear form": "Очистить форму",
+      "AI provider is empty": "Провайдер ИИ не указан",
+      "API key is empty": "Ключ API не указан",
+      "Name is empty": "Название не указано",
+      "Description is empty": "Описание не указано",
+      "Generate Flowchart with AI": "Создать ДРАКОН-схему с помощью ИИ",
+      "Describe an algorithm in plain language, and AI will turn it into a DRAKON flowchart.": "Опишите алгоритм обычным языком, и ИИ преобразует его в ДРАКОН-схему.",
       "scenarios": "сценарии",
       "Selection mode": "Режим выделения",
-      "Exit selection mode": "Выйти из режима выделения",      
+      "Exit selection mode": "Выйти из режима выделения",
       "My diagrams": "Мои диаграммы",
       "Restart app": "Перезапустить приложение",
       Settings: "Настройки",
@@ -469,6 +480,17 @@ function getLocalizedStrings(language) {
 
   if (language === "de") {
     return {
+      "Model": "Modell",
+      "Model is empty": "Modell ist nicht angegeben",
+      "AI provider": "KI-Anbieter",
+      "API key": "API-Schlüssel",
+      "Clear form": "Formular leeren",
+      "AI provider is empty": "KI-Anbieter ist nicht angegeben",
+      "API key is empty": "API-Schlüssel ist nicht angegeben",
+      "Name is empty": "Name ist nicht angegeben",
+      "Description is empty": "Beschreibung ist nicht angegeben",
+      "Generate Flowchart with AI": "Flussdiagramm mit KI erstellen",
+      "Describe an algorithm in plain language, and AI will turn it into a DRAKON flowchart.": "Beschreiben Sie einen Algorithmus in natürlicher Sprache, und die KI wandelt ihn in ein DRAKON-Flussdiagramm um.",
       "scenarios": "Szenarien",
       "Selection mode": "Auswahlmodus",
       "Exit selection mode": "Auswahlmodus beenden",
@@ -938,12 +960,23 @@ function getLocalizedStrings(language) {
       "I agree to receive marketing emails.": "Ich stimme zu, Marketing-E-Mails zu erhalten.",
       "Open folder": "Ordner öffnen",
       "Close folder": "Ordner schließen",
-      "Open diagram": "Diagramm öffnen"      
+      "Open diagram": "Diagramm öffnen"
     };
   }
 
   if (language === "fr") {
     return {
+      "Model": "Modèle",
+      "Model is empty": "Le modèle n'est pas spécifié",      
+      "AI provider": "Fournisseur d’IA",
+      "API key": "Clé API",
+      "Clear form": "Effacer le formulaire",
+      "AI provider is empty": "Le fournisseur d’IA n’est pas indiqué",
+      "API key is empty": "La clé API n’est pas indiquée",
+      "Name is empty": "Le nom n’est pas indiqué",
+      "Description is empty": "La description n’est pas indiquée",
+      "Generate Flowchart with AI": "Générer un organigramme avec l’IA",
+      "Describe an algorithm in plain language, and AI will turn it into a DRAKON flowchart.": "Décrivez un algorithme en langage naturel, et l’IA le transformera en organigramme DRAKON.",
       "scenarios": "scénarios",
       "Selection mode": "Mode de sélection",
       "Exit selection mode": "Quitter le mode de sélection",
@@ -1412,12 +1445,23 @@ function getLocalizedStrings(language) {
       "I agree to receive marketing emails.": "Acepto recibir correos electrónicos de marketing.",
       "Open folder": "Ouvrir le dossier",
       "Close folder": "Fermer le dossier",
-      "Open diagram": "Ouvrir le diagramme"      
+      "Open diagram": "Ouvrir le diagramme"
     };
   }
 
   if (language === "lt") {
     return {
+      "Model": "Modelis",
+      "Model is empty": "Modelis nenurodytas",
+      "AI provider": "DI teikėjas",
+      "API key": "API raktas",
+      "Clear form": "Išvalyti formą",
+      "AI provider is empty": "DI teikėjas nenurodytas",
+      "API key is empty": "API raktas nenurodytas",
+      "Name is empty": "Pavadinimas nenurodytas",
+      "Description is empty": "Aprašymas nenurodytas",
+      "Generate Flowchart with AI": "Generuoti blokinę schemą naudojant DI",
+      "Describe an algorithm in plain language, and AI will turn it into a DRAKON flowchart.": "Aprašykite algoritmą įprasta kalba, o DI pavers jį DRAKON blokine schema.",
       "scenarios": "scenarijai",
       "Selection mode": "Pasirinkimo režimas",
       "Exit selection mode": "Išeiti iš pasirinkimo režimo",
@@ -1884,15 +1928,26 @@ function getLocalizedStrings(language) {
       "I agree to receive marketing emails.": "Sutinku gauti rinkodaros el. laiškus.",
       "Open folder": "Atidaryti aplanką",
       "Close folder": "Uždaryti aplanką",
-      "Open diagram": "Atidaryti diagramą"      
+      "Open diagram": "Atidaryti diagramą"
     };
   }
 
   if (language === "es") {
     return {
+      "Model": "Modelo",
+      "Model is empty": "No se ha especificado el modelo",      
+      "AI provider": "Proveedor de IA",
+      "API key": "Clave de API",
+      "Clear form": "Limpiar formulario",
+      "AI provider is empty": "No se ha especificado el proveedor de IA",
+      "API key is empty": "No se ha especificado la clave de API",
+      "Name is empty": "No se ha especificado el nombre",
+      "Description is empty": "No se ha especificado la descripción",      
+      "Generate Flowchart with AI": "Generar diagrama de flujo con IA",
+      "Describe an algorithm in plain language, and AI will turn it into a DRAKON flowchart.": "Describa un algoritmo en lenguaje natural y la IA lo convertirá en un diagrama de flujo DRAKON.",
       "scenarios": "escenarios",
       "Selection mode": "Modo de selección",
-      "Exit selection mode": "Salir del modo de selección",      
+      "Exit selection mode": "Salir del modo de selección",
       "My diagrams": "Mis diagramas",
       "Restart app": "Reiniciar la aplicación",
       Settings: "Configuración",
@@ -2353,19 +2408,30 @@ function getLocalizedStrings(language) {
       "This email domain is not supported. Here is the list of supported domains:": "Este dominio de correo electrónico no es compatible. Aquí está la lista de dominios compatibles:",
       "Unsubscribe": "Darse de baja",
       "You have been unsubscribed.": "Se ha dado de baja correctamente.",
-      "Invalid unsubscribe link.": "Enlace de baja no válido.",      
+      "Invalid unsubscribe link.": "Enlace de baja no válido.",
       "I agree to receive marketing emails.": "Acepto recibir correos electrónicos de marketing.",
       "Open folder": "Abrir carpeta",
       "Close folder": "Cerrar carpeta",
-      "Open diagram": "Abrir diagrama"      
+      "Open diagram": "Abrir diagrama"
     };
   }
 
   if (language === "no") {
     return {
+      "Model": "Modell",
+      "Model is empty": "Modell er ikke angitt",
+      "AI provider": "KI-leverandør",
+      "API key": "API-nøkkel",
+      "Clear form": "Tøm skjema",
+      "AI provider is empty": "KI-leverandør er ikke angitt",
+      "API key is empty": "API-nøkkel er ikke angitt",
+      "Name is empty": "Navn er ikke angitt",
+      "Description is empty": "Beskrivelse er ikke angitt",      
+      "Generate Flowchart with AI": "Generer flytskjema med KI",
+      "Describe an algorithm in plain language, and AI will turn it into a DRAKON flowchart.": "Beskriv en algoritme med vanlig språk, så gjør KI den om til et DRAKON-flytskjema.",
       "scenarios": "scenarioer",
       "Selection mode": "Utvalgsmodus",
-      "Exit selection mode": "Avslutt utvalgsmodus",      
+      "Exit selection mode": "Avslutt utvalgsmodus",
       "My diagrams": "Mine diagrammer",
       "Restart app": "Start appen på nytt",
       Settings: "Innstillinger",
@@ -2825,7 +2891,7 @@ function getLocalizedStrings(language) {
       "I agree to receive marketing emails.": "Jeg samtykker til å motta markedsførings-e-poster.",
       "Open folder": "Åpne mappe",
       "Close folder": "Lukk mappe",
-      "Open diagram": "Åpne diagram"      
+      "Open diagram": "Åpne diagram"
     };
   }
   return undefined;

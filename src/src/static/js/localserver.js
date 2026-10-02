@@ -750,6 +750,70 @@ function localserver(utils) {
     return drakonStorage.write(BODY, id, diagram);
   }
 
+  function applyEdit(diagram, edit, output) {
+    var _collection_2, _collection_4, _collection_6, change, existing, itemId, items;
+    if ('name' in edit) {
+      if (edit.name) {
+        output.name = edit.name;
+      } else {
+        output.errorResult = createError(400, 'Name is empty');
+        return
+      }
+    } 
+    items = diagram.items;
+    if (edit.added) {
+      _collection_2 = edit.added;
+      for (change of _collection_2) {
+        itemId = change.id;
+        delete change.id;
+        items[itemId] = change;
+      }
+    }
+    if (edit.updated) {
+      _collection_4 = edit.updated;
+      for (change of _collection_4) {
+        itemId = change.id;
+        delete change.id;
+        existing = items[itemId];
+        Object.assign(existing, change);
+      }
+    }
+    if (edit.removed) {
+      _collection_6 = edit.removed;
+      for (itemId of _collection_6) {
+        delete items[itemId];
+      }
+    }
+    utils.copyNotNull(diagram, edit, [
+      'params',
+      'style',
+      'description'
+    ]);
+  }
+
+  function itemsToObject(diagram) {
+    var itemList = diagram.items || [];
+    var items = {};
+    for (var item of itemList) {
+      var copy = utils.clone(item);
+      var itemId = item.id;
+      delete copy.id;
+      items[itemId] = copy;
+    }
+    diagram.items = items;    
+  }
+
+  function itemsToArray(diagram) {
+    var newItems = [];
+    for (var itemId in diagram.items) {
+      var item = diagram.items[itemId];
+      item.id = itemId;
+      newItems.push(item);
+    }
+    diagram.items = newItems;
+  }
+
+
   async function editDiagram(url, body) {
     var id = getIdFromUrl(url);
     var node = await getNode(id);
@@ -759,59 +823,27 @@ function localserver(utils) {
     if (body.oldTag !== node.tag) {
       return createError(400, "ERR_MODIFIED");
     }
-    if ("name" in body) {
-      if (!body.name) {
-        return createError(400, "Name is empty");
-      }
-      var nameOk = await checkNameIsUnique(node.parent, body.name, id);
+    var diagram = (await getBody(id)) || {};
+    itemsToObject(diagram);
+    var editResult = {}
+    for (var edit of body.edits) {
+      applyEdit(diagram, edit, editResult)
+    }
+    if (editResult.errorResult) {
+      return editResult.errorResult;
+    }
+    if ("name" in editResult) {
+      var nameOk = await checkNameIsUnique(node.parent, editResult.name, id);
       if (!nameOk) {
         return createNotUnique();
       }
-      node.name = body.name;
+      node.name = editResult.name;
     }
 
     updateWhenUpdated(node);
     node.tag = body.tag;
     await writeNode(node);
-
-    var diagram = (await getBody(id)) || {};
-    utils.copyNotNull(diagram, body, ["params", "style", "description"]);
-
-    var itemList = diagram.items || [];
-    var items = {};
-    for (var item of itemList) {
-      var copy = utils.clone(item);
-      var itemId = item.id;
-      delete copy.id;
-      items[itemId] = copy;
-    }
-    if (body.added) {
-      for (var change of body.added) {
-        var itemId = change.id;
-        delete change.id;
-        items[itemId] = change;
-      }
-    }
-    if (body.updated) {
-      for (var change of body.updated) {
-        var itemId = change.id;
-        delete change.id;
-        var existing = items[itemId];
-        Object.assign(existing, change);
-      }
-    }
-    if (body.removed) {
-      for (var itemId of body.removed) {
-        delete items[itemId];
-      }
-    }
-    var newItems = [];
-    for (var itemId in items) {
-      var item = items[itemId];
-      item.id = itemId;
-      newItems.push(item);
-    }
-    diagram.items = newItems;
+    itemsToArray(diagram);
     await writeBody(id, diagram);
     return [204, ""];
   }

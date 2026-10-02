@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta
             http-equiv="Content-Security-Policy"
-            content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline' 'self'; img-src 'self' data:"
+            content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.openai.com https://api.anthropic.com; style-src 'unsafe-inline' 'self'; img-src 'self' data:"
         />
         <meta
             name="viewport"
@@ -24,7 +24,7 @@
     <body style="overflow: hidden">
         <div id="main">
             <div id="loading">
-                <img src="./static/images/drakosha-loading.png" />
+                <img src="./static/images/drakosha-loading.png" />  
             </div>
             <div id="snack-root"></div>
             <div id="question-root"></div>
@@ -40,6 +40,7 @@
         <script src="./electronconfig.js"></script>
         <script src="./static/strings/localization.js"></script>
 
+        <script src="./static/js/prompts.js"></script>
         <script src="./static/js/utils.js"></script>
         <script src="./static/js/dh2common.js"></script>
         <script src="./static/js/drakon_canvas.js"></script>

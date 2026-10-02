@@ -1031,9 +1031,8 @@ function decrement_arrow_count(context, node) {
     algonode.branching--;
 }
 function decrement_if_count(context, node) {
-    var _collection_12, if_id, if_node;
-    _collection_12 = node.stack;
-    for (if_id of _collection_12) {
+    var if_id, if_node;
+    for (if_id of node.stack) {
         if_node = context.nodes[if_id];
         if_node.branching--;
     }
@@ -1057,9 +1056,8 @@ function group_stack_by_id(stack) {
     return counts_by_id;
 }
 function increment_if_count(context, node) {
-    var _collection_14, if_id, if_node;
-    _collection_14 = node.stack;
-    for (if_id of _collection_14) {
+    var if_id, if_node;
+    for (if_id of node.stack) {
         if_node = context.nodes[if_id];
         if_node.branching++;
     }
@@ -1108,9 +1106,9 @@ function merge_converging_branches(context, node_id, node, stack) {
     node.stack = processed_stack;
 }
 function recurse_traversal(context, node_id, node) {
-    var _collection_20, _selectValue_18, proc, stack1, stack2;
-    _selectValue_18 = node.type;
-    if (_selectValue_18 === 'question') {
+    var _selectValue_2, proc, stack1, stack2;
+    _selectValue_2 = node.type;
+    if (_selectValue_2 === 'question') {
         increment_if_count(context, node);
         stack1 = node.stack.slice();
         stack1.push(node_id);
@@ -1119,17 +1117,16 @@ function recurse_traversal(context, node_id, node) {
         traverse_node(context, node.two, stack2);
         traverse_node(context, node.one, stack1);
     } else {
-        if (_selectValue_18 === 'arrow-loop') {
+        if (_selectValue_2 === 'arrow-loop') {
             stack1 = node.stack.slice();
             stack1.push(node_id);
             traverse_node(context, node.one, stack1);
         } else {
-            if (_selectValue_18 === 'arrow-stub') {
+            if (_selectValue_2 === 'arrow-stub') {
                 decrement_arrow_count(context, node);
             } else {
-                if (_selectValue_18 === 'parbegin') {
-                    _collection_20 = node.procs;
-                    for (proc of _collection_20) {
+                if (_selectValue_2 === 'parbegin') {
+                    for (proc of node.procs) {
                         flow_no_loop(context.nodes, proc.start);
                     }
                 } else {
@@ -1479,7 +1476,7 @@ function getQuestionExits(step) {
     }
 }
 function handleParallel(ctx, step, scenario) {
-    var _collection_2, clone, ctxClone, next, proc, proc2;
+    var clone, ctxClone, next, proc, proc2;
     next = step.procs[0].next;
     clone = {
         id: step.id,
@@ -1487,8 +1484,7 @@ function handleParallel(ctx, step, scenario) {
         type: 'parallel'
     };
     scenario.push(clone);
-    _collection_2 = step.procs;
-    for (proc of _collection_2) {
+    for (proc of step.procs) {
         proc2 = { scenarios: [] };
         clone.procs.push(proc2);
         ctxClone = cloneContext(ctx, proc.start, proc2.scenarios);
@@ -1512,10 +1508,9 @@ function normalizeContent(step) {
     }
 }
 function printParallel(step, baseIndex, depth, lines) {
-    var _collection_2, branch, i;
+    var branch, i;
     i = 1;
-    _collection_2 = step.procs;
-    for (branch of _collection_2) {
+    for (branch of step.procs) {
         addLine(tr('Parallel process') + ' ' + i, depth, lines);
         printScenariosCore(branch.scenarios, baseIndex + '.' + i, depth + 1, lines);
         i++;
@@ -1816,7 +1811,7 @@ function structFlow(nodes, branches, filename, translate, options) {
 
     for (var branch of branches) {
       var body = [];
-      buildTree(nodes, branch.next, body, "<dummy id>", undefined, onError);
+      buildTree(nodes, branch.next, body, "<dummy id>", undefined, onError, []);
 
       result.push({
         name: branch.content,
@@ -1835,7 +1830,13 @@ function structFlow(nodes, branches, filename, translate, options) {
 module.exports = { structFlow, redirectNode };
 
 },{"./noloop":6,"./technicalTree":10,"./tools":11,"./treeTools":13}],10:[function(require,module,exports){
-function buildTree(nodes, nodeId, body, stopId, afterLoop, onError) {
+function append(array, item) {
+    var copy = array.slice();
+    copy.push(item);
+    return copy;
+}
+
+function buildTree(nodes, nodeId, body, stopId, afterLoop, onError, qstack) {
     while (nodeId) {
         if (nodeId === afterLoop) {
             body.push({type: "break"}) 
@@ -1849,7 +1850,8 @@ function buildTree(nodes, nodeId, body, stopId, afterLoop, onError) {
         let next;
 
         if (node.type === "question") {
-            next = reserveNext(nodes, node)
+            var myStack = append(qstack, nodeId);
+            next = reserveNext(nodes, node, myStack);
             
             transformed = {
                 id: node.id,
@@ -1862,8 +1864,8 @@ function buildTree(nodes, nodeId, body, stopId, afterLoop, onError) {
             const yesNodeId = node.flag1 === 1 ? node.one : node.two;
             const noNodeId = node.flag1 === 1 ? node.two : node.one;
 
-            buildTree(nodes, yesNodeId, transformed.yes, node.next, afterLoop, onError);
-            buildTree(nodes, noNodeId, transformed.no, node.next, afterLoop, onError);
+            buildTree(nodes, yesNodeId, transformed.yes, node.next, afterLoop, onError, myStack);
+            buildTree(nodes, noNodeId, transformed.no, node.next, afterLoop, onError, myStack);
             if (next === afterLoop) {
                 next = undefined
             }
@@ -1876,7 +1878,7 @@ function buildTree(nodes, nodeId, body, stopId, afterLoop, onError) {
                 body: []
             };
             var end = nodes[node.end]
-            buildTree(nodes, node.one, transformed.body, node.end, end.one, onError)
+            buildTree(nodes, node.one, transformed.body, node.end, end.one, onError, qstack)
             next = node.next;   
         } else if (node.type == "loopend") {
             if (stopId !== afterLoop) {
@@ -1895,7 +1897,7 @@ function buildTree(nodes, nodeId, body, stopId, afterLoop, onError) {
                 body: []
             };
             var end = nodes[node.stub]
-            buildTree(nodes, node.one, transformed.body, node.stub, end.one, onError)
+            buildTree(nodes, node.one, transformed.body, node.stub, end.one, onError, qstack)
             next = node.next;  
         } else if (node.type === "arrow-stub") {
             return
@@ -1911,7 +1913,7 @@ function buildTree(nodes, nodeId, body, stopId, afterLoop, onError) {
                     body: []
                 }
                 transformed.procs.push(childProc)
-                buildTree(nodes, proc.start, childProc.body, undefined, undefined, buildTree)
+                buildTree(nodes, proc.start, childProc.body, undefined, undefined, onError, [])
             }
             next = node.one;
         } else {
@@ -1952,17 +1954,21 @@ function copyFields(dst, src, fields) {
     }
 }
 
-function reserveNext(nodes, node) {
+function reserveNext(nodes, node, qstack) {
     if (!node.next) {
         return undefined
     }
     const target = nodes[node.next];
-    if (target.targetTaken) {
-        return undefined;
-    } else {
-        target.targetTaken = true;
-        return node.next;
-    }    
+    if (!target.ifs) {
+        target.ifs = {}
+    }
+    for (var qid of qstack) {
+        if (target.ifs[qid]) {
+            return undefined;
+        }
+    }
+    target.ifs[node.id] = true;
+    return node.next   
 }
 
 module.exports = {buildTree}

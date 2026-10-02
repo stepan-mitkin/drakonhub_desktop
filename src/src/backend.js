@@ -28,16 +28,34 @@ function localserver(utils, gconfig) {
   }
 
   async function getTheme() {
-    var theme = await invoke("read_settings");
+    var theme = await invoke("read_settings", {
+      filename: "settings.json"
+    });
     return [200, theme];
   }
 
   async function saveTheme(settings) {
     await invoke("write_settings", {
+      filename: "settings.json",
       settings: settings
     });
     return [204, ""];
   }
+
+  async function getAiSettings() {
+    var theme = await invoke("read_settings", {
+      filename: "aisettings.json"
+    });
+    return theme;
+  }
+
+  async function saveAiSettings(settings) {
+    await invoke("write_settings", {
+      filename: "aisettings.json",
+      settings: settings
+    });
+    return [204, ""];
+  }  
 
   async function getRecentFolders() {
     var response = await invoke("read_recent");
@@ -214,6 +232,8 @@ function localserver(utils, gconfig) {
 
 
   window.padBridge = {
+    getAiSettings: getAiSettings,
+    saveAiSettings: saveAiSettings,    
     createNewWindow: createNewWindow,
     openLink: openLink,
     exportSvg: exportSvg,

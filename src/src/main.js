@@ -33,8 +33,8 @@ function getConfigDir() {
 }
 
 
-function getSettingsPath() {
-    return path.join(getConfigDir(), "settings.json");
+function getSettingsPath(filename) {
+    return path.join(getConfigDir(), filename);
 }
 
 
@@ -254,9 +254,9 @@ function registerIpcHandlers() {
 
     ipcMain.handle(
         "read_settings",
-        async function () {
+        async function (_event, args) {
             return await readJsonFile(
-                getSettingsPath(),
+                getSettingsPath(args.filename),
                 {}
             );
         }
@@ -267,7 +267,7 @@ function registerIpcHandlers() {
         "write_settings",
         async function (_event, args) {
             await writeJsonFile(
-                getSettingsPath(),
+                getSettingsPath(args.filename),
                 args.settings
             );
         }

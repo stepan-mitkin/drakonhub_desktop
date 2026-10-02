@@ -492,6 +492,7 @@ function addDiagramType(parent, imageSrc, header, description, action) {
     icon.style.verticalAlign = 'middle';
     headerDiv = div({
         'font-weight': 'bold',
+        'white-space': 'normal',
         'font-size': getHeader2Size(),
         'text-align': 'center',
         'padding-bottom': '5px',
@@ -920,6 +921,7 @@ function chooseDocumentType_create() {
             'padding-bottom': '10px'
         }));
         addDiagramType(dialog, ipath('logo-drakon.png'), translate('Drakon flowchart'), translate('A process, procedure, algorithm, behavior, HOW the system works'), me.drakon);
+        addDiagramType(dialog, ipath('generate-with-ai.png'), translate('Generate Flowchart with AI'), translate('Describe an algorithm in plain language, and AI will turn it into a DRAKON flowchart.'), me.drakonai);
         addDiagramType(dialog, ipath('logo-graf.png'), translate('Mind map'), translate('Structure, composition, hierarchy, ' + 'ordered notes, what the system CONSISTS OF'), me.graf);
         addDiagramType(dialog, ipath('logo-free.png'), translate('Free-form diagram'), translate('Boxes and arrows, network diagrams, GUI sketches, GNOME diagrams, no limits'), me.free);
         cancel = widgets.createSimpleButton(translate('Cancel'), me.cancel);
@@ -940,24 +942,32 @@ function chooseDocumentType_create() {
                 evt: evt
             };
         } else {
-            if (_eventType_ === 'free') {
+            if (_eventType_ === 'drakonai') {
                 evt = _event_[1];
                 result = {
-                    type: 'free',
+                    type: 'drakonai',
                     evt: evt
                 };
             } else {
-                if (_eventType_ === 'graf') {
+                if (_eventType_ === 'free') {
                     evt = _event_[1];
                     result = {
-                        type: 'graf',
+                        type: 'free',
                         evt: evt
                     };
                 } else {
-                    if (!(_eventType_ === 'cancel')) {
-                        throw new Error('Unexpected case value: ' + _eventType_);
+                    if (_eventType_ === 'graf') {
+                        evt = _event_[1];
+                        result = {
+                            type: 'graf',
+                            evt: evt
+                        };
+                    } else {
+                        if (!(_eventType_ === 'cancel')) {
+                            throw new Error('Unexpected case value: ' + _eventType_);
+                        }
+                        result = undefined;
                     }
-                    result = undefined;
                 }
             }
         }
@@ -993,6 +1003,23 @@ function chooseDocumentType_create() {
         case '14':
             _args_ = [];
             _args_.push('drakon');
+            _args_.push(evt);
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    me.drakonai = function (evt) {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '14':
+            _args_ = [];
+            _args_.push('drakonai');
             _args_.push(evt);
             me._busy = true;
             _topGen_.next(_args_);
@@ -1559,7 +1586,7 @@ function getAppRoot() {
     return gconfig.appRoot;
 }
 function getAppVersion() {
-    return '2026.09.10';
+    return '2026.10.02';
 }
 function getBaseUrl() {
     return gconfig.baseUrl;

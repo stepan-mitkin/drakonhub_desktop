@@ -9,6 +9,8 @@ var html;
 var http;
 var utils;
 var widgets;
+var nextAlgoId;
+nextAlgoId = 0;
 function AccountScreen() {
     var self = { _type: 'AccountScreen' };
     function createStyles() {
@@ -153,6 +155,7 @@ function AdminScreen() {
             top: '0px',
             width: 'calc(100% - 250px)',
             height: '100%',
+            'overflow-y': 'auto',
             padding: '20px'
         });
         html.add(bottom, left);
@@ -237,10 +240,9 @@ function BreadCrumbs() {
         }
     }
     function update(change) {
-        var _collection_2, step;
+        var step;
         if (change.name) {
-            _collection_2 = self.path;
-            for (step of _collection_2) {
+            for (step of self.path) {
                 if (step.id === change.id) {
                     html.setText(step.element, change.name);
                     break;
@@ -404,7 +406,7 @@ function DeskHome() {
 function EditSender() {
     var self = { _type: 'EditSender' };
     function pushEdit(edit) {
-        self.queue.unshift(edit);
+        self.queue.push(edit);
         self.sender.onItem();
     }
     function stop() {
@@ -789,11 +791,10 @@ function FolderListWidget() {
         dh2common.redrawWidgetDom(self);
     }
     function onCheckAll(evt) {
-        var _collection_2, child, selected;
+        var child, selected;
         selected = {};
         if (!isAllChecked(self)) {
-            _collection_2 = self.folder.children;
-            for (child of _collection_2) {
+            for (child of self.folder.children) {
                 selected[child.id] = true;
             }
         }
@@ -988,10 +989,9 @@ function FolderScreen() {
         registerDataListener(self.onChange);
     }
     function onChange(change) {
-        var _collection_2, changeItem;
+        var changeItem;
         if (change.op === 'update') {
-            _collection_2 = change.items;
-            for (changeItem of _collection_2) {
+            for (changeItem of change.items) {
                 if (changeItem.id === self.folderId && 'name' in changeItem) {
                     dh2common.setTitle(changeItem.name);
                     break;
@@ -1000,7 +1000,7 @@ function FolderScreen() {
         }
     }
     function onFolderChanged(changes) {
-        var _branch_, _collection_4, _selectValue_2, _selectValue_6, alive, change, op;
+        var _branch_, _selectValue_2, _selectValue_4, alive, change, op;
         _branch_ = 'Choose function';
         while (true) {
             switch (_branch_) {
@@ -1027,19 +1027,18 @@ function FolderScreen() {
                 }
                 break;
             case 'Run function on items':
-                _collection_4 = changes.items;
-                for (change of _collection_4) {
+                for (change of changes.items) {
                     op(self, change);
                 }
                 _branch_ = 'Update view';
                 break;
             case 'Update view':
-                _selectValue_6 = changes.op;
-                if (_selectValue_6 === 'update' || _selectValue_6 === 'insert' || _selectValue_6 === 'clip') {
+                _selectValue_4 = changes.op;
+                if (_selectValue_4 === 'update' || _selectValue_4 === 'insert' || _selectValue_4 === 'clip') {
                     dh2common.redrawWidgetDom(self.tree);
                 } else {
-                    if (!(_selectValue_6 === 'delete')) {
-                        throw new Error('Unexpected case value: ' + _selectValue_6);
+                    if (!(_selectValue_4 === 'delete')) {
+                        throw new Error('Unexpected case value: ' + _selectValue_4);
                     }
                     dh2common.redrawWidgetDom(self.search);
                 }
@@ -1361,10 +1360,9 @@ function FolderScreenMobile() {
         registerDataListener(self.onChange);
     }
     function onChange(change) {
-        var _collection_2, changeItem;
+        var changeItem;
         if (change.op === 'update') {
-            _collection_2 = change.items;
-            for (changeItem of _collection_2) {
+            for (changeItem of change.items) {
                 if (changeItem.id === self.folderId && 'name' in changeItem) {
                     dh2common.setTitle(changeItem.name);
                     html.setText(self.lowHeader, changeItem.name);
@@ -1374,7 +1372,7 @@ function FolderScreenMobile() {
         }
     }
     function onFolderChanged(changes) {
-        var _branch_, _collection_4, _selectValue_2, change, op;
+        var _branch_, _selectValue_2, change, op;
         _branch_ = 'Choose function';
         while (true) {
             switch (_branch_) {
@@ -1401,8 +1399,7 @@ function FolderScreenMobile() {
                 }
                 break;
             case 'Run function on items':
-                _collection_4 = changes.items;
-                for (change of _collection_4) {
+                for (change of changes.items) {
                     op(self, change);
                 }
                 _branch_ = 'Update view';
@@ -1967,12 +1964,11 @@ function RecentWidget() {
         registerDataListener(self.onChange);
     }
     function onChange(change) {
-        var _collection_4, _collection_6, _selectValue_2, changeItem, changed, found, id;
+        var _selectValue_2, changeItem, changed, found, id;
         changed = false;
         _selectValue_2 = change.op;
         if (_selectValue_2 === 'update') {
-            _collection_6 = change.items;
-            for (changeItem of _collection_6) {
+            for (changeItem of change.items) {
                 found = utils.findBy(self.items, 'id', changeItem.id);
                 if (found && 'name' in changeItem) {
                     found.name = changeItem.name;
@@ -1981,8 +1977,7 @@ function RecentWidget() {
             }
         } else {
             if (_selectValue_2 === 'delete') {
-                _collection_4 = change.items;
-                for (id of _collection_4) {
+                for (id of change.items) {
                     if (removeItemCore(self, id)) {
                         changed = true;
                     }
@@ -2305,7 +2300,7 @@ function SenderLoop_create(sender, diagramId) {
         throw _value_;
     };
     function* SenderLoop_main() {
-        var _branch_, _eventType_, _event_, edit, edit2, id, pollId, response, result, timeoutId, timeoutInterval;
+        var _branch_, _eventType_, _event_, body, editDelay, id, ok, pollId, response, result, timeoutId, timeoutInterval;
         _branch_ = 'Poll';
         while (true) {
             switch (_branch_) {
@@ -2321,11 +2316,7 @@ function SenderLoop_create(sender, diagramId) {
                     if (id === pollId && response.status === 200) {
                         result = JSON.parse(response.responseText);
                         if (result.tag === sender.tag) {
-                            if (sender.queue.length === 0) {
-                                _branch_ = 'Wait';
-                            } else {
-                                _branch_ = 'Send';
-                            }
+                            _branch_ = 'Wait';
                         } else {
                             goToFolderCore(sender.folderId);
                             _branch_ = 'Exit';
@@ -2338,7 +2329,7 @@ function SenderLoop_create(sender, diagramId) {
                         throw new Error('Unexpected case value: ' + _eventType_);
                     }
                     pollId = undefined;
-                    _branch_ = 'Send';
+                    _branch_ = 'Accumulate';
                 }
                 break;
             case 'Wait':
@@ -2354,7 +2345,7 @@ function SenderLoop_create(sender, diagramId) {
                 _eventType_ = _event_[0];
                 if (_eventType_ === 'onItem') {
                     clearTimeout(timeoutId);
-                    _branch_ = 'Send';
+                    _branch_ = 'Accumulate';
                 } else {
                     if (!(_eventType_ === 'onTimeout')) {
                         throw new Error('Unexpected case value: ' + _eventType_);
@@ -2362,24 +2353,46 @@ function SenderLoop_create(sender, diagramId) {
                     _branch_ = 'Poll';
                 }
                 break;
+            case 'Accumulate':
+                if (sender.indicator) {
+                    sender.indicator.saving();
+                }
+                editDelay = 500;
+                timeoutId = setTimeout(me.onTimeout, editDelay, true);
+                me.state = '73';
+                me._busy = false;
+                _event_ = yield;
+                _eventType_ = _event_[0];
+                if (_eventType_ === 'onItem') {
+                    clearTimeout(timeoutId);
+                    _branch_ = 'Accumulate';
+                } else {
+                    if (!(_eventType_ === 'onTimeout')) {
+                        throw new Error('Unexpected case value: ' + _eventType_);
+                    }
+                    _branch_ = 'Send';
+                }
+                break;
             case 'Send':
                 if (sender.queue.length === 0) {
-                    if (sender.indicator) {
-                        sender.indicator.saved();
-                    }
-                    _branch_ = 'Poll';
+                    _branch_ = 'Wait';
                 } else {
-                    if (sender.indicator) {
-                        sender.indicator.saving();
-                    }
-                    edit = sender.queue.pop();
-                    edit2 = enrichPayload(sender, edit);
-                    sendEditCore(sender.folderId, edit2).then(me.onResponse);
+                    body = buildEditObject(sender);
+                    sendEditCore(sender.folderId, body).then(me.onResponse);
                     me.state = '65';
                     me._busy = false;
                     _event_ = yield;
-                    rememberTag(diagramId, edit2.tag);
-                    _branch_ = 'Send';
+                    ok = _event_[1];
+                    if (ok) {
+                        rememberTag(diagramId, body.tag);
+                        if (sender.indicator) {
+                            sender.indicator.saved();
+                        }
+                        _branch_ = 'Wait';
+                    } else {
+                        goToFolderCore(sender.folderId);
+                        _branch_ = 'Exit';
+                    }
                 }
                 break;
             case 'Exit':
@@ -2418,6 +2431,7 @@ function SenderLoop_create(sender, diagramId) {
         switch (me.state) {
         case '44':
         case '62':
+        case '73':
             _args_ = [];
             _args_.push('onItem');
             me._busy = true;
@@ -2434,6 +2448,7 @@ function SenderLoop_create(sender, diagramId) {
         }
         switch (me.state) {
         case '44':
+        case '73':
             _args_ = [];
             _args_.push('onTimeout');
             me._busy = true;
@@ -2461,7 +2476,7 @@ function SenderLoop_create(sender, diagramId) {
             break;
         }
     };
-    me.onResponse = function () {
+    me.onResponse = function (ok) {
         var _args_;
         if (me._busy) {
             throw new Error('Synchronous reentry is not allowed');
@@ -2470,6 +2485,7 @@ function SenderLoop_create(sender, diagramId) {
         case '65':
             _args_ = [];
             _args_.push('onResponse');
+            _args_.push(ok);
             me._busy = true;
             _topGen_.next(_args_);
             break;
@@ -2841,11 +2857,10 @@ function TreeView() {
         }
     }
     function collapse(id) {
-        var _collection_2, childId, item;
+        var childId, item;
         if (!self.locked) {
             item = getTreeItem(self, id);
-            _collection_2 = item.children;
-            for (childId of _collection_2) {
+            for (childId of item.children) {
                 removeTreeNode(self, childId);
             }
             item.expanded = false;
@@ -2882,10 +2897,9 @@ function TreeView() {
         return id in self.items;
     }
     function expand(id, children) {
-        var _collection_2, child, childId, item;
+        var child, childId, item;
         item = getTreeItem(self, id);
-        _collection_2 = item.children;
-        for (childId of _collection_2) {
+        for (childId of item.children) {
             removeTreeNode(self, childId);
         }
         item.children = [];
@@ -3535,6 +3549,11 @@ function addEditableCore(widget, container, title, parentId, prop, left, top, st
         html.add(container, editable);
     }
 }
+function addEnd(context) {
+    var end;
+    end = addItem(context, 'end', undefined);
+    context.end = end.id;
+}
 function addFileSection(widget, parent) {
     var items, parentId;
     items = [];
@@ -3653,6 +3672,19 @@ function addGotoProjectSession(parent) {
     addGoToGroups(items);
     html.add(parent, dh2common.createMenuSection(tr('Go to'), items));
 }
+function addItem(context, type, content) {
+    var id, item;
+    id = getNextAlgoId();
+    item = {
+        type: type,
+        id: id
+    };
+    if (content) {
+        item.content = content;
+    }
+    context.items[id] = item;
+    return item;
+}
 function addNavItem(widget, parent, id, label) {
     var item, itemClass;
     if (widget.page === id) {
@@ -3704,6 +3736,17 @@ function addRecentItem(container, widget, item) {
             goToFolder(id);
         });
     }
+}
+function addStage(context, stage) {
+    var bid, branch, end;
+    bid = context.branches[stage.name];
+    branch = context.items[bid];
+    if (stage.last) {
+        end = context.end;
+    } else {
+        end = undefined;
+    }
+    branch.one = traverseSequence(context, stage.steps, end);
 }
 function addSubHeader(parent, title) {
     html.add(parent, div({
@@ -3898,13 +3941,25 @@ function buildCountRow(bucket) {
     return result;
 }
 function buildCsvFromTable(table) {
-    var _collection_2, row, rows;
+    var row, rows;
     rows = [table.columns.join(';')];
-    _collection_2 = table.rows;
-    for (row of _collection_2) {
+    for (row of table.rows) {
         rows.push(row.join(';'));
     }
     return rows.join('\n');
+}
+function buildEditObject(sender) {
+    var edits, newTag, oldTag;
+    newTag = generateNewTag();
+    oldTag = sender.tag;
+    edits = sender.queue.map(edit => enrichPayload(sender, edit));
+    sender.queue = [];
+    sender.tag = newTag;
+    return {
+        tag: newTag,
+        oldTag: oldTag,
+        edits: edits
+    };
 }
 function buildGroupHeader(group) {
     var groups, name;
@@ -3931,23 +3986,21 @@ function buildGroupsUrl() {
     return baseUrl + '?group=list';
 }
 function buildHtmlTableFromData(data) {
-    var _collection_2, row, table;
+    var row, table;
     table = html.createElement('table');
     table.className = 'report-table';
     addTableRow(table, data.columns, 'th');
-    _collection_2 = data.rows;
-    for (row of _collection_2) {
+    for (row of data.rows) {
         addTableRow(table, row, 'td');
     }
     return table;
 }
 async function buildItemsForPaste(folders, parentId) {
-    var _collection_2, child, chosenName, folder, item, items, lowName, name, namesInParent, parent;
+    var child, chosenName, folder, item, items, lowName, name, namesInParent, parent;
     namesInParent = {};
     parent = await fetchFolder(parentId);
     if (parent.children) {
-        _collection_2 = parent.children;
-        for (child of _collection_2) {
+        for (child of parent.children) {
             name = child.name.toLowerCase();
             namesInParent[name] = true;
         }
@@ -4133,12 +4186,11 @@ function checkIfCanReuseUndo(id, tag) {
     }
 }
 async function checkIfNameIsUnique(widget, name) {
-    var _collection_2, child, childName, id, lowname, parent;
+    var child, childName, id, lowname, parent;
     lowname = name.toLowerCase();
     parent = await fetchFolder(widget.parentId);
     if (parent.children) {
-        _collection_2 = parent.children;
-        for (child of _collection_2) {
+        for (child of parent.children) {
             id = makeId(child.space_id, child.id);
             childName = child.name.toLowerCase();
             if (!(!(childName === lowname) || id === widget.folderId)) {
@@ -4352,6 +4404,14 @@ function cleanupOnMove() {
     widgets.removePopups();
     widgets.removeSnack();
 }
+function clearAiForm(context) {
+    context.key.value = '';
+    context.model.value = '';
+    context.provider.value = '';
+    context.name.value = '';
+    context.description.value = '';
+    saveAiDialogData({});
+}
 function clearFolderActive(parentId) {
     if (parentId && unit.globals.active) {
         delete unit.globals.active[parentId];
@@ -4541,35 +4601,41 @@ async function createDocumentCore(parentId, evt, documentType) {
         case 'Choose document type':
             trace('createDocumentCore', parentId);
             if (documentType) {
-                _branch_ = 'Get name from user';
+                _branch_ = 'Normal drakon';
             } else {
                 if (gconfig.free) {
                     chosenType = await dh2common.chooseDocumentType();
                     if (chosenType) {
-                        documentType = chosenType.type;
-                        evt = chosenType.evt;
-                        _branch_ = 'Get name from user';
+                        if (chosenType.type === 'drakonai') {
+                            _branch_ = 'Create with AI';
+                        } else {
+                            documentType = chosenType.type;
+                            evt = chosenType.evt;
+                            _branch_ = 'Normal drakon';
+                        }
                     } else {
                         _branch_ = 'Exit';
                     }
                 } else {
                     documentType = 'drakon';
-                    _branch_ = 'Get name from user';
+                    _branch_ = 'Normal drakon';
                 }
             }
             break;
-        case 'Get name from user':
+        case 'Create with AI':
+            folder = await createDrakonWithAi(parentId);
+            _branch_ = 'Open document';
+            break;
+        case 'Normal drakon':
             folder = await createFolderCore(parentId, evt, documentType, tr('Create document'));
-            if (folder) {
-                reportInsert([folder]);
-                _branch_ = 'Open document';
-            } else {
-                _branch_ = 'Exit';
-            }
+            _branch_ = 'Open document';
             break;
         case 'Open document':
-            id = folder.id;
-            goToFolder(id);
+            if (folder) {
+                reportInsert([folder]);
+                id = folder.id;
+                goToFolder(id);
+            }
             _branch_ = 'Exit';
             break;
         case 'Exit':
@@ -4610,6 +4676,23 @@ function createDrakonHubWidgetConfig(widget) {
         watermark: gconfig.watermark
     };
 }
+async function createDrakonWithAi(parentId) {
+    var created, diagram, editBody, folder;
+    diagram = await generateWithAi();
+    if (diagram) {
+        folder = await createWithUniqueName(parentId, 'drakon', diagram.name);
+        if (folder) {
+            created = await fetchFolder(folder.id);
+            editBody = createEditFromDiagram(created.tag, diagram);
+            await sendEditCore(folder.id, editBody);
+            return folder;
+        } else {
+            return undefined;
+        }
+    } else {
+        return undefined;
+    }
+}
 function createDwSenderAdapter(diagram, indicator) {
     var pushEdit, sender;
     sender = createEditSender(diagram.id, diagram.tag, indicator);
@@ -4618,6 +4701,34 @@ function createDwSenderAdapter(diagram, indicator) {
         pushEdit(wrapEdit(edit));
     };
     return sender;
+}
+function createEditFromDiagram(tag, diagram) {
+    var _collection_2, copy, edit, edits, id, item, newTag, oldTag;
+    newTag = generateNewTag();
+    oldTag = tag;
+    edits = [];
+    edit = {
+        editType: 'edit',
+        removed: [],
+        added: [],
+        updated: []
+    };
+    edits.push(edit);
+    _collection_2 = diagram.items;
+    for (id in _collection_2) {
+        item = _collection_2[id];
+        copy = utils.clone(item);
+        copy.id = id;
+        edit.added.push(copy);
+    }
+    if (diagram.params) {
+        edit.params = diagram.params;
+    }
+    return {
+        tag: newTag,
+        oldTag: oldTag,
+        edits: edits
+    };
 }
 function createEditSender(id, tag, indicator) {
     var self;
@@ -4720,6 +4831,44 @@ function createFolderItem(widget, folder, clip) {
     });
     folder.container = line;
     return line;
+}
+async function createGenerateWithAiDialog(onGenerated) {
+    var ai, context, dialog, forget, forgetBlock, form, generate, onProviderChange;
+    dialog = widgets.createMiddleWindow();
+    dialog.style.padding = '10px';
+    form = html.createElement('form');
+    html.add(dialog, form);
+    ai = await getAiDialogData();
+    widgets.addMiddleHeader(form, tr('Generate Flowchart with AI'), getHeader1Size());
+    context = { onGenerated: onGenerated };
+    generate = function () {
+        doGenerateWithAi(context);
+    };
+    widgets.addMiddleTwoButtons(form, tr('Cancel'), widgets.removeQuestions, tr('Generate'), generate);
+    context.provider = widgets.addMiddleCombo(form, tr('AI provider'), [
+        {
+            id: 'openai',
+            text: 'OpenAI'
+        },
+        {
+            id: 'claude',
+            text: 'Claude'
+        }
+    ], ai.provider);
+    onProviderChange = () => setDefaultModel(context);
+    context.provider.addEventListener('change', onProviderChange);
+    context.model = widgets.addMiddleInput(form, tr('Model'), ai.model);
+    context.key = widgets.addMiddleSecretInput(form, tr('API key'), ai.key);
+    forgetBlock = widgets.addButtonBlock(form);
+    forget = widgets.createSimpleButton(tr('Clear form'), () => clearAiForm(context));
+    html.add(forgetBlock, forget);
+    onProviderChange();
+    if (ai.model) {
+        context.model.value = ai.model;
+    }
+    context.error = widgets.addMiddleError(form);
+    context.name = widgets.addMiddleInput(form, tr('Name'), ai.name);
+    context.description = widgets.addMiddleTextArea(form, tr('Description'), ai.description);
 }
 function createGoToDefinition(items, folder) {
     items.push({
@@ -4926,12 +5075,11 @@ function createTab(widget, tab) {
     html.add(widget.top, tabDiv);
 }
 function createTableFromData(data) {
-    var _collection_2, row, table;
+    var row, table;
     table = html.createElement('table');
     table.className = 'report-table';
     addTableRow(table, data.columns, 'th');
-    _collection_2 = data.rows;
-    for (row of _collection_2) {
+    for (row of data.rows) {
         addTableRow(table, row, 'td');
     }
     return table;
@@ -5083,6 +5231,24 @@ function createUpdate(id) {
         op: 'update',
         fields: {}
     };
+}
+async function createWithUniqueName(parentId, type, name) {
+    var error, i, result, retry, xname;
+    result = {};
+    error = await sendCreateFolder(parentId, type, name, result);
+    if (error) {
+        for (i = 0; i < 100; i++) {
+            retry = {};
+            xname = name + '_x' + (i + 2);
+            error = await sendCreateFolder(parentId, type, xname, retry);
+            if (!error) {
+                return retry;
+            }
+        }
+        return undefined;
+    } else {
+        return result;
+    }
 }
 function cutCore(widget, ids) {
     var items;
@@ -5581,6 +5747,109 @@ function div() {
     properties = {};
     return html.createElement('div', properties, args);
 }
+async function doGenerateWithAi(context) {
+    var _selectValue_2, ai, aiResponse, diagram, error, ex, fakeai, prompt, promptLines, responseObj, userRequest;
+    try {
+        ai = {
+            provider: context.provider.value,
+            key: trim(context.key.value),
+            name: trim(context.name.value),
+            model: trim(context.model.value),
+            description: trim(context.description.value)
+        };
+        html.setText(context.error, '');
+        error = '';
+        if (ai.provider) {
+            if (ai.model) {
+                if (ai.key) {
+                    if (ai.name) {
+                        if (!ai.description) {
+                            context.description.focus();
+                            error = tr('Description is empty');
+                        }
+                    } else {
+                        context.name.focus();
+                        error = tr('Name is empty');
+                    }
+                } else {
+                    context.key.focus();
+                    error = tr('API key is empty');
+                }
+            } else {
+                context.model.focus();
+                error = tr('Model is empty');
+            }
+        } else {
+            error = tr('AI provider is empty');
+        }
+        if (error) {
+            html.setText(context.error, error);
+        } else {
+            await saveAiDialogData(ai);
+            promptLines = window.drakonhub_prompts.getCreateDrakonPrompt();
+            prompt = promptLines.join('\n');
+            userRequest = '## ' + ai.name + '\n\n' + ai.description;
+            console.log(prompt, userRequest);
+            fakeai = false;
+            _selectValue_2 = ai.provider;
+            if (_selectValue_2 === 'openai') {
+                showWait();
+                if (fakeai) {
+                    responseObj = generateFakeAiResponse();
+                } else {
+                    responseObj = await sendRequestToOpenAi(ai.key, ai.model, prompt, userRequest);
+                }
+                hideWait();
+                if (responseObj.response) {
+                    aiResponse = JSON.parse(responseObj.response);
+                }
+                if (responseObj.error) {
+                    html.setText(context.error, responseObj.error);
+                } else {
+                    console.log(JSON.stringify(aiResponse, null, 2));
+                    if (aiResponse.ok) {
+                        diagram = generateDrakonFromAiAst(aiResponse.algorithm);
+                        widgets.removeQuestions();
+                        context.onGenerated(diagram);
+                    } else {
+                        html.setText(context.error, aiResponse.error);
+                    }
+                }
+            } else {
+                if (_selectValue_2 === 'claude') {
+                    showWait();
+                    if (fakeai) {
+                        responseObj = generateFakeAiResponse();
+                    } else {
+                        responseObj = await sendRequestToClaude(ai.key, ai.model, prompt, userRequest);
+                    }
+                    hideWait();
+                    if (responseObj.response) {
+                        aiResponse = JSON.parse(removeFirstAndLastLines(responseObj.response));
+                    }
+                    if (responseObj.error) {
+                        html.setText(context.error, responseObj.error);
+                    } else {
+                        console.log(JSON.stringify(aiResponse, null, 2));
+                        if (aiResponse.ok) {
+                            diagram = generateDrakonFromAiAst(aiResponse.algorithm);
+                            widgets.removeQuestions();
+                            context.onGenerated(diagram);
+                        } else {
+                            html.setText(context.error, aiResponse.error);
+                        }
+                    }
+                } else {
+                    html.setText(context.error, 'This AI provider is not supported');
+                }
+            }
+        }
+    } catch (_handlerData_) {
+        ex = _handlerData_;
+        hideWait();
+        html.setText(context.error, ex.message);
+    }
+}
 function downloadLink(url, filename) {
     var link;
     link = document.createElement('a');
@@ -5591,13 +5860,12 @@ function downloadLink(url, filename) {
     document.body.removeChild(link);
 }
 async function downloadMyData() {
-    var _collection_2, access, data, response, str;
+    var access, data, response, str;
     try {
         response = await sendRequestRaw('GET', '/api/get_my_data');
         data = JSON.parse(response.responseText);
         if (data.spaces_access) {
-            _collection_2 = data.spaces_access;
-            for (access of _collection_2) {
+            for (access of data.spaces_access) {
                 access.url = 'https://' + window.location.hostname + '/app?proj=' + access.space_id + '&doc=1';
             }
         }
@@ -5627,34 +5895,28 @@ function enneScheduleChange(self, id, prop, value) {
     ]);
 }
 function enrichPayload(self, edit) {
-    var _collection_2, _selectValue_4, change, edit2, item, newTag, oldTag, reportedChange;
-    newTag = Math.floor(20000000 + Math.random() * 10000000).toString();
-    oldTag = self.tag;
-    self.tag = newTag;
+    var _selectValue_2, change, edit2, item, reportedChange;
     edit2 = {
-        tag: newTag,
-        oldTag: oldTag,
         editType: 'edit',
         removed: [],
         added: [],
         updated: []
     };
-    _collection_2 = edit.changes;
-    for (change of _collection_2) {
+    for (change of edit.changes) {
         if (change.id) {
-            _selectValue_4 = change.op;
-            if (_selectValue_4 === 'insert') {
+            _selectValue_2 = change.op;
+            if (_selectValue_2 === 'insert') {
                 item = utils.clone(change.fields);
                 item.id = change.id;
                 edit2.added.push(item);
             } else {
-                if (_selectValue_4 === 'update') {
+                if (_selectValue_2 === 'update') {
                     item = utils.clone(change.fields);
                     item.id = change.id;
                     edit2.updated.push(item);
                 } else {
-                    if (!(_selectValue_4 === 'delete')) {
-                        throw new Error('Unexpected case value: ' + _selectValue_4);
+                    if (!(_selectValue_2 === 'delete')) {
+                        throw new Error('Unexpected case value: ' + _selectValue_2);
                     }
                     edit2.removed.push(change.id);
                 }
@@ -5749,14 +6011,13 @@ async function feedbackScreenGeneric(widget, parent, title, type) {
     };
 }
 async function fetchAllDocuments(folderId, output) {
-    var _collection_2, child, doc, docBody, docs, folder, folders, id;
+    var child, doc, docBody, docs, folder, folders, id;
     folder = await fetchFolder(folderId);
     if (folder.type === 'folder') {
         if (folder.children) {
             folders = [];
             docs = [];
-            _collection_2 = folder.children;
-            for (child of _collection_2) {
+            for (child of folder.children) {
                 if (child.type === 'folder') {
                     folders.push(child);
                 } else {
@@ -5983,33 +6244,30 @@ function fillNameBanner(nameContainer, name, path, type) {
     }
 }
 function fillProjectListItems(widget) {
-    var _collection_2, _collection_4, container, item, line;
+    var container, item, line;
     container = widget.container;
     html.clear(container);
     if (widget.items && !(widget.items.length === 0)) {
         html.add(container, div('list-subheader', { text: tr('Projects') }));
-        _collection_4 = widget.items;
-        for (item of _collection_4) {
+        for (item of widget.items) {
             line = makeProjectListLine(widget, item, widget.active);
             html.add(container, line);
         }
     }
     if (widget.recent && !(widget.recent.length === 0)) {
         html.add(container, div('list-subheader', { text: tr('Recent') }));
-        _collection_2 = widget.recent;
-        for (item of _collection_2) {
+        for (item of widget.recent) {
             line = makeRecentListLine(widget, item);
             html.add(container, line);
         }
     }
 }
 function fillSimpleListItems(widget) {
-    var _collection_2, container, item, line;
+    var container, item, line;
     container = widget.container;
     html.clear(container);
     if (widget.items) {
-        _collection_2 = widget.items;
-        for (item of _collection_2) {
+        for (item of widget.items) {
             line = makeSimpleListLine(widget, item, widget.active);
             html.add(container, line);
         }
@@ -6072,7 +6330,7 @@ function fillTreeNodeMenu(widget, item) {
     }
 }
 async function fillUserInfo(container, userId) {
-    var _collection_2, email, name, passContainer, response, space, table;
+    var email, name, passContainer, response, space, table;
     html.clear(container);
     showWait();
     response = await sendRequest('GET', '/api/user_details/' + userId);
@@ -6107,8 +6365,7 @@ async function fillUserInfo(container, userId) {
     table = html.createElement('table');
     html.add(container, table);
     utils.sortBy(response.spaces_access, 'name');
-    _collection_2 = response.spaces_access;
-    for (space of _collection_2) {
+    for (space of response.spaces_access) {
         addAccessLine(table, space);
     }
 }
@@ -6605,6 +6862,130 @@ async function generateAiPrompt(widget) {
     hideWait();
     widget.drakon.generateMany(docs);
 }
+function generateDrakonFromAiAst(algorithm) {
+    var context, diagram, stage;
+    nextAlgoId = 1;
+    context = {
+        items: {},
+        branches: {}
+    };
+    if (algorithm.stages && !(algorithm.stages.length === 0)) {
+        addEnd(context);
+        registerBranches(context, algorithm);
+        for (stage of algorithm.stages) {
+            addStage(context, stage);
+        }
+        removeIds(context.items);
+    }
+    diagram = {
+        name: algorithm.name,
+        type: 'drakon',
+        params: algorithm.arguments || '',
+        items: context.items
+    };
+    return diagram;
+}
+async function generateDummyDiagram() {
+    return {
+        name: 'Артикль в английском языке',
+        'items': {
+            '4': {
+                'content': '<p>Объектов несколько?</p>',
+                'flag1': 0,
+                'type': 'question',
+                'two': '9',
+                'one': '5'
+            },
+            '8': {
+                'type': 'action',
+                'content': '<p><strong>A</strong></p><p>Неопределённый артикль</p>',
+                'one': '1'
+            },
+            '1': { 'type': 'end' },
+            '5': {
+                'content': '<p>Объект исчисляемый?</p>',
+                'flag1': 1,
+                'type': 'question',
+                'one': '8',
+                'two': '9'
+            },
+            '9': {
+                'type': 'action',
+                'content': '<p>Без артикля</p>',
+                'one': '1'
+            },
+            '6': {
+                'type': 'action',
+                'content': '<p><strong>THE</strong></p><p>Определённый артикль</p>',
+                'one': '1'
+            },
+            '3': {
+                'content': '<p>Речь идёт о конкретном объекте/объектах?</p>',
+                'flag1': 1,
+                'type': 'question',
+                'two': '4',
+                'one': '7'
+            },
+            '7': {
+                'type': 'comment',
+                'content': '<p>Можно сказать "этот" или "эти".</p>',
+                'one': '6'
+            },
+            '2': {
+                'type': 'branch',
+                'one': '3',
+                'branchId': 0
+            }
+        },
+        'description': '<p>Если мы говорим о каком-то конкретном объекте, то ставим определённый артикль THE, даже если объектов несколько.</p><p><br /></p><p>Если мы говорим о чём-то, на что не можем показать пальцем, и если объектов несколько, то артикль опускается.</p><p><br /></p><p>Если абстрактный объект один, и он исчисляемый, то ставим неопределённый артикль A.</p><p><br /></p><p>Если абстрактный объект неисчисляемый, то артикль опускается.</p>',
+        'type': 'drakon'
+    };
+}
+function generateFakeAiResponse() {
+    var response, respstr;
+    response = {
+        'ok': true,
+        'algorithm': {
+            'name': 'Lunch Break',
+            'arguments': 'Colleagues\nDonuts\nPlace to nap',
+            'stages': [{
+                    'name': 'Main',
+                    'steps': [
+                        {
+                            'type': 'action',
+                            'content': 'Discuss the weather with colleagues'
+                        },
+                        {
+                            'type': 'action',
+                            'content': 'Discuss sports with colleagues'
+                        },
+                        {
+                            'type': 'action',
+                            'content': 'Discuss the news with colleagues'
+                        },
+                        {
+                            'type': 'action',
+                            'content': 'Eat a donut'
+                        },
+                        {
+                            'type': 'loop',
+                            'content': 'While still hungry',
+                            'steps': [{
+                                    'type': 'action',
+                                    'content': 'Eat another donut'
+                                }]
+                        },
+                        {
+                            'type': 'action',
+                            'content': 'Take a nap to prepare for work'
+                        }
+                    ]
+                }]
+        }
+    };
+    respstr = JSON.stringify(response);
+    return { response: respstr };
+}
 async function generateNewPassword(container, userId) {
     var copy, payload, response;
     payload = { user_id: userId };
@@ -6618,6 +6999,75 @@ async function generateNewPassword(container, userId) {
     });
     copy.style.marginLeft = '10px';
     html.add(container, copy);
+}
+function generateNewTag() {
+    return Math.floor(20000000 + Math.random() * 10000000).toString();
+}
+function generateWithAi() {
+    var _obj_;
+    _obj_ = generateWithAi_create();
+    return _obj_.run();
+}
+function generateWithAi_create() {
+    var _earlyPromise_, _topGen_, _topReject_, _topResolve_, me;
+    me = {
+        _type: 'generateWithAi',
+        _busy: true,
+        state: 'created'
+    };
+    _topResolve_ = function (_value_) {
+        _earlyPromise_ = Promise.resolve(_value_);
+    };
+    _topReject_ = function (_value_) {
+        throw _value_;
+    };
+    function* generateWithAi_main() {
+        var _event_, diagram;
+        createGenerateWithAiDialog(me.onGenerated);
+        me.state = '5';
+        me._busy = false;
+        _event_ = yield;
+        diagram = _event_[1];
+        _topResolve_(diagram);
+        return;
+    }
+    function generateWithAi_run() {
+        if (me.state !== 'created') {
+            throw new Error('run() can be called only once');
+        }
+        me.state = 'started';
+        _topGen_ = generateWithAi_main();
+        _topGen_.next();
+        if (_earlyPromise_) {
+            return _earlyPromise_;
+        }
+        return new Promise((resolve, reject) => {
+            _topResolve_ = resolve;
+            _topReject_ = reject;
+        });
+    }
+    me.run = generateWithAi_run;
+    me.stop = function () {
+        me.state = undefined;
+    };
+    me.onGenerated = function (diagram) {
+        var _args_;
+        if (me._busy) {
+            throw new Error('Synchronous reentry is not allowed');
+        }
+        switch (me.state) {
+        case '5':
+            _args_ = [];
+            _args_.push('onGenerated');
+            _args_.push(diagram);
+            me._busy = true;
+            _topGen_.next(_args_);
+            break;
+        default:
+            break;
+        }
+    };
+    return me;
 }
 async function genericRenameObject(widget, evt, item) {
     var action, newName;
@@ -6636,6 +7086,21 @@ async function genericRenameObject(widget, evt, item) {
         } else {
         }
     }
+}
+async function getAiDialogData() {
+    var ai, aiSettings;
+    ai = unit.globals.ai || {};
+    if (padBridge.saveAiSettings) {
+        aiSettings = await padBridge.getAiSettings() || {};
+    } else {
+        aiSettings = loadJsonToLocalStorage('ai-settings');
+    }
+    if (aiSettings.provider) {
+        ai.provider = aiSettings.provider;
+        ai.key = aiSettings.key;
+        ai.model = aiSettings.model;
+    }
+    return ai;
 }
 function getCurrentClientType() {
     var _selectValue_2;
@@ -6742,6 +7207,12 @@ function getHeaders() {
     } else {
         return undefined;
     }
+}
+function getNextAlgoId() {
+    var id;
+    id = nextAlgoId;
+    nextAlgoId++;
+    return id.toString();
 }
 function getNodeIcon(type) {
     if (type === 'project') {
@@ -7155,11 +7626,10 @@ function gotoDocs() {
     html.openTab(gconfig.documentation);
 }
 function groupBy(table, columns) {
-    var _collection_2, bucket, indexed, key, list, newColumns, newRows, row, values;
+    var bucket, indexed, key, list, newColumns, newRows, row, values;
     indexed = {};
     list = [];
-    _collection_2 = table.rows;
-    for (row of _collection_2) {
+    for (row of table.rows) {
         values = getSubRow(table, row, columns);
         key = values.join('|');
         bucket = indexed[key];
@@ -7200,11 +7670,10 @@ function hideWait() {
     dh2common.hideWaitBlock();
 }
 function hieTraverse(byId, id, output) {
-    var _collection_2, childId, item;
+    var childId, item;
     item = byId[id];
     output.push(item.item);
-    _collection_2 = item.children;
-    for (childId of _collection_2) {
+    for (childId of item.children) {
         hieTraverse(byId, childId, output);
     }
 }
@@ -7352,10 +7821,9 @@ function isFree() {
     }
 }
 function isItemCut(clip, id) {
-    var _collection_2, item;
+    var item;
     if (clip && clip.type === 'cut') {
-        _collection_2 = clip.items;
-        for (item of _collection_2) {
+        for (item of clip.items) {
             if (item.id === id) {
                 return true;
             }
@@ -7433,8 +7901,13 @@ function loadDiagramItems(items, doc) {
     ensureTriChildExists(doc, neg, 'neg');
     ensureTriChildExists(doc, neg, 'org');
 }
+function loadJsonToLocalStorage(key) {
+    var str;
+    str = localStorage.getItem(key) || '{}';
+    return JSON.parse(str);
+}
 async function loadPayments(container) {
-    var _collection_2, amount, line, response, row, table, th, wait;
+    var amount, line, response, row, table, th, wait;
     wait = createTag(container, 'div', tr('Loading...'));
     response = await sendRequest('GET', '/api/get_payments');
     html.remove(wait);
@@ -7446,8 +7919,7 @@ async function loadPayments(container) {
         th = createTag(table, 'tr');
         createTag(th, 'th', tr('Date'));
         createTag(th, 'th', tr('Amount'));
-        _collection_2 = response.payments;
-        for (line of _collection_2) {
+        for (line of response.payments) {
             row = createTag(table, 'tr');
             createTag(row, 'td', formatDate(line.payment_date));
             amount = createTag(row, 'td', line.amount + ' руб.');
@@ -7458,7 +7930,7 @@ async function loadPayments(container) {
     }
 }
 async function loadSessions(container) {
-    var _collection_2, line, response, row, table, th, wait;
+    var line, response, row, table, th, wait;
     wait = createTag(container, 'div', tr('Loading...'));
     response = await sendRequest('GET', '/api/get_my_sessions');
     html.remove(wait);
@@ -7471,8 +7943,7 @@ async function loadSessions(container) {
         createTag(th, 'th', 'IP');
         createTag(th, 'th', tr('Device'));
         createTag(th, 'th', tr('Current'));
-        _collection_2 = response.sessions;
-        for (line of _collection_2) {
+        for (line of response.sessions) {
             row = createTag(table, 'tr');
             createTag(row, 'td', formatDate(line.created));
             createTag(row, 'td', line.ip);
@@ -8534,12 +9005,30 @@ function redrawSearchItems(widget) {
     }
 }
 function redrawTabs(widget) {
-    var _collection_2, tab;
+    var tab;
     html.clear(widget.top);
-    _collection_2 = widget.tabs;
-    for (tab of _collection_2) {
+    for (tab of widget.tabs) {
         createTab(widget, tab);
     }
+}
+function registerBranches(context, algorithm) {
+    var branch, branchId, firstStage, last, stage, stages;
+    stages = algorithm.stages;
+    firstStage = stages[0];
+    if (stages.length === 1) {
+        branchId = 0;
+    } else {
+        branchId = 1;
+    }
+    for (stage of stages) {
+        stage.last = false;
+        branch = addItem(context, 'branch', stage.name);
+        branch.branchId = branchId;
+        context.branches[stage.name] = branch.id;
+        branchId++;
+    }
+    last = stages[stages.length - 1];
+    last.last = true;
 }
 function registerDataListener(listener) {
     var key;
@@ -8598,6 +9087,18 @@ function removeFeedbackButton() {
         unit.feedbackButton = undefined;
     }
 }
+function removeFirstAndLastLines(text) {
+    var lines;
+    lines = text.split('\n');
+    return lines.slice(1, -1).join('\n');
+}
+function removeIds(items) {
+    var id, item;
+    for (id in items) {
+        item = items[id];
+        delete item.id;
+    }
+}
 function removeItemCore(widget, id) {
     var index, items;
     items = widget.items;
@@ -8610,10 +9111,9 @@ function removeItemCore(widget, id) {
     }
 }
 function removeTreeNode(widget, id) {
-    var _collection_2, childId, item;
+    var childId, item;
     item = getTreeItem(widget, id);
-    _collection_2 = item.children;
-    for (childId of _collection_2) {
+    for (childId of item.children) {
         removeTreeNode(widget, childId);
     }
     html.remove(item.container);
@@ -9206,6 +9706,23 @@ function runMouseAction(prim, pos, link, insertion, nothing) {
         return nothing();
     }
 }
+async function saveAiDialogData(ai) {
+    var aiSettings, copy;
+    copy = utils.clone(ai);
+    delete copy.key;
+    delete copy.provider;
+    delete copy.model;
+    unit.globals.ai = copy;
+    aiSettings = {};
+    aiSettings.provider = ai.provider;
+    aiSettings.key = ai.key;
+    aiSettings.model = ai.model;
+    if (padBridge.saveAiSettings) {
+        await padBridge.saveAiSettings(aiSettings);
+    } else {
+        saveJsonToLocalStorage('ai-settings', aiSettings);
+    }
+}
 async function saveDetails(widget, usernameInput, emailInput, good, bad) {
     var email, error, errorObj, marketing, message, name, payload, response;
     good.style.display = 'none';
@@ -9265,6 +9782,11 @@ function saveInClipboard(type, obj) {
     content = JSON.stringify(obj);
     localStorage.setItem('clipboard-type', type);
     localStorage.setItem('clipboard', content);
+}
+function saveJsonToLocalStorage(key, obj) {
+    var str;
+    str = JSON.stringify(obj);
+    localStorage.setItem(key, str);
 }
 async function saveLanguage(languageControls) {
     var bad, good, response, settings;
@@ -9594,12 +10116,15 @@ async function sendCreateFolder(parentId, type, name, output) {
             return undefined;
         } else {
             if (body.error === 'ERR_NAME_NOT_UNIQUE') {
+                output.error = body.error;
                 return tr('Name is not unique');
             } else {
+                output.error = 'other';
                 return tr('An error has occurred');
             }
         }
     } else {
+        output.error = 'other';
         return tr('An error has occurred');
     }
 }
@@ -9608,11 +10133,12 @@ async function sendDeactivateLicense() {
     payload = {};
     await sendRequest('POST', '/api/deactivate_license', payload);
 }
-async function sendEditCore(id, edit) {
-    var parsed, url;
+async function sendEditCore(id, edits) {
+    var parsed, response, url;
     parsed = parseId(id);
     url = '/api/edit/' + parsed.spaceId + '/' + parsed.folderId;
-    await sendRequest('POST', url, edit);
+    response = await sendRequestCheckAuth('POST', url, edits);
+    return dh2common.isSuccess(response);
 }
 async function sendErrorReport(ex) {
     var account, folderId, report, settings, stack;
@@ -9782,6 +10308,93 @@ async function sendRequestRawNoCheck(method, url, payload) {
     response = await http.sendRequest(method, fullUrl, body, headers);
     return response;
 }
+async function sendRequestToClaude(apiKey, model, context, request) {
+    var data, error, output, response;
+    response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            model: model,
+            max_tokens: 16000,
+            system: context,
+            messages: [{
+                    role: 'user',
+                    content: request
+                }]
+        })
+    });
+    data = await response.json();
+    if (response.ok) {
+        if (data.content) {
+            output = data.content.filter(item => item.type === 'text').map(item => item.text).join('');
+            if (output) {
+                if (data.stop_reason === 'max_tokens') {
+                    return { error: 'Claude response exceeded max_tokens' };
+                } else {
+                    return { response: output };
+                }
+            } else {
+                return { error: 'Claude returned no text response' };
+            }
+        } else {
+            return { error: 'Claude returned no text response' };
+        }
+    } else {
+        if (data.error && data.error.message) {
+            error = data.error.message;
+        } else {
+            error = 'OpenAI request failed';
+        }
+        return { error: error };
+    }
+}
+async function sendRequestToOpenAi(apiKey, model, context, request) {
+    var data, error, output, response;
+    response = await fetch('https://api.openai.com/v1/responses', {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + apiKey,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            model: model,
+            input: [
+                {
+                    role: 'developer',
+                    content: context
+                },
+                {
+                    role: 'user',
+                    content: request
+                }
+            ]
+        })
+    });
+    data = await response.json();
+    if (response.ok) {
+        if (data.output) {
+            output = data.output.flatMap(item => item.content || []).find(item => item.type === 'output_text');
+            if (output) {
+                return { response: output.text };
+            } else {
+                return { error: 'OpenAI returned no text response' };
+            }
+        } else {
+            return { error: 'OpenAI returned no text response' };
+        }
+    } else {
+        if (data.error && data.error.message) {
+            error = data.error.message;
+        } else {
+            error = 'OpenAI request failed';
+        }
+        return { error: error };
+    }
+}
 async function sendRequestWithCallback(method, url, payload, parent) {
     var response;
     response = await sendRequest(method, url, payload);
@@ -9810,6 +10423,19 @@ function setChosenUser(parent, container, user) {
         parent.onUserSelected(user);
     });
     html.add(container, block);
+}
+function setDefaultModel(context) {
+    var _selectValue_2;
+    _selectValue_2 = context.provider.value;
+    if (_selectValue_2 === 'openai') {
+        context.model.value = 'gpt-6-luna';
+    } else {
+        if (_selectValue_2 === 'claude') {
+            context.model.value = 'claude-sonnet-5-5';
+        } else {
+            context.model.value = '';
+        }
+    }
 }
 function setDefaultValue(obj, prop, value) {
     if (!utils.hasValue(obj[prop])) {
@@ -11134,6 +11760,141 @@ function transformDtItem(item, items) {
     delete item.text;
     delete item.id;
 }
+function traverseAddress(context, step, prev) {
+    return context.branches[step.next];
+}
+function traverseBreak(context, step, prev) {
+    if (context.exit) {
+        return context.exit;
+    } else {
+        throw new Error('break outside a loop');
+    }
+}
+function traverseConcurrent(context, step, prev) {
+    var parbegin, parend, path, paths, right;
+    parend = addItem(context, 'parend', undefined);
+    parend.one = prev;
+    paths = step.paths.slice();
+    paths.reverse();
+    right = undefined;
+    for (path of paths) {
+        parbegin = addItem(context, 'parbegin', undefined);
+        parbegin.one = traverseSequence(context, path, parend.id);
+        parbegin.two = right;
+        right = parbegin.id;
+    }
+    return right;
+}
+function traverseControl(context, step, prev) {
+    var ctrlend, ctrlstart;
+    ctrlend = addItem(context, 'ctrlend', undefined);
+    ctrlend.one = prev;
+    ctrlstart = addItem(context, 'ctrlstart', step.content);
+    ctrlstart.one = traverseSequence(context, step.steps, ctrlend.id);
+    return ctrlstart.id;
+}
+function traverseLoop(context, step, prev) {
+    var context2, loopbegin, loopend;
+    loopend = addItem(context, 'loopend', undefined);
+    loopend.one = prev;
+    loopbegin = addItem(context, 'loopbegin', step.content);
+    context2 = utils.clone(context);
+    context2.exit = prev;
+    loopbegin.one = traverseSequence(context2, step.steps, loopend.id);
+    return loopbegin.id;
+}
+function traverseQuestion(context, step, prev) {
+    var item;
+    item = addItem(context, 'question', step.content);
+    if (step.invert) {
+        item.flag1 = 0;
+    } else {
+        item.flag1 = 1;
+    }
+    item.one = traverseSequence(context, step.then, prev);
+    item.two = traverseSequence(context, step['else'], prev);
+    return item.id;
+}
+function traverseSelect(context, step, prev) {
+    var cases, cs, csitem, right, select;
+    select = addItem(context, 'select', step.content);
+    cases = step.cases.slice();
+    cases.reverse();
+    right = undefined;
+    for (cs of cases) {
+        csitem = addItem(context, 'case', cs.content);
+        csitem.one = traverseSequence(context, cs.steps, prev);
+        csitem.two = right;
+        right = csitem.id;
+    }
+    select.one = right;
+    return select.id;
+}
+function traverseSequence(context, steps, end) {
+    var _selectValue_2, i, prev, step;
+    prev = end;
+    for (i = steps.length - 1; i >= 0; i--) {
+        step = steps[i];
+        _selectValue_2 = step.type;
+        if (_selectValue_2 === 'action') {
+            prev = traverseSimple(context, step, prev);
+        } else {
+            if (_selectValue_2 === 'question') {
+                prev = traverseQuestion(context, step, prev);
+            } else {
+                if (_selectValue_2 === 'select') {
+                    prev = traverseSelect(context, step, prev);
+                } else {
+                    if (_selectValue_2 === 'loop') {
+                        prev = traverseLoop(context, step, prev);
+                    } else {
+                        if (_selectValue_2 === 'break') {
+                            prev = traverseBreak(context, step, prev);
+                        } else {
+                            if (_selectValue_2 === 'address') {
+                                prev = traverseAddress(context, step, prev);
+                            } else {
+                                if (_selectValue_2 === 'insertion' || _selectValue_2 === 'pause' || _selectValue_2 === 'process' || _selectValue_2 === 'simpleoutput' || _selectValue_2 === 'simpleinput') {
+                                    prev = traverseSimple(context, step, prev);
+                                } else {
+                                    if (_selectValue_2 === 'concurrent') {
+                                        prev = traverseConcurrent(context, step, prev);
+                                    } else {
+                                        if (!(_selectValue_2 === 'controlperiod')) {
+                                            throw new Error('Unexpected case value: ' + _selectValue_2);
+                                        }
+                                        prev = traverseControl(context, step, prev);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return prev;
+}
+function traverseSimple(context, step, prev) {
+    var duration, item;
+    item = addItem(context, step.type, step.content);
+    if (step.secondary) {
+        item.secondary = step.secondary;
+    }
+    if (step.duration) {
+        duration = addItem(context, 'duration', step.duration);
+        item.side = duration.id;
+    }
+    item.one = prev;
+    return item.id;
+}
+function trim(text) {
+    if (text === null || text === undefined) {
+        return '';
+    } else {
+        return text.trim();
+    }
+}
 function tryGoToLocation(id) {
     return new Promise(function (resolve, reject) {
         goToFolderCore(id).then(function () {
@@ -11181,12 +11942,11 @@ function updateEnneCore(widget, id, prop, value) {
     widget.edit.updateDocument([change]);
 }
 function updateFolderList(widget) {
-    var _collection_2, clip, folder, item;
+    var clip, folder, item;
     html.clear(widget.grid);
     widget.folder.children.sort(compareFolders);
     clip = getFolderClipboard();
-    _collection_2 = widget.folder.children;
-    for (folder of _collection_2) {
+    for (folder of widget.folder.children) {
         item = createFolderItem(widget, folder, clip);
         html.add(widget.grid, item);
     }
@@ -11348,20 +12108,18 @@ function userSearch(parent, users, value, results) {
         parent.search.run();
     }
 }
-function userSearchAdmin(parent, value, results) {
+async function userSearchAdmin(parent, value, results) {
     if (value && value.length > 1) {
         if (parent.search) {
             parent.search.state = undefined;
         }
-        parent.search = getUserAdmin_create(parent, value, results);
-        parent.search.run();
+        await getUserAdmin(parent, value, results);
     }
 }
 function wrapEdit(edit) {
-    var _collection_2, change, change2, changes2;
+    var change, change2, changes2;
     changes2 = [];
-    _collection_2 = edit.changes;
-    for (change of _collection_2) {
+    for (change of edit.changes) {
         change2 = utils.clone(change);
         change2.fields = utils.clone(change.fields);
         if (change.fields && 'content' in change.fields) {

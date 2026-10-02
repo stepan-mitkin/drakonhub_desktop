@@ -5,7 +5,7 @@ function FileBackend(utils, host) {
     const SPACEID = 'my-diagrams';
     const USERID = 'local-user';
     const DELETE_TIMEOUT = 3000;
-    const FOLDER_DEBOUNCE_MS = 200;
+    const FOLDER_DEBOUNCE_MS = 400;
     var gAccess = 'admin';
     var gRootPath = '';
     var gProjectName = '';
@@ -37,6 +37,73 @@ function FileBackend(utils, host) {
         parent.children.push(id);
     }
     async function addToRecent(id) {
+    }
+    function applyEdit(diagram, edit, output) {
+        var change, existing, itemId, items;
+        if ('name' in edit) {
+            if (edit.name) {
+                output.name = edit.name;
+                items = diagram.items;
+                if (edit.added) {
+                    for (change of edit.added) {
+                        normalizeItem(change);
+                        itemId = change.id;
+                        delete change.id;
+                        items[itemId] = change;
+                    }
+                }
+                if (edit.updated) {
+                    for (change of edit.updated) {
+                        normalizeItem(change);
+                        itemId = change.id;
+                        delete change.id;
+                        existing = items[itemId];
+                        Object.assign(existing, change);
+                    }
+                }
+                if (edit.removed) {
+                    for (itemId of edit.removed) {
+                        delete items[itemId];
+                    }
+                }
+                utils.copyNotNull(diagram, edit, [
+                    'params',
+                    'style',
+                    'description'
+                ]);
+            } else {
+                output.errorResult = createError(400, 'Name is empty');
+            }
+        } else {
+            items = diagram.items;
+            if (edit.added) {
+                for (change of edit.added) {
+                    normalizeItem(change);
+                    itemId = change.id;
+                    delete change.id;
+                    items[itemId] = change;
+                }
+            }
+            if (edit.updated) {
+                for (change of edit.updated) {
+                    normalizeItem(change);
+                    itemId = change.id;
+                    delete change.id;
+                    existing = items[itemId];
+                    Object.assign(existing, change);
+                }
+            }
+            if (edit.removed) {
+                for (itemId of edit.removed) {
+                    delete items[itemId];
+                }
+            }
+            utils.copyNotNull(diagram, edit, [
+                'params',
+                'style',
+                'description'
+            ]);
+        }
     }
     function buildPath(parentPath, name, type) {
         var last, parts;
@@ -161,34 +228,30 @@ function FileBackend(utils, host) {
         }
     }
     async function collectChanges(id, changes) {
-        var _collection_2, _collection_4, _collection_6, change, childId, node, refresh;
+        var change, childId, node, refresh;
         node = getNode(id);
         if (node && node.type === 'folder') {
             refresh = await refreshChildren(node);
             if (refresh.ok) {
-                _collection_2 = refresh.added;
-                for (change of _collection_2) {
+                for (change of refresh.added) {
                     change.op = 'add';
                     changes.push(change);
                 }
-                _collection_4 = refresh.removed;
-                for (change of _collection_4) {
+                for (change of refresh.removed) {
                     change.op = 'remove';
                     changes.push(change);
                 }
-                _collection_6 = node.children;
-                for (childId of _collection_6) {
+                for (childId of node.children) {
                     await collectChanges(childId, changes);
                 }
             }
         }
     }
     async function copyPaste(body) {
-        var _collection_2, item, ok;
+        var item, ok;
         ok = checkCycle(body.target, body.items);
         if (ok) {
-            _collection_2 = body.items;
-            for (item of _collection_2) {
+            for (item of body.items) {
                 await copySubfolder(item, body.target.folder_id);
             }
             return create200({});
@@ -313,11 +376,10 @@ function FileBackend(utils, host) {
         return createError(400, 'ERR_NAME_NOT_UNIQUE');
     }
     async function cutPaste(body) {
-        var _collection_2, item, ok;
+        var item, ok;
         ok = checkCycle(body.target, body.items);
         if (ok) {
-            _collection_2 = body.items;
-            for (item of _collection_2) {
+            for (item of body.items) {
                 await moveSubfolder(item, body.target.folder_id);
             }
             return create200({});
@@ -326,10 +388,9 @@ function FileBackend(utils, host) {
         }
     }
     function deleteChildrenFromCache(node) {
-        var _collection_2, childId;
+        var childId;
         if (node.children) {
-            _collection_2 = node.children;
-            for (childId of _collection_2) {
+            for (childId of node.children) {
                 deleteSubtreeFromCache(childId);
             }
             node.children = [];
@@ -353,14 +414,13 @@ function FileBackend(utils, host) {
         return create200({});
     }
     function deleteSubtreeFromCache(id) {
-        var _collection_2, childId, node;
+        var childId, node;
         node = getNode(id);
         if (node) {
             delete gNodesById[id];
             delete gIdsByPath[node.path];
             if (node.children) {
-                _collection_2 = node.children;
-                for (childId of _collection_2) {
+                for (childId of node.children) {
                     deleteSubtreeFromCache(childId);
                 }
             }
@@ -393,143 +453,61 @@ function FileBackend(utils, host) {
         gDeleteItems = [];
     }
     async function editDiagram(url, body) {
-        var _collection_2, _collection_4, _collection_6, change, diagram, existing, id, itemId, items, json, nameOk, node, ok, oldPath;
+        var _collection_2, _id, changeResult, diagram, edit, id, item, json, nameOk, node, ok, oldPath;
         id = getIdFromUrl(url);
         node = getNode(id);
         if (node) {
-            if (body.oldTag === node.tag) {
-                if ('name' in body) {
-                    if (body.name) {
-                        nameOk = await checkNameIsUnique(node.parent, body.name, id);
-                        if (nameOk) {
-                            diagram = await readJson(node.path);
-                            diagram = diagram || {};
-                            items = diagram.items || {};
-                            diagram.items = items;
-                            if (body.added) {
-                                _collection_2 = body.added;
-                                for (change of _collection_2) {
-                                    itemId = change.id;
-                                    delete change.id;
-                                    items[itemId] = change;
-                                }
-                            }
-                            if (body.updated) {
-                                _collection_4 = body.updated;
-                                for (change of _collection_4) {
-                                    itemId = change.id;
-                                    delete change.id;
-                                    existing = items[itemId];
-                                    Object.assign(existing, change);
-                                }
-                            }
-                            if (body.removed) {
-                                _collection_6 = body.removed;
-                                for (itemId of _collection_6) {
-                                    delete items[itemId];
-                                }
-                            }
-                            utils.copyNotNull(diagram, body, [
-                                'params',
-                                'style',
-                                'description'
-                            ]);
-                            json = JSON.stringify(diagram, null, 4);
-                            ok = await host.writeTextFile(node.path, json);
-                            if (ok) {
-                                node.tag = body.tag;
-                                if (body.name) {
-                                    oldPath = node.path;
-                                    registerEdit(oldPath);
-                                    ok = await renameCore(id, node, body.name);
-                                    if (ok) {
-                                        registerEdit(node.path);
-                                        return [
-                                            204,
-                                            ''
-                                        ];
-                                    } else {
-                                        return createNotUnique();
-                                    }
-                                } else {
-                                    registerEdit(node.path);
-                                    return [
-                                        204,
-                                        ''
-                                    ];
-                                }
-                            } else {
-                                return createNotUnique();
-                            }
-                        } else {
-                            return createNotUnique();
-                        }
-                    } else {
-                        return createError(400, 'Name is empty');
-                    }
-                } else {
-                    diagram = await readJson(node.path);
-                    diagram = diagram || {};
-                    items = diagram.items || {};
-                    diagram.items = items;
-                    if (body.added) {
-                        _collection_2 = body.added;
-                        for (change of _collection_2) {
-                            itemId = change.id;
-                            delete change.id;
-                            items[itemId] = change;
-                        }
-                    }
-                    if (body.updated) {
-                        _collection_4 = body.updated;
-                        for (change of _collection_4) {
-                            itemId = change.id;
-                            delete change.id;
-                            existing = items[itemId];
-                            Object.assign(existing, change);
-                        }
-                    }
-                    if (body.removed) {
-                        _collection_6 = body.removed;
-                        for (itemId of _collection_6) {
-                            delete items[itemId];
-                        }
-                    }
-                    utils.copyNotNull(diagram, body, [
-                        'params',
-                        'style',
-                        'description'
-                    ]);
-                    json = JSON.stringify(diagram, null, 4);
-                    ok = await host.writeTextFile(node.path, json);
+            diagram = await readJson(node.path);
+            diagram = diagram || {};
+            diagram.items = diagram.items || {};
+            _collection_2 = diagram.items;
+            for (_id in _collection_2) {
+                item = _collection_2[_id];
+                normalizeItem(item);
+            }
+            if (!(body.oldTag === node.tag)) {
+                return createError(400, 'ERR_MODIFIED');
+            }
+            changeResult = {};
+            for (edit of body.edits) {
+                applyEdit(diagram, edit, changeResult);
+                if (changeResult.errorResult) {
+                    return changeResult.errorResult;
+                }
+            }
+            if (changeResult.name) {
+                nameOk = await checkNameIsUnique(node.parent, changeResult.name, id);
+                if (!nameOk) {
+                    return createNotUnique();
+                }
+            }
+            json = JSON.stringify(diagram, null, 4);
+            ok = await host.writeTextFile(node.path, json);
+            if (ok) {
+                if (changeResult.name) {
+                    oldPath = node.path;
+                    registerEdit(oldPath);
+                    ok = await renameCore(id, node, changeResult.name);
                     if (ok) {
                         node.tag = body.tag;
-                        if (body.name) {
-                            oldPath = node.path;
-                            registerEdit(oldPath);
-                            ok = await renameCore(id, node, body.name);
-                            if (ok) {
-                                registerEdit(node.path);
-                                return [
-                                    204,
-                                    ''
-                                ];
-                            } else {
-                                return createNotUnique();
-                            }
-                        } else {
-                            registerEdit(node.path);
-                            return [
-                                204,
-                                ''
-                            ];
-                        }
+                        registerEdit(node.path);
+                        return [
+                            204,
+                            ''
+                        ];
                     } else {
                         return createNotUnique();
                     }
+                } else {
+                    node.tag = body.tag;
+                    registerEdit(node.path);
+                    return [
+                        204,
+                        ''
+                    ];
                 }
             } else {
-                return createError(400, 'ERR_MODIFIED');
+                return createNotUnique();
             }
         } else {
             return createNotFound();
@@ -710,10 +688,9 @@ function FileBackend(utils, host) {
         return path;
     }
     function getPaths(evt) {
-        var _collection_2, path, paths, rawPath;
+        var path, paths, rawPath;
         paths = [];
-        _collection_2 = evt.paths;
-        for (rawPath of _collection_2) {
+        for (rawPath of evt.paths) {
             path = utils.normalizePath(rawPath);
             if (path.startsWith(gRootPath) && !isEditedRecently(path)) {
                 paths.push(path);
@@ -837,7 +814,7 @@ function FileBackend(utils, host) {
         if (modified) {
             nowMs = getUnixMsNow();
             diff = nowMs - modified;
-            if (diff > FOLDER_DEBOUNCE_MS * 3) {
+            if (diff > FOLDER_DEBOUNCE_MS * 4) {
                 return false;
             } else {
                 return true;
@@ -938,13 +915,16 @@ function FileBackend(utils, host) {
         for (id in items) {
             item = items[id];
             item.id = id;
-            if ('text' in item) {
-                item.content = item.text;
-                delete item.text;
-            }
+            normalizeItem(item);
             items2.push(item);
         }
         diagram.items = items2;
+    }
+    function normalizeItem(item) {
+        if ('text' in item) {
+            item.content = item.text;
+            delete item.text;
+        }
     }
     function normalizeStringForSearch(str) {
         if (str) {
@@ -961,10 +941,9 @@ function FileBackend(utils, host) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
     async function processFolderChanged() {
-        var _collection_2, changes, path;
+        var changes, path;
         changes = getListOfModifiedFiles();
-        _collection_2 = changes.modified;
-        for (path of _collection_2) {
+        for (path of changes.modified) {
             resetTag(path);
         }
         if (!(changes.other.length === 0)) {
@@ -998,7 +977,7 @@ function FileBackend(utils, host) {
         }
     }
     async function refreshChildren(node) {
-        var _, _collection_3, added, childId, children2, created, fchildren, id, nodeInfo, removed, toDelete, toInsert;
+        var _, added, childId, children2, created, fchildren, id, nodeInfo, removed, toDelete, toInsert;
         fchildren = await host.readFolder(node.path);
         if (fchildren) {
             toDelete = {};
@@ -1017,8 +996,7 @@ function FileBackend(utils, host) {
                 addChangedNode(added, created.id);
                 children2.push(created.id);
             }
-            _collection_3 = node.children;
-            for (childId of _collection_3) {
+            for (childId of node.children) {
                 if (!toDelete[childId]) {
                     children2.push(childId);
                 }
@@ -1069,15 +1047,14 @@ function FileBackend(utils, host) {
         return parts.join('/');
     }
     function replacePathPart(id, renameOrdinal, changedPart) {
-        var _collection_2, childId, newPath, node, parts;
+        var childId, newPath, node, parts;
         node = getNode(id);
         parts = node.path.split('/');
         parts[renameOrdinal] = changedPart;
         newPath = parts.join('/');
         updateByPathIndex(node, newPath);
         if (node.children) {
-            _collection_2 = node.children;
-            for (childId of _collection_2) {
+            for (childId of node.children) {
                 replacePathPart(childId, renameOrdinal, changedPart);
             }
         }
@@ -1199,7 +1176,7 @@ function FileBackend(utils, host) {
         }
     }
     async function traverseFolders(id, visitor) {
-        var _collection_2, childId, node, refresh, stop, stopChild;
+        var childId, node, refresh, stop, stopChild;
         stop = false;
         node = getNode(id);
         if (node) {
@@ -1207,8 +1184,7 @@ function FileBackend(utils, host) {
             if (!stop && node.type === 'folder') {
                 refresh = await refreshChildren(node);
                 if (refresh.ok) {
-                    _collection_2 = node.children;
-                    for (childId of _collection_2) {
+                    for (childId of node.children) {
                         stopChild = await traverseFolders(childId, visitor);
                         if (stopChild) {
                             stop = true;
