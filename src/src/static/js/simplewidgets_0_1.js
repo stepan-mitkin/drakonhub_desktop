@@ -1826,10 +1826,9 @@ function readSafeAreaInsets() {
     return insets;
 }
 function redrawPlainList(widget) {
-    var _collection_2, item;
+    var item;
     html.clear(widget.container);
-    _collection_2 = widget.items;
-    for (item of _collection_2) {
+    for (item of widget.items) {
         createPlainListItem(widget, item);
     }
 }

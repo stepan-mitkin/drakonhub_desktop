@@ -2039,10 +2039,9 @@ function createWidget(widget, data) {
     return widget;
 }
 function detectDescChange(widget, edit) {
-    var _collection_2, change, desc;
+    var change, desc;
     desc = undefined;
-    _collection_2 = edit.changes;
-    for (change of _collection_2) {
+    for (change of edit.changes) {
         if (!(change.id || !('description' in change.fields))) {
             desc = change.fields.description;
             break;
@@ -3860,7 +3859,7 @@ function showDescription(widget) {
     }
 }
 function showPalette(context, launcher, value, onColorChosen) {
-    var _collection_2, apply, bottom, chooseColor, chooseColorLight, closeAndUse, color, currentContainer, data, i, input, line, lineColor, lineContainer, lines, paletteWindow, recent, rect;
+    var apply, bottom, chooseColor, chooseColorLight, closeAndUse, color, currentContainer, data, i, input, line, lineColor, lineContainer, lines, paletteWindow, recent, rect;
     data = getColorPaletteData();
     paletteWindow = div('shadow', {
         background: 'white',
@@ -3906,8 +3905,7 @@ function showPalette(context, launcher, value, onColorChosen) {
             break;
         }
     }
-    _collection_2 = data.lines;
-    for (line of _collection_2) {
+    for (line of data.lines) {
         lineContainer = div({
             'padding-left': '5px',
             'padding-top': '1px',

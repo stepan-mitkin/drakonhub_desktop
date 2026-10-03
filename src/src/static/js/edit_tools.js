@@ -53,12 +53,11 @@ function UndoEdit() {
         }
     }
     function updateDocument(changes, before, after) {
-        var _collection_2, change, changesToSave, initial, undoRecord;
+        var change, changesToSave, initial, undoRecord;
         changesToSave = [];
         initial = createInitialEdit(self.diagram);
         if (initial) {
-            _collection_2 = initial.changes;
-            for (change of _collection_2) {
+            for (change of initial.changes) {
                 applyChange(self.diagram, change);
             }
             changesToSave.push(initial);
@@ -107,9 +106,8 @@ function applyChange(diagram, change) {
     }
 }
 function applyEdit(diagram, edit) {
-    var _collection_2, changes;
-    _collection_2 = edit.changes;
-    for (changes of _collection_2) {
+    var changes;
+    for (changes of edit.changes) {
         applyChange(diagram, changes);
     }
 }

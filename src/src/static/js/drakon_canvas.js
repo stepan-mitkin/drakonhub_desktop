@@ -1418,9 +1418,8 @@ function Frame() {
         return accepted;
     }
     function hit(element, pos) {
-        var _collection_2, box;
-        _collection_2 = element.boxes;
-        for (box of _collection_2) {
+        var box;
+        for (box of element.boxes) {
             if (hitBox(box, pos.x, pos.y)) {
                 return true;
             }
@@ -1581,10 +1580,9 @@ function FreeImage() {
 function FreeMover() {
     var self = { _type: 'FreeMover' };
     function complete() {
-        var _collection_2, change, changes, coord;
+        var change, changes, coord;
         changes = [];
-        _collection_2 = self.coords;
-        for (coord of _collection_2) {
+        for (coord of self.coords) {
             change = {
                 id: coord.element.id,
                 fields: {},
@@ -1602,7 +1600,7 @@ function FreeMover() {
         updateAndKeepSelection(self.widget, changes);
     }
     function onDrag(evt) {
-        var _branch_, _collection_2, config, coord, dx, dxDia, dy, dyDia, ebox, element, visuals, x, y, zoom;
+        var _branch_, config, coord, dx, dxDia, dy, dyDia, ebox, element, visuals, x, y, zoom;
         _branch_ = 'Calculate move';
         while (true) {
             switch (_branch_) {
@@ -1623,8 +1621,7 @@ function FreeMover() {
                 }
                 break;
             case 'Move elements':
-                _collection_2 = self.coords;
-                for (coord of _collection_2) {
+                for (coord of self.coords) {
                     x = coord.elementX + dx;
                     y = coord.elementY + dy;
                     if (coord.xy) {
@@ -1845,12 +1842,11 @@ function GroupDuration() {
         return accepted;
     }
     function hit(element, pos) {
-        var _collection_2, box;
+        var box;
         if (hitBox(element.innerBox, pos.x, pos.y)) {
             return true;
         }
-        _collection_2 = element.subboxes;
-        for (box of _collection_2) {
+        for (box of element.subboxes) {
             if (hitBox(box, pos.x, pos.y)) {
                 return true;
             }
@@ -4315,6 +4311,7 @@ function SelectBehavior_create(widget) {
                         updateHighlight(widget, undefined);
                         setCursor(evt.target, 'default');
                     }
+                    _branch_ = 'Idle';
                 }
                 break;
             case 'OnSocket':
@@ -5722,7 +5719,7 @@ function addFreedomToBox(box, widgetWidth, widgetHeight) {
     return result;
 }
 function addHtmltoDom(html, parentElement, fonts, font, findLinks) {
-    var _branch_, _collection_2, body, cache, doc, firstNode, font2, fontObj, fontObj2, formats, name, node, parser;
+    var _branch_, body, cache, doc, firstNode, font2, fontObj, fontObj2, formats, name, node, parser;
     _branch_ = 'Parse HTML';
     while (true) {
         switch (_branch_) {
@@ -5749,8 +5746,7 @@ function addHtmltoDom(html, parentElement, fonts, font, findLinks) {
             }
             break;
         case 'Scan DOM nodes':
-            _collection_2 = body.childNodes;
-            for (node of _collection_2) {
+            for (node of body.childNodes) {
                 addNodeToDom(node, parentElement, false, false, formats, findLinks);
             }
             _branch_ = 'Add to fonts';
@@ -5793,7 +5789,7 @@ function addItemToModel(model, item) {
     }
 }
 function addLineVertex(widget, id, ordinal) {
-    var _branch_, _collection_2, _collection_4, _collection_6, _collection_8, cx1, cx2, cy1, cy2, dx, dy, element, len, newVertex, next, old, point, prev, radius, shift, visuals;
+    var _branch_, cx1, cx2, cy1, cy2, dx, dy, element, len, newVertex, next, old, point, prev, radius, shift, visuals;
     _branch_ = 'Prepare';
     while (true) {
         switch (_branch_) {
@@ -5868,8 +5864,7 @@ function addLineVertex(widget, id, ordinal) {
         case 'Move vertexes up':
             dx = 0;
             dy = -shift;
-            _collection_6 = element.coords;
-            for (point of _collection_6) {
+            for (point of element.coords) {
                 if (point.y < old.y) {
                     point.y -= shift * 2;
                 }
@@ -5879,8 +5874,7 @@ function addLineVertex(widget, id, ordinal) {
         case 'Move vertexes down':
             dx = 0;
             dy = shift;
-            _collection_8 = element.coords;
-            for (point of _collection_8) {
+            for (point of element.coords) {
                 if (point.y > old.y) {
                     point.y += shift * 2;
                 }
@@ -5890,8 +5884,7 @@ function addLineVertex(widget, id, ordinal) {
         case 'Move vertexes left':
             dx = -shift;
             dy = 0;
-            _collection_2 = element.coords;
-            for (point of _collection_2) {
+            for (point of element.coords) {
                 if (point.x < old.x) {
                     point.x -= shift * 2;
                 }
@@ -5901,8 +5894,7 @@ function addLineVertex(widget, id, ordinal) {
         case 'Move vertexes right':
             dx = shift;
             dy = 0;
-            _collection_4 = element.coords;
-            for (point of _collection_4) {
+            for (point of element.coords) {
                 if (point.x > old.x) {
                     point.x += shift * 2;
                 }
@@ -5955,7 +5947,7 @@ function addNodeSubRecord(records, node) {
     records[targetId] = record;
 }
 function addNodeToDom(node, parentElement, bold, italic, formats, findLinks) {
-    var _collection_2, child, copy, name;
+    var child, copy, name;
     name = getNodeName(node);
     if (name === '#text') {
         if (bold) {
@@ -5985,15 +5977,14 @@ function addNodeToDom(node, parentElement, bold, italic, formats, findLinks) {
             }
             copy = document.createElement(name);
             parentElement.appendChild(copy);
-            _collection_2 = node.childNodes;
-            for (child of _collection_2) {
+            for (child of node.childNodes) {
                 addNodeToDom(child, copy, bold, italic, formats, findLinks);
             }
         }
     }
 }
 function addNodeToLine(node, line, strong, em) {
-    var _collection_2, child, name, tokens, type;
+    var child, name, tokens, type;
     if (strong) {
         if (em) {
             type = 'sem';
@@ -6007,8 +5998,7 @@ function addNodeToLine(node, line, strong, em) {
             type = 'normal';
         }
     }
-    _collection_2 = node.childNodes;
-    for (child of _collection_2) {
+    for (child of node.childNodes) {
         name = getNodeName(child);
         if (name === '#text') {
             tokens = splitHtmlTextNode(child.nodeValue, type);
@@ -6207,7 +6197,7 @@ function addUpperCorner(sub, node) {
     addNodeSubRecord(sub.outer, node);
 }
 function addVertex(widget, id, ordinal) {
-    var _branch_, _collection_2, _collection_4, _collection_6, _collection_8, cx1, cx2, cy1, cy2, dx, dy, element, len, newVertex, next, nindex, old, pindex, point, prev, radius, shift, visuals;
+    var _branch_, cx1, cx2, cy1, cy2, dx, dy, element, len, newVertex, next, nindex, old, pindex, point, prev, radius, shift, visuals;
     _branch_ = 'Prepare';
     while (true) {
         switch (_branch_) {
@@ -6262,8 +6252,7 @@ function addVertex(widget, id, ordinal) {
         case 'Move vertexes up':
             dx = 0;
             dy = -shift;
-            _collection_6 = element.coords;
-            for (point of _collection_6) {
+            for (point of element.coords) {
                 if (point.y < old.y) {
                     point.y -= shift * 2;
                 }
@@ -6273,8 +6262,7 @@ function addVertex(widget, id, ordinal) {
         case 'Move vertexes down':
             dx = 0;
             dy = shift;
-            _collection_8 = element.coords;
-            for (point of _collection_8) {
+            for (point of element.coords) {
                 if (point.y > old.y) {
                     point.y += shift * 2;
                 }
@@ -6284,8 +6272,7 @@ function addVertex(widget, id, ordinal) {
         case 'Move vertexes left':
             dx = -shift;
             dy = 0;
-            _collection_2 = element.coords;
-            for (point of _collection_2) {
+            for (point of element.coords) {
                 if (point.x < old.x) {
                     point.x -= shift * 2;
                 }
@@ -6295,8 +6282,7 @@ function addVertex(widget, id, ordinal) {
         case 'Move vertexes right':
             dx = shift;
             dy = 0;
-            _collection_4 = element.coords;
-            for (point of _collection_4) {
+            for (point of element.coords) {
                 if (point.x > old.x) {
                     point.x += shift * 2;
                 }
@@ -6374,13 +6360,12 @@ function areConnected(visuals, id1, id2) {
     }
 }
 function bakeSubtreeCoords(node, parentX, parentY) {
-    var _collection_2, child, subtreeX, subtreeY;
+    var child, subtreeX, subtreeY;
     subtreeX = node.subtreeBox.left + parentX;
     subtreeY = node.subtreeBox.top + parentY;
     node.x += subtreeX;
     node.y += subtreeY;
-    _collection_2 = node.children;
-    for (child of _collection_2) {
+    for (child of node.children) {
         bakeSubtreeCoords(child, subtreeX, subtreeY);
     }
 }
@@ -6714,7 +6699,7 @@ function buildBlockMenu(widget) {
     return menu;
 }
 function buildBoxes(widget, visuals) {
-    var _collection_4, bottom, edge, edges, element, height, id, left, node, nodes, right, top, tr, width;
+    var bottom, edge, edges, element, height, id, left, node, nodes, right, top, tr, width;
     tr = visuals.config.socketTouchRadius;
     nodes = visuals.nodes;
     for (id in nodes) {
@@ -6752,8 +6737,7 @@ function buildBoxes(widget, visuals) {
         }
         edge.box = createBox(left, top, width, height);
     }
-    _collection_4 = visuals.free;
-    for (element of _collection_4) {
+    for (element of visuals.free) {
         calculateFreeBox(widget, element, visuals.config);
     }
 }
@@ -8572,12 +8556,11 @@ function buildStyleFromPrims(visuals, prims) {
     return style;
 }
 function buildSubspaces(visuals) {
-    var _collection_2, branch, branchNode;
+    var branch, branchNode;
     if (visuals.branches.length === 1) {
         crawlSubdiagram(visuals, visuals.header.down);
     } else {
-        _collection_2 = visuals.branches;
-        for (branch of _collection_2) {
+        for (branch of visuals.branches) {
             branchNode = getNode(visuals, branch);
             crawlSubdiagram(visuals, branchNode.down);
         }
@@ -8689,7 +8672,7 @@ function buildTextDiv(type, text, config, font, textAlign, color) {
     return textDiv;
 }
 function buildVisuals(widget) {
-    var _branch_, _collection_2, _collection_4, _collection_7, _selectValue_10, _selectValue_12, bItemId, branch, config, context, ctx, element, id, item, model, node, skewer, visuals;
+    var _branch_, _collection_2, _collection_5, _selectValue_10, _selectValue_8, bItemId, branch, config, context, ctx, element, id, item, model, node, skewer, visuals;
     _branch_ = 'Create visuals object';
     while (true) {
         switch (_branch_) {
@@ -8730,24 +8713,24 @@ function buildVisuals(widget) {
             _branch_ = 'Header and params';
             break;
         case 'Header and params':
-            _selectValue_12 = model.type;
-            if (_selectValue_12 === 'drakon') {
+            _selectValue_10 = model.type;
+            if (_selectValue_10 === 'drakon') {
                 buildDrakonHeader(visuals, model);
             } else {
-                if (_selectValue_12 === 'graf') {
+                if (_selectValue_10 === 'graf') {
                     buildGrafHeader(visuals, model);
                 } else {
-                    if (!(_selectValue_12 === 'free')) {
-                        throw new Error('Unexpected case value: ' + _selectValue_12);
+                    if (!(_selectValue_10 === 'free')) {
+                        throw new Error('Unexpected case value: ' + _selectValue_10);
                     }
                 }
             }
             _branch_ = 'Create nodes';
             break;
         case 'Create nodes':
-            _collection_4 = model.items;
-            for (id in _collection_4) {
-                item = _collection_4[id];
+            _collection_2 = model.items;
+            for (id in _collection_2) {
+                item = _collection_2[id];
                 if (item.type === 'connection') {
                     addConnectionToVisuals(visuals, id, item);
                 } else {
@@ -8763,23 +8746,22 @@ function buildVisuals(widget) {
                 }
             }
             sortFreeIcons(visuals);
-            _selectValue_10 = model.type;
-            if (_selectValue_10 === 'drakon') {
+            _selectValue_8 = model.type;
+            if (_selectValue_8 === 'drakon') {
                 _branch_ = 'Link nodes';
             } else {
-                if (_selectValue_10 === 'graf') {
+                if (_selectValue_8 === 'graf') {
                     _branch_ = 'Graf';
                 } else {
-                    if (!(_selectValue_10 === 'free')) {
-                        throw new Error('Unexpected case value: ' + _selectValue_10);
+                    if (!(_selectValue_8 === 'free')) {
+                        throw new Error('Unexpected case value: ' + _selectValue_8);
                     }
                     _branch_ = 'Free';
                 }
             }
             break;
         case 'Link nodes':
-            _collection_2 = visuals.branches;
-            for (bItemId of _collection_2) {
+            for (bItemId of visuals.branches) {
                 context = {
                     visuals: visuals,
                     addresses: []
@@ -8802,9 +8784,9 @@ function buildVisuals(widget) {
             break;
         case 'Calculate coords':
             buildSkewers(visuals);
-            _collection_7 = visuals.skewers;
-            for (id in _collection_7) {
-                skewer = _collection_7[id];
+            _collection_5 = visuals.skewers;
+            for (id in _collection_5) {
+                skewer = _collection_5[id];
                 setSameWidth(visuals, skewer);
             }
             reflowContent(visuals);
@@ -8895,7 +8877,7 @@ function calculateBoxIter(node, box) {
     }
 }
 function calculateDiagramBox(visuals) {
-    var _collection_10, _collection_2, _collection_5, _collection_7, bottom, box, conbox, connection, element, id, metre, node, padding, right;
+    var _collection_2, _collection_5, bottom, box, conbox, connection, element, id, metre, node, padding, right;
     box = {
         left: Number.MAX_SAFE_INTEGER,
         right: Number.MIN_SAFE_INTEGER,
@@ -8908,16 +8890,14 @@ function calculateDiagramBox(visuals) {
         node = _collection_2[id];
         calculateBoxIter(node, box);
     }
-    _collection_5 = visuals.free;
-    for (element of _collection_5) {
+    for (element of visuals.free) {
         calculateBoxFromFree(element.box, box);
     }
-    _collection_7 = visuals.connectionById;
-    for (id in _collection_7) {
-        connection = _collection_7[id];
+    _collection_5 = visuals.connectionById;
+    for (id in _collection_5) {
+        connection = _collection_5[id];
         buildConnectionBoxes(visuals, connection);
-        _collection_10 = connection.boxes;
-        for (conbox of _collection_10) {
+        for (conbox of connection.boxes) {
             right = conbox.left + conbox.width;
             bottom = conbox.top + conbox.height;
             nextBox(box, conbox.left, conbox.top, right, bottom);
@@ -8952,12 +8932,11 @@ function calculateFreeBox(widget, element, config) {
     }
 }
 function calculateHorizontalSubtree(config, node) {
-    var _collection_2, _collection_4, child, first, height, last, lastY, left, nBottom, nTop, right, shift, top;
+    var child, first, height, last, lastY, left, nBottom, nTop, right, shift, top;
     top = 0;
     left = node.w * 2 + config.metre * 2;
     right = node.subtreeBox.width;
-    _collection_2 = node.children;
-    for (child of _collection_2) {
+    for (child of node.children) {
         right = Math.max(right, left + child.subtreeBox.width);
         child.subtreeBox.left = left;
         child.subtreeBox.top = top;
@@ -8985,8 +8964,7 @@ function calculateHorizontalSubtree(config, node) {
     nBottom = node.y + node.h;
     if (nTop < 0) {
         shift = -nTop;
-        _collection_4 = node.children;
-        for (child of _collection_4) {
+        for (child of node.children) {
             child.subtreeBox.top += shift;
         }
         height += shift;
@@ -9083,15 +9061,14 @@ function calculateSkewerPos(skewers, links, skewer, pos) {
     }
 }
 function calculateSubtreeBox(config, node) {
-    var _collection_2, child, subtreeBox, ttype;
+    var child, subtreeBox, ttype;
     subtreeBox = createBox(0, 0, node.w * 2, node.h * 2);
     node.subtreeBox = subtreeBox;
     if (node.children.length === 0) {
         node.x = node.w;
         node.y = node.h;
     } else {
-        _collection_2 = node.children;
-        for (child of _collection_2) {
+        for (child of node.children) {
             calculateSubtreeBox(config, child);
         }
         ttype = getTType(node);
@@ -9110,7 +9087,7 @@ function calculateSubtreeBox(config, node) {
     }
 }
 function calculateTvSubtree(config, node) {
-    var _collection_2, child, left, right, top;
+    var child, left, right, top;
     if (node.parent) {
         left = config.metre * 2;
     } else {
@@ -9118,8 +9095,7 @@ function calculateTvSubtree(config, node) {
     }
     top = node.h * 2 + config.metre;
     right = node.subtreeBox.width;
-    _collection_2 = node.children;
-    for (child of _collection_2) {
+    for (child of node.children) {
         right = Math.max(right, left + child.subtreeBox.width);
         child.subtreeBox.left = left;
         child.subtreeBox.top = top;
@@ -9131,12 +9107,11 @@ function calculateTvSubtree(config, node) {
     node.subtreeBox.height = top - config.metre;
 }
 function calculateVerticalSubtree(config, node) {
-    var _collection_2, _collection_4, bottom, child, first, last, lastX, left, nLeft, nRight, shift, top, width;
+    var bottom, child, first, last, lastX, left, nLeft, nRight, shift, top, width;
     left = 0;
     top = node.h * 2 + config.metre * 2;
     bottom = node.subtreeBox.height;
-    _collection_2 = node.children;
-    for (child of _collection_2) {
+    for (child of node.children) {
         bottom = Math.max(bottom, top + child.subtreeBox.height);
         child.subtreeBox.left = left;
         child.subtreeBox.top = top;
@@ -9164,8 +9139,7 @@ function calculateVerticalSubtree(config, node) {
     nRight = node.x + node.w;
     if (nLeft < 0) {
         shift = -nLeft;
-        _collection_4 = node.children;
-        for (child of _collection_4) {
+        for (child of node.children) {
             child.subtreeBox.left += shift;
         }
         width += shift;
@@ -9293,7 +9267,7 @@ function canComeBackTo(src, loops) {
     return context.success;
 }
 function canComeBackToStep(context, node) {
-    var _collection_2, loops, prev, visited;
+    var loops, prev, visited;
     loops = context.loops;
     visited = context.visited;
     if (!context.finished) {
@@ -9306,8 +9280,7 @@ function canComeBackToStep(context, node) {
                     context.finished = true;
                     context.success = true;
                 } else {
-                    _collection_2 = node.prev;
-                    for (prev of _collection_2) {
+                    for (prev of node.prev) {
                         canComeBackToStep(context, prev);
                     }
                 }
@@ -9865,7 +9838,7 @@ function configToStyleFields() {
     ];
 }
 function connectBranch(visuals, branch, upper, lower) {
-    var _branch_, _collection_2, address, branchLower, ceil, floor;
+    var _branch_, address, branchLower, ceil, floor;
     _branch_ = 'Top';
     while (true) {
         switch (_branch_) {
@@ -9885,8 +9858,7 @@ function connectBranch(visuals, branch, upper, lower) {
             _branch_ = 'Bottom';
             break;
         case 'Bottom':
-            _collection_2 = branch.addresses;
-            for (address of _collection_2) {
+            for (address of branch.addresses) {
                 branchLower = createJunction(visuals, undefined);
                 floor = createEdge(visuals, lower, branchLower, false);
                 floor.role = 'floor';
@@ -10113,7 +10085,7 @@ function copyBlock(widget, startId, items, images) {
     return copyItemsToClipboard(widget, startId, items, images, 'block');
 }
 function copyBranch(widget, node) {
-    var _collection_3, block, bnode, branchNodes, end, images, itemId, items, next, targets;
+    var block, bnode, branchNodes, end, images, itemId, items, next, targets;
     images = {};
     branchNodes = {};
     scanBranchItems(node, branchNodes);
@@ -10125,8 +10097,7 @@ function copyBranch(widget, node) {
     targets = {};
     for (itemId in branchNodes) {
         bnode = branchNodes[itemId];
-        _collection_3 = bnode.next;
-        for (next of _collection_3) {
+        for (next of bnode.next) {
             if (!(next.itemId in branchNodes)) {
                 targets[next.itemId] = next.content;
             }
@@ -10352,13 +10323,12 @@ function copyScrollToScrollable(widget, scrollX, scrollY) {
     }
 }
 function copySelect(widget, node) {
-    var _collection_2, caseItem, caseNode, images, items, selectItem;
+    var caseItem, caseNode, images, items, selectItem;
     images = {};
     items = [];
     selectItem = copyItem(widget, node.itemId, images);
     items.push(selectItem);
-    _collection_2 = node.cases;
-    for (caseNode of _collection_2) {
+    for (caseNode of node.cases) {
         caseItem = copyItem(widget, caseNode.itemId, images);
         caseItem.one = 'finish';
         items.push(caseItem);
@@ -10450,7 +10420,7 @@ function copyWholeItem(widget, itemId, images) {
     return copy;
 }
 function crawl(crawler, startEdge) {
-    var _collection_2, edge, node, step;
+    var edge, node, step;
     step = {};
     edge = startEdge;
     while (true) {
@@ -10461,8 +10431,7 @@ function crawl(crawler, startEdge) {
             break;
         }
     }
-    _collection_2 = crawler.plan;
-    for (node of _collection_2) {
+    for (node of crawler.plan) {
         createQSubspace(crawler, node);
     }
 }
@@ -10891,7 +10860,7 @@ function createMindEdge(visuals, head, tail, vertical, target) {
     return ed;
 }
 function createMindEdges(visuals, node) {
-    var _collection_2, _collection_4, _collection_6, child, childJun, config, connector, prev, rootJun, ttype;
+    var child, childJun, config, connector, prev, rootJun, ttype;
     if (node.children.length === 0) {
     } else {
         config = visuals.config;
@@ -10904,8 +10873,7 @@ function createMindEdges(visuals, node) {
             } else {
                 prev = undefined;
                 connector = undefined;
-                _collection_2 = node.children;
-                for (child of _collection_2) {
+                for (child of node.children) {
                     createMindEdges(visuals, child);
                     childJun = createJunction(visuals, undefined);
                     childJun.x = child.x;
@@ -10955,8 +10923,7 @@ function createMindEdges(visuals, node) {
                 } else {
                     prev = undefined;
                     connector = undefined;
-                    _collection_4 = node.children;
-                    for (child of _collection_4) {
+                    for (child of node.children) {
                         createMindEdges(visuals, child);
                         childJun = createJunction(visuals, undefined);
                         childJun.y = child.y;
@@ -11007,8 +10974,7 @@ function createMindEdges(visuals, node) {
                     createEdge(visuals, rootJun, node, false);
                 }
                 prev = rootJun;
-                _collection_6 = node.children;
-                for (child of _collection_6) {
+                for (child of node.children) {
                     createMindEdges(visuals, child);
                     childJun = createJunction(visuals, undefined);
                     childJun.y = child.y;
@@ -11024,13 +10990,12 @@ function createMindEdges(visuals, node) {
     }
 }
 function createMindIconOrPaste(widget, socket, parent, payload, edits) {
-    var _collection_2, citem, edit, id, newItem, oldToNew, roots;
+    var citem, edit, id, newItem, oldToNew, roots;
     roots = [];
     if (payload) {
         oldToNew = generateNewIds(widget, payload.items);
         oldToNew['target'] = parent.id;
-        _collection_2 = payload.items;
-        for (citem of _collection_2) {
+        for (citem of payload.items) {
             if (citem.parent === 'target') {
                 roots.push(citem.id);
             }
@@ -11417,16 +11382,16 @@ function createTempEdge(visuals, node, leftBottom) {
     visuals.tempEdges.push(edge);
 }
 function createTextBlock(ctx, text, options, fonts) {
-    var _collection_2, _selectValue_4, block, fontCache, fontObj, line, lines, size, token;
+    var _selectValue_2, block, fontCache, fontObj, line, lines, size, token;
     if (options.singleLine) {
         line = splitLineToTokens(text, '');
         lines = wrapInLineObjects([line]);
     } else {
-        _selectValue_4 = options.textFormat;
-        if (_selectValue_4 === 'html') {
+        _selectValue_2 = options.textFormat;
+        if (_selectValue_2 === 'html') {
             lines = splitToTokensHtml(text);
         } else {
-            if (_selectValue_4 === 'markdown') {
+            if (_selectValue_2 === 'markdown') {
                 lines = splitToTokensMarkdown(text);
             } else {
                 lines = wrapInLineObjects(splitToTokens(text));
@@ -11445,8 +11410,7 @@ function createTextBlock(ctx, text, options, fonts) {
         lines: lines
     };
     for (line of lines) {
-        _collection_2 = line.tokens;
-        for (token of _collection_2) {
+        for (token of line.tokens) {
             ctx.font = token.font;
             if (token.font) {
                 fonts[token.font] = true;
@@ -11562,15 +11526,14 @@ function databasePath(ctx, left, top, width, height) {
     ctx.restore();
 }
 function debugLog(text) {
-    var _collection_2, element, line;
+    var element, line;
     if (unit.debugLog) {
         unit.debugLog.push(text);
         if (unit.debugLog.length > 20) {
             unit.debugLog.shift();
         }
         html.clear(unit.logDiv);
-        _collection_2 = unit.debugLog;
-        for (line of _collection_2) {
+        for (line of unit.debugLog) {
             element = div({ text: line });
             html.add(unit.logDiv, element);
         }
@@ -12109,11 +12072,10 @@ function drawArrowHead(ctx, color, x, y, angle) {
     ctx.restore();
 }
 function drawBackPlane(widget, ctx) {
-    var _collection_2, element, visited, visuals;
+    var element, visited, visuals;
     visuals = widget.visuals;
     visited = {};
-    _collection_2 = visuals.free;
-    for (element of _collection_2) {
+    for (element of visuals.free) {
         if (element.zIndex >= 0) {
             break;
         } else {
@@ -12400,11 +12362,10 @@ function drawFreeNuggetAndHandles(widget, ctx) {
     drawEars(visuals, ctx);
 }
 function drawFrontPlane(widget, ctx) {
-    var _collection_2, element, visited, visuals;
+    var element, visited, visuals;
     visuals = widget.visuals;
     visited = {};
-    _collection_2 = visuals.free;
-    for (element of _collection_2) {
+    for (element of visuals.free) {
         if (element.zIndex >= 0) {
             drawFreeIcon(widget, element, ctx, visited);
         }
@@ -12873,17 +12834,16 @@ function drawSubNode(node, ctx, color) {
     ctx.fillRect(node.x - size / 2, node.y - size / 2, size, size);
 }
 function drawSubspaces(visuals, ctx) {
-    var _collection_2, _collection_4, _collection_7, itemId, record, sub;
-    _collection_2 = visuals.subs;
-    for (sub of _collection_2) {
-        _collection_4 = sub.inner;
-        for (itemId in _collection_4) {
-            record = _collection_4[itemId];
+    var _collection_2, _collection_5, itemId, record, sub;
+    for (sub of visuals.subs) {
+        _collection_2 = sub.inner;
+        for (itemId in _collection_2) {
+            record = _collection_2[itemId];
             drawInnerSubItem(record, ctx, sub.color);
         }
-        _collection_7 = sub.outer;
-        for (itemId in _collection_7) {
-            record = _collection_7[itemId];
+        _collection_5 = sub.outer;
+        for (itemId in _collection_5) {
+            record = _collection_5[itemId];
             drawOuterSubItem(record, ctx, sub.color);
         }
     }
@@ -13173,7 +13133,7 @@ function findEdge(visuals, pos) {
     return findElementAt(visuals.edges, pos.x, pos.y);
 }
 function findEdgeLinks(visuals, startEdge, edge) {
-    var _collection_2, itemId, link, prevEdge, source;
+    var itemId, link, prevEdge, source;
     source = edge.source;
     if (source) {
         if (!(source.type === 'junction') || source.subtype === 'parbegin' || source.subtype === 'parend') {
@@ -13181,8 +13141,7 @@ function findEdgeLinks(visuals, startEdge, edge) {
             link = createLink(itemId, edge.vertical ? 0 : 1);
             startEdge.links.push(link);
         } else {
-            _collection_2 = source.sources;
-            for (prevEdge of _collection_2) {
+            for (prevEdge of source.sources) {
                 findEdgeLinks(visuals, startEdge, prevEdge);
             }
         }
@@ -13297,9 +13256,8 @@ function findGuidesForPoint(handle, x, y) {
     findVerticalCentralGuide(handle.widget, handle.element.id, sourceBox, x);
 }
 function findHandle(visuals, pos) {
-    var _collection_2, handle;
-    _collection_2 = visuals.handles;
-    for (handle of _collection_2) {
+    var handle;
+    for (handle of visuals.handles) {
         if (hitBox(handle.box, pos.x, pos.y)) {
             return handle;
         }
@@ -13322,12 +13280,11 @@ function findHead(selection, byId) {
     return undefined;
 }
 function findHorizontalCentralGuide(widget, id, box, y) {
-    var _collection_2, ebox, element, found, guide, left, right;
+    var ebox, element, found, guide, left, right;
     left = box.centerX;
     right = box.centerX;
     found = false;
-    _collection_2 = widget.visuals.free;
-    for (element of _collection_2) {
+    for (element of widget.visuals.free) {
         if (!(element.id === id) && canGuideNode(widget, element)) {
             ebox = getGuideBox(element);
             if (ebox.centerY === y) {
@@ -13353,12 +13310,11 @@ function findHorizontalForHandle(handle, element, y) {
     findHorizontalGuide(handle.widget, element.id, ebox, y);
 }
 function findHorizontalGuide(widget, id, box, y) {
-    var _collection_2, ebox, element, found, guide, left, right;
+    var ebox, element, found, guide, left, right;
     left = box.left;
     right = box.right;
     found = false;
-    _collection_2 = widget.visuals.free;
-    for (element of _collection_2) {
+    for (element of widget.visuals.free) {
         if (!(element.id === id) && canGuideNode(widget, element)) {
             ebox = getGuideBox(element);
             if (ebox.top === y || ebox.bottom === y) {
@@ -13621,9 +13577,8 @@ function findSelectionBottom(widget) {
     return next.itemId;
 }
 function findSocket(visuals, x, y) {
-    var _collection_2, socket;
-    _collection_2 = visuals.sockets;
-    for (socket of _collection_2) {
+    var socket;
+    for (socket of visuals.sockets) {
         if (hitBox(socket.box, x, y)) {
             return socket.id;
         }
@@ -13650,12 +13605,11 @@ function findValueBelow(array, value) {
     return value;
 }
 function findVerticalCentralGuide(widget, id, box, x) {
-    var _collection_2, bottom, ebox, element, found, guide, left, right, top;
+    var bottom, ebox, element, found, guide, left, right, top;
     top = box.centerY;
     bottom = box.centerY;
     found = false;
-    _collection_2 = widget.visuals.free;
-    for (element of _collection_2) {
+    for (element of widget.visuals.free) {
         if (!(element.id === id) && canGuideNode(widget, element)) {
             ebox = getGuideBox(element);
             if (ebox.centerX === x) {
@@ -13683,12 +13637,11 @@ function findVerticalForHandle(handle, element, x) {
     findVerticalGuide(handle.widget, element.id, ebox, x);
 }
 function findVerticalGuide(widget, id, box, x) {
-    var _collection_2, bottom, ebox, element, found, guide, top;
+    var bottom, ebox, element, found, guide, top;
     top = box.top;
     bottom = box.bottom;
     found = false;
-    _collection_2 = widget.visuals.free;
-    for (element of _collection_2) {
+    for (element of widget.visuals.free) {
         if (!(element.id === id) && canGuideNode(widget, element)) {
             ebox = getGuideBox(element);
             if (ebox.left === x || ebox.right === x) {
@@ -13782,7 +13735,7 @@ function findWayUp(lowNode, highNode) {
     }
 }
 function findWayUpStep(context, node, highNode) {
-    var _collection_2, prev, visited;
+    var prev, visited;
     visited = context.visited;
     if (node.type === 'branch') {
         context.leak = true;
@@ -13793,8 +13746,7 @@ function findWayUpStep(context, node, highNode) {
                 if (node.type === 'case') {
                     findWayUpStep(context, node.select, highNode);
                 } else {
-                    _collection_2 = node.prev;
-                    for (prev of _collection_2) {
+                    for (prev of node.prev) {
                         findWayUpStep(context, prev, highNode);
                     }
                 }
@@ -13920,17 +13872,16 @@ function flowIcon(visuals, node) {
     }
 }
 function flowLine(inputLine, left, top, right, flowBlock) {
-    var _collection_2, _selectValue_4, baseLineShift, line, margin, token, wrap;
+    var _selectValue_2, baseLineShift, line, margin, token, wrap;
     margin = (flowBlock.lineHeight - flowBlock.fontSize) / 2;
     baseLineShift = flowBlock.lineHeight - margin;
     line = createLine(flowBlock, left, top, baseLineShift);
-    _selectValue_4 = inputLine.type;
-    if ((_selectValue_4 === 'ul' || _selectValue_4 === 'ol') && !(inputLine.tokens.length === 0)) {
+    _selectValue_2 = inputLine.type;
+    if ((_selectValue_2 === 'ul' || _selectValue_2 === 'ol') && !(inputLine.tokens.length === 0)) {
         left += inputLine.tokens[0].width;
     }
     wrap = false;
-    _collection_2 = inputLine.tokens;
-    for (token of _collection_2) {
+    for (token of inputLine.tokens) {
         while (true) {
             if (line.right + token.width <= right || line.tokens.length === 0) {
                 break;
@@ -13944,7 +13895,7 @@ function flowLine(inputLine, left, top, right, flowBlock) {
     return line.bottom;
 }
 function flowTextBlock(block, width) {
-    var _branch_, _collection_10, _collection_12, _collection_2, _collection_6, _collection_8, _selectValue_4, actualWidth, diff, extraPadding, flowBlock, last, left, line, lineWidth, options, right, rightWMargin, size, top;
+    var _branch_, _selectValue_2, actualWidth, diff, extraPadding, flowBlock, last, left, line, lineWidth, options, right, rightWMargin, size, top;
     _branch_ = 'Prepare';
     while (true) {
         switch (_branch_) {
@@ -13975,16 +13926,14 @@ function flowTextBlock(block, width) {
             break;
         case 'Flow lines':
             rightWMargin = right;
-            _collection_2 = block.lines;
-            for (line of _collection_2) {
+            for (line of block.lines) {
                 top = flowLine(line, left, top, rightWMargin, flowBlock);
             }
             flowBlock.height = top + options.paddingBottom;
             _branch_ = 'Align';
             break;
         case 'Align':
-            _collection_10 = flowBlock.lines;
-            for (line of _collection_10) {
+            for (line of flowBlock.lines) {
                 if (!(line.tokens.length === 0)) {
                     last = line.tokens[line.tokens.length - 1];
                     if (last.type === 'space') {
@@ -13995,11 +13944,11 @@ function flowTextBlock(block, width) {
                 line.width = line.right - line.left;
                 lineWidth = Math.max(lineWidth, line.width);
             }
-            _selectValue_4 = options.textAlign;
-            if (_selectValue_4 === 'right') {
+            _selectValue_2 = options.textAlign;
+            if (_selectValue_2 === 'right') {
                 _branch_ = 'Right';
             } else {
-                if (_selectValue_4 === 'center') {
+                if (_selectValue_2 === 'center') {
                     _branch_ = 'Center';
                 } else {
                     _branch_ = 'Left';
@@ -14008,23 +13957,20 @@ function flowTextBlock(block, width) {
             break;
         case 'Left':
             extraPadding = getExtraPadding(options, width, lineWidth);
-            _collection_12 = flowBlock.lines;
-            for (line of _collection_12) {
+            for (line of flowBlock.lines) {
                 line.left = line.left + extraPadding;
             }
             _branch_ = 'Exit';
             break;
         case 'Right':
             extraPadding = getExtraPadding(options, width, lineWidth);
-            _collection_6 = flowBlock.lines;
-            for (line of _collection_6) {
+            for (line of flowBlock.lines) {
                 line.left = right - line.width - extraPadding;
             }
             _branch_ = 'Exit';
             break;
         case 'Center':
-            _collection_8 = flowBlock.lines;
-            for (line of _collection_8) {
+            for (line of flowBlock.lines) {
                 diff = (right - left - line.width) / 2;
                 line.left = left + diff;
             }
@@ -14151,9 +14097,8 @@ function getBranch(visuals, ordinal) {
     return getNode(visuals, nodeId);
 }
 function getBranchById(visuals, branchId) {
-    var _collection_2, branch, itemId;
-    _collection_2 = visuals.branches;
-    for (itemId of _collection_2) {
+    var branch, itemId;
+    for (itemId of visuals.branches) {
         branch = getNode(visuals, itemId);
         if (branch.branchId === branchId) {
             return branch;
@@ -14162,9 +14107,8 @@ function getBranchById(visuals, branchId) {
     return undefined;
 }
 function getBranchByName(visuals, name) {
-    var _collection_2, branch, itemId;
-    _collection_2 = visuals.branches;
-    for (itemId of _collection_2) {
+    var branch, itemId;
+    for (itemId of visuals.branches) {
         branch = getNode(visuals, itemId);
         if (branch.content === name) {
             return branch;
@@ -14424,13 +14368,12 @@ function getExtraPadding(options, width, lineWidth) {
     }
 }
 function getFloorTarget(visuals, floorEdge) {
-    var _collection_2, itemId, left, leftBranch, right, rightBranch;
+    var itemId, left, leftBranch, right, rightBranch;
     left = getUp(floorEdge.head);
     right = getUp(floorEdge.tail);
     leftBranch = left.branch.itemId;
     rightBranch = right.branch.itemId;
-    _collection_2 = visuals.branches;
-    for (itemId of _collection_2) {
+    for (itemId of visuals.branches) {
         if (!(itemId === leftBranch || itemId === rightBranch)) {
             return itemId;
         }
@@ -14438,9 +14381,8 @@ function getFloorTarget(visuals, floorEdge) {
     return rightBranch;
 }
 function getFree(visuals, id) {
-    var _collection_2, element;
-    _collection_2 = visuals.free;
-    for (element of _collection_2) {
+    var element;
+    for (element of visuals.free) {
         if (element.id === id) {
             return element;
         }
@@ -14646,10 +14588,9 @@ function getMindSiblingSocketPos(r2, node) {
     };
 }
 function getMindSubtree(node, output) {
-    var _collection_2, child;
+    var child;
     output.push(node);
-    _collection_2 = node.children;
-    for (child of _collection_2) {
+    for (child of node.children) {
         getMindSubtree(child, output);
     }
 }
@@ -15198,36 +15139,33 @@ function hasLeft(node) {
     }
 }
 function hasOtherEntries(visuals, source, higher) {
-    var _collection_2, context, link, node;
+    var context, link, node;
     context = {
         found: false,
         visited: {}
     };
-    _collection_2 = source.links;
-    for (link of _collection_2) {
+    for (link of source.links) {
         node = getNodeByItem(visuals, link.source);
         hasOtherEntriesStep(node, higher, context);
     }
     return context.found;
 }
 function hasOtherEntriesStep(lower, higher, context) {
-    var _collection_2, prev;
+    var prev;
     if (!(context.found || lower === higher || lower.id in context.visited)) {
         context.visited[lower.id] = true;
         if (lower.prev.length === 0) {
             context.found = true;
         } else {
-            _collection_2 = lower.prev;
-            for (prev of _collection_2) {
+            for (prev of lower.prev) {
                 hasOtherEntriesStep(prev, higher, context);
             }
         }
     }
 }
 function hasUntouchedArrows(visited, node) {
-    var _collection_2, prev;
-    _collection_2 = node.aprev;
-    for (prev of _collection_2) {
+    var prev;
+    for (prev of node.aprev) {
         if (!(prev.itemId in visited)) {
             return true;
         }
@@ -15235,12 +15173,11 @@ function hasUntouchedArrows(visited, node) {
     return false;
 }
 function hasUntouchedUpstream(visited, node) {
-    var _collection_2, prev;
+    var prev;
     if (node.type === 'case') {
         return false;
     } else {
-        _collection_2 = node.prev;
-        for (prev of _collection_2) {
+        for (prev of node.prev) {
             if (!(prev.itemId in visited)) {
                 return true;
             }
@@ -15256,9 +15193,8 @@ function hitBox(box, x, y) {
     }
 }
 function hitConnection(connection, pos) {
-    var _collection_2, box;
-    _collection_2 = connection.boxes;
-    for (box of _collection_2) {
+    var box;
+    for (box of connection.boxes) {
         if (hitBox(box, pos.x, pos.y)) {
             return true;
         }
@@ -15779,9 +15715,8 @@ function insertPath(widget, pathNode, left) {
     runInsertAction(widget, socket);
 }
 function intersectBoxes(element, frame) {
-    var _collection_2, box;
-    _collection_2 = element.boxes;
-    for (box of _collection_2) {
+    var box;
+    for (box of element.boxes) {
         if (boxesIntersect(box, frame)) {
             return true;
         }
@@ -16083,14 +16018,13 @@ function isUpstream(visuals, lower, upper) {
     return context.found;
 }
 function isUpstreamStep(lower, upper, context) {
-    var _collection_2, prev;
+    var prev;
     if (!context.found) {
         if (lower.id === upper.id) {
             context.found = true;
         } else {
             context.visited[lower.id] = true;
-            _collection_2 = lower.prev;
-            for (prev of _collection_2) {
+            for (prev of lower.prev) {
                 isUpstreamStep(prev, upper, context);
             }
         }
@@ -16188,7 +16122,7 @@ function layoutPrimitive(visuals) {
     buildManhattan(visuals, header);
 }
 function layoutSelect(visuals, stack, select) {
-    var _collection_2, caseNode, edge, i, jun, left, node;
+    var caseNode, edge, i, jun, left, node;
     select.cases = [];
     node = select.next[0];
     while (true) {
@@ -16201,8 +16135,7 @@ function layoutSelect(visuals, stack, select) {
         }
     }
     left = null;
-    _collection_2 = select.cases;
-    for (caseNode of _collection_2) {
+    for (caseNode of select.cases) {
         jun = createJunction(visuals, undefined);
         jun.role = 'case';
         makeDownEdgeCore(visuals, jun, caseNode, undefined);
@@ -16219,14 +16152,13 @@ function layoutSelect(visuals, stack, select) {
     }
 }
 function layoutSilhouette(visuals) {
-    var _collection_2, branch, branchId, first, firstId, leftDown, leftUp, lower, upper;
+    var branch, branchId, first, firstId, leftDown, leftUp, lower, upper;
     leftUp = createJunction(visuals, undefined);
     leftDown = createJunction(visuals, undefined);
     createEdge(visuals, leftUp, leftDown, true);
     upper = leftUp;
     lower = leftDown;
-    _collection_2 = visuals.branches;
-    for (branchId of _collection_2) {
+    for (branchId of visuals.branches) {
         branch = visuals.nodes[branchId];
         buildManhattan(visuals, branch);
         connectBranch(visuals, branch, upper, lower);
@@ -16644,10 +16576,9 @@ function markInnerSide(crawler, lower) {
     }
 }
 function markOtherCasesToStay(widget, node) {
-    var _collection_2, below, caseNode, toKeep;
+    var below, caseNode, toKeep;
     toKeep = {};
-    _collection_2 = node.select.cases;
-    for (caseNode of _collection_2) {
+    for (caseNode of node.select.cases) {
         if (!(caseNode === node)) {
             below = caseNode.next[0];
             markToStay(widget, caseNode, below.itemId, toKeep);
@@ -16874,10 +16805,9 @@ function mouseClick(widget, pos, evt) {
     }
 }
 function moveBranchIdsLeft(visuals, branchId) {
-    var _collection_2, branch, edits, itemId, newId;
+    var branch, edits, itemId, newId;
     edits = [];
-    _collection_2 = visuals.branches;
-    for (itemId of _collection_2) {
+    for (itemId of visuals.branches) {
         branch = getNode(visuals, itemId);
         if (branch.branchId > branchId) {
             newId = branch.branchId - 1;
@@ -16887,10 +16817,9 @@ function moveBranchIdsLeft(visuals, branchId) {
     return edits;
 }
 function moveBranchIdsRight(visuals, branchId) {
-    var _collection_2, branch, edits, itemId, newId;
+    var branch, edits, itemId, newId;
     edits = [];
-    _collection_2 = visuals.branches;
-    for (itemId of _collection_2) {
+    for (itemId of visuals.branches) {
         branch = getNode(visuals, itemId);
         if (branch.branchId >= branchId) {
             newId = branch.branchId + 1;
@@ -16992,10 +16921,9 @@ function nextBox(box, left, top, right, bottom) {
     }
 }
 function nextBranchName(visuals) {
-    var _collection_2, branch, id, max, number;
+    var branch, id, max, number;
     max = 0;
-    _collection_2 = visuals.branches;
-    for (id of _collection_2) {
+    for (id of visuals.branches) {
         branch = getNode(visuals, id);
         number = getNumberPart(branch.content);
         max = Math.max(max, number);
@@ -17200,7 +17128,7 @@ function paint(widget) {
     drawScrollbars(widget);
 }
 function paintCore(widget, factor, zoom, translateX, translateY, width, height) {
-    var _collection_11, _collection_14, _collection_16, _collection_2, _collection_5, _collection_8, config, ctx, edge, guide, id, node, padding, socket, type, visuals;
+    var _collection_11, _collection_2, _collection_5, _collection_8, config, ctx, edge, guide, id, node, padding, socket, type, visuals;
     visuals = widget.visuals;
     config = visuals.config;
     ctx = visuals.ctx;
@@ -17258,8 +17186,7 @@ function paintCore(widget, factor, zoom, translateX, translateY, width, height) 
     }
     drawFrontPlane(widget, ctx);
     drawFreeNuggetAndHandles(widget, ctx);
-    _collection_14 = visuals.sockets;
-    for (socket of _collection_14) {
+    for (socket of visuals.sockets) {
         drawSocket(visuals, socket, ctx, config);
     }
     if (visuals.selectionFrame) {
@@ -17268,8 +17195,7 @@ function paintCore(widget, factor, zoom, translateX, translateY, width, height) 
         ctx.strokeRect(visuals.selectionFrame.left, visuals.selectionFrame.top, visuals.selectionFrame.width, visuals.selectionFrame.height);
     }
     if (visuals.guides.length > 0) {
-        _collection_16 = visuals.guides;
-        for (guide of _collection_16) {
+        for (guide of visuals.guides) {
             line(ctx, guide.x1, guide.y1, guide.x2, guide.y2, visuals.config.theme.guides, 1);
         }
         visuals.guides = [];
@@ -17565,7 +17491,7 @@ function pasteDuration(widget, existing, item) {
     return edits;
 }
 async function pasteFree(widget, clipboard, evt) {
-    var _collection_2, _collection_4, config, create, currentZ, dx, dy, edits, epos, first, images, item, oldPos, payload, pos, x, y;
+    var config, create, currentZ, dx, dy, edits, epos, first, images, item, oldPos, payload, pos, x, y;
     payload = clipboard.content;
     images = payload.images;
     config = widget.visuals.config;
@@ -17583,8 +17509,7 @@ async function pasteFree(widget, clipboard, evt) {
         unit.pasteDX = dx;
         unit.pasteDY = dy;
     }
-    _collection_2 = payload.items;
-    for (item of _collection_2) {
+    for (item of payload.items) {
         if (!(item.type === 'connection')) {
             oldPos = getFreePosition(item);
             x = snapUp(config, oldPos.x + dx);
@@ -17594,8 +17519,7 @@ async function pasteFree(widget, clipboard, evt) {
     }
     utils.sortBy(payload.items, 'zIndex');
     currentZ = getNextZIndex(widget);
-    _collection_4 = payload.items;
-    for (item of _collection_4) {
+    for (item of payload.items) {
         if (!(item.type === 'connection')) {
             item.zIndex = currentZ;
             currentZ++;
@@ -17966,9 +17890,8 @@ function putCycleMark(visuals, address) {
     }
 }
 function putLoopsOnCases(visuals, select) {
-    var _collection_2, caseIcon;
-    _collection_2 = select.cases;
-    for (caseIcon of _collection_2) {
+    var caseIcon;
+    for (caseIcon of select.cases) {
         Object.assign(caseIcon.loops, select.loops);
     }
 }
@@ -18068,15 +17991,14 @@ function redirectBranch(visuals, branchNodes, oldTargets, newTarget, edits) {
     }
 }
 function redirectPrevItems(edits, node, targetId) {
-    var _collection_2, edit, prev, visited;
+    var edit, prev, visited;
     visited = {};
     for (edit of edits) {
         if (edit.op === 'delete') {
             visited[edit.id] = true;
         }
     }
-    _collection_2 = node.prev;
-    for (prev of _collection_2) {
+    for (prev of node.prev) {
         if (!(prev.id in visited)) {
             visited[prev.id] = true;
             replaceInUpdate(edits, node.id, prev, targetId);
@@ -18159,9 +18081,8 @@ function removeNode(visuals, id) {
     }
 }
 function removeTempEdges(visuals) {
-    var _collection_2, edgeDown, edgeUp, finalTarget, lower, newLevel, oldLevel, tmpEdge, tmpJun, upper;
-    _collection_2 = visuals.tempEdges;
-    for (tmpEdge of _collection_2) {
+    var edgeDown, edgeUp, finalTarget, lower, newLevel, oldLevel, tmpEdge, tmpJun, upper;
+    for (tmpEdge of visuals.tempEdges) {
         tmpJun = tmpEdge.head;
         removeEdge(visuals, tmpEdge.id);
         edgeUp = tmpJun.up;
@@ -18580,7 +18501,7 @@ function renderEnd(visuals, node, ctx) {
     renderHeader(visuals, node, ctx);
 }
 function renderFlowBlock(visuals, flowBlock, left, top) {
-    var _collection_2, ctx, iconSize, line, x, y;
+    var ctx, iconSize, line, x, y;
     ctx = visuals.ctx;
     if (flowBlock.options.link) {
         iconSize = 24;
@@ -18590,17 +18511,15 @@ function renderFlowBlock(visuals, flowBlock, left, top) {
     }
     ctx.fillStyle = flowBlock.options.color;
     top = prepareTextRender(visuals, ctx, flowBlock.fontSize, top);
-    _collection_2 = flowBlock.lines;
-    for (line of _collection_2) {
+    for (line of flowBlock.lines) {
         renderFlowBlockLine(ctx, line, left, top);
     }
 }
 function renderFlowBlockLine(ctx, line, left, top) {
-    var _collection_2, baseLine, token, x;
+    var baseLine, token, x;
     baseLine = top + line.baseLine + 1;
     x = left + line.left;
-    _collection_2 = line.tokens;
-    for (token of _collection_2) {
+    for (token of line.tokens) {
         if (!(token.type === 'space')) {
             ctx.font = token.font;
             ctx.fillText(token.text, x, baseLine);
@@ -19743,11 +19662,10 @@ function saveRectangleCoords(handle) {
     updateAndKeepSelection(handle.widget, [change]);
 }
 function scanBranchItems(node, visited) {
-    var _collection_2, next;
+    var next;
     if (!(node.itemId in visited || node.type === 'address')) {
         visited[node.itemId] = node;
-        _collection_2 = node.next;
-        for (next of _collection_2) {
+        for (next of node.next) {
             scanBranchItems(next, visited);
         }
     }
@@ -20303,14 +20221,12 @@ function setSameHeight(visuals) {
     forTypeTogether(visuals, 'address', setSameHeightForNodes);
 }
 function setSameHeightForMindChildren(parent) {
-    var _collection_2, _collection_4, height, node;
+    var height, node;
     height = 0;
-    _collection_2 = parent.children;
-    for (node of _collection_2) {
+    for (node of parent.children) {
         height = Math.max(height, node.h);
     }
-    _collection_4 = parent.children;
-    for (node of _collection_4) {
+    for (node of parent.children) {
         node.h = height;
     }
 }
@@ -20336,13 +20252,12 @@ function setSameHeightMind(visuals) {
     }
 }
 function setSameWidth(visuals, skewer) {
-    var _collection_2, _collection_4, config, dur, leftWidth, margin, node, width;
+    var config, dur, leftWidth, margin, node, width;
     config = visuals.config;
     width = 0;
     leftWidth = 0;
     margin = 0;
-    _collection_2 = skewer.nodes;
-    for (node of _collection_2) {
+    for (node of skewer.nodes) {
         if (!(node.type === 'header')) {
             width = Math.max(width, node.w);
         }
@@ -20352,8 +20267,7 @@ function setSameWidth(visuals, skewer) {
     }
     width = config.maxWidth / 2;
     skewer.boundary = width;
-    _collection_4 = skewer.nodes;
-    for (node of _collection_4) {
+    for (node of skewer.nodes) {
         if (shouldAlignWidth(visuals, node)) {
             node.w = width;
             dur = getDurExtend(visuals, node);
@@ -20363,14 +20277,12 @@ function setSameWidth(visuals, skewer) {
     skewer.leftWidth = leftWidth + margin * visuals.config.metre;
 }
 function setSameWidthForMindChildren(parent) {
-    var _collection_2, _collection_4, node, width;
+    var node, width;
     width = 0;
-    _collection_2 = parent.children;
-    for (node of _collection_2) {
+    for (node of parent.children) {
         width = Math.max(width, node.w);
     }
-    _collection_4 = parent.children;
-    for (node of _collection_4) {
+    for (node of parent.children) {
         node.w = width;
     }
 }
@@ -20923,7 +20835,7 @@ function splitToTokens(text) {
     });
 }
 function splitToTokensHtml(html) {
-    var _collection_2, body, doc, firstNode, lines, name, node, parser;
+    var body, doc, firstNode, lines, name, node, parser;
     html = html || '';
     lines = [];
     parser = new DOMParser();
@@ -20936,8 +20848,7 @@ function splitToTokensHtml(html) {
             lines = wrapInLineObjects(splitToTokens(firstNode.nodeValue));
             return lines;
         } else {
-            _collection_2 = body.childNodes;
-            for (node of _collection_2) {
+            for (node of body.childNodes) {
                 name = getNodeName(node);
                 if (name === 'ul') {
                     processUnordered(node.childNodes, lines);
@@ -20954,8 +20865,7 @@ function splitToTokensHtml(html) {
             return lines;
         }
     } else {
-        _collection_2 = body.childNodes;
-        for (node of _collection_2) {
+        for (node of body.childNodes) {
             name = getNodeName(node);
             if (name === 'ul') {
                 processUnordered(node.childNodes, lines);
@@ -21371,13 +21281,12 @@ function traceLevel(visuals, node) {
     }
 }
 function traceLoop(visited, node, loopEnd) {
-    var _collection_2, prev;
+    var prev;
     if (!(node.id in visited)) {
         visited[node.id] = true;
         if (!(node.loopEnd === loopEnd)) {
             node.loops[loopEnd.id] = true;
-            _collection_2 = node.prev;
-            for (prev of _collection_2) {
+            for (prev of node.prev) {
                 traceLoop(visited, prev, loopEnd);
             }
         }
@@ -21465,12 +21374,11 @@ function triPath(ctx, x0, y0, x1, y1, x2, y2) {
     ctx.closePath();
 }
 function tryAddFreeToBlock(widget) {
-    var _collection_2, added, box, element, selection, visuals;
+    var added, box, element, selection, visuals;
     visuals = widget.visuals;
     selection = widget.selection;
     added = false;
-    _collection_2 = visuals.free;
-    for (element of _collection_2) {
+    for (element of visuals.free) {
         if (!isSelected(widget, element.id)) {
             if (element.innerBox) {
                 box = element.innerBox;
@@ -21628,10 +21536,9 @@ function widgetToDiagram(widget, widgetX, widgetY) {
     };
 }
 function withinSameLoop(visuals, src, target) {
-    var _collection_2, link, node, targetNode;
+    var link, node, targetNode;
     targetNode = target.finalTarget;
-    _collection_2 = src.links;
-    for (link of _collection_2) {
+    for (link of src.links) {
         node = getNodeByItem(visuals, link.source);
         if (!withinSameLoopCore(node, targetNode, 0)) {
             return false;
@@ -21640,7 +21547,7 @@ function withinSameLoop(visuals, src, target) {
     return true;
 }
 function withinSameLoopCore(node, target, depth) {
-    var _collection_4, _selectValue_2, prev;
+    var _selectValue_2, prev;
     _selectValue_2 = node.type;
     if (_selectValue_2 === 'loopbegin') {
         depth--;
@@ -21653,8 +21560,7 @@ function withinSameLoopCore(node, target, depth) {
         return false;
     } else {
         if (!(node === target)) {
-            _collection_4 = node.prev;
-            for (prev of _collection_4) {
+            for (prev of node.prev) {
                 if (!withinSameLoopCore(prev, target, depth)) {
                     return false;
                 }
