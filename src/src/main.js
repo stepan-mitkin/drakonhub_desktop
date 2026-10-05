@@ -244,11 +244,17 @@ function createWindow() {
 
     var html = path.join(__dirname, "electron.html")
     win.loadFile(html);
-    win.setMenu(null);
-
+    if (isDebug()) {
+        win.webContents.openDevTools();
+    } else {
+        win.setMenu(null);
+    }
     return win;
 }
 
+function isDebug() {
+    return process.argv.includes('--dev');
+}
 
 function registerIpcHandlers() {
 

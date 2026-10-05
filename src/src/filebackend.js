@@ -5,7 +5,7 @@ function FileBackend(utils, host) {
     const SPACEID = 'my-diagrams';
     const USERID = 'local-user';
     const DELETE_TIMEOUT = 3000;
-    const FOLDER_DEBOUNCE_MS = 400;
+    const FOLDER_DEBOUNCE_MS = 50;
     var gAccess = 'admin';
     var gRootPath = '';
     var gProjectName = '';
@@ -311,7 +311,6 @@ function FileBackend(utils, host) {
                         id = nextId();
                         node = createNode(body.parent, id, name, path, type);
                         addToChildren(parent, id);
-                        registerEdit(node.path);
                         return create200({ folder_id: id });
                     } else {
                         return createNotUnique();
@@ -453,7 +452,7 @@ function FileBackend(utils, host) {
         gDeleteItems = [];
     }
     async function editDiagram(url, body) {
-        var _collection_2, _id, changeResult, diagram, edit, id, item, json, nameOk, node, ok, oldPath;
+        var _collection_2, _id, changeResult, diagram, edit, id, item, json, nameOk, newPath, node, ok;
         id = getIdFromUrl(url);
         node = getNode(id);
         if (node) {
@@ -482,15 +481,16 @@ function FileBackend(utils, host) {
                 }
             }
             json = JSON.stringify(diagram, null, 4);
+            registerEdit(node.path, json);
             ok = await host.writeTextFile(node.path, json);
             if (ok) {
                 if (changeResult.name) {
-                    oldPath = node.path;
-                    registerEdit(oldPath);
+                    newPath = renamePath(node.path, changeResult.name, node.type);
+                    registerEdit(newPath, json);
                     ok = await renameCore(id, node, changeResult.name);
                     if (ok) {
                         node.tag = body.tag;
-                        registerEdit(node.path);
+                        registerEdit(node.path, json);
                         return [
                             204,
                             ''
@@ -500,7 +500,7 @@ function FileBackend(utils, host) {
                     }
                 } else {
                     node.tag = body.tag;
-                    registerEdit(node.path);
+                    registerEdit(node.path, json);
                     return [
                         204,
                         ''
@@ -649,7 +649,6 @@ function FileBackend(utils, host) {
             }
         }
         gFolderEvents = [];
-        gLatestEdits = {};
         return {
             modified: Object.keys(modifiedSet),
             other: Object.keys(otherSet)
@@ -692,7 +691,7 @@ function FileBackend(utils, host) {
         paths = [];
         for (rawPath of evt.paths) {
             path = utils.normalizePath(rawPath);
-            if (path.startsWith(gRootPath) && !isEditedRecently(path)) {
+            if (path.startsWith(gRootPath)) {
                 paths.push(path);
             }
         }
@@ -763,6 +762,15 @@ function FileBackend(utils, host) {
             }
         }
     }
+    function hashString(text) {
+        var hash, i;
+        hash = 2166136261;
+        for (i = 0; i < text.length; i++) {
+            hash ^= text.charCodeAt(i);
+            hash = Math.imul(hash, 16777619);
+        }
+        return hash >>> 0;
+    }
     function htmlToString(html) {
         var doc, output, parser, root;
         if (html) {
@@ -808,19 +816,24 @@ function FileBackend(utils, host) {
         gUnlistenFolder = await host.watchFolder(gRootPath, onFolderChanged);
         gLatestEdits = {};
     }
-    function isEditedRecently(path) {
-        var diff, modified, nowMs;
-        modified = gLatestEdits[path];
-        if (modified) {
-            nowMs = getUnixMsNow();
-            diff = nowMs - modified;
-            if (diff > FOLDER_DEBOUNCE_MS * 4) {
+    async function isChangedOutside(path) {
+        var body, newHash, oldHash;
+        oldHash = gLatestEdits[path];
+        if (oldHash) {
+            body = await host.readTextFile(path);
+            if (body === undefined) {
                 return false;
             } else {
-                return true;
+                newHash = hashString(body);
+                if (newHash === oldHash) {
+                    return false;
+                } else {
+                    gLatestEdits[path] = newHash;
+                    return true;
+                }
             }
         } else {
-            return false;
+            return true;
         }
     }
     function isEmptyOrSeparator(text) {
@@ -934,6 +947,7 @@ function FileBackend(utils, host) {
         }
     }
     function onFolderChanged(evt) {
+        console.log('onFolderChanged', evt);
         gFolderEvents.push(evt);
         gFolderDebounce.onInput();
     }
@@ -942,9 +956,10 @@ function FileBackend(utils, host) {
     }
     async function processFolderChanged() {
         var changes, path;
+        console.log('processFolderChanged');
         changes = getListOfModifiedFiles();
         for (path of changes.modified) {
-            resetTag(path);
+            await resetTag(path);
         }
         if (!(changes.other.length === 0)) {
             await refreshCache();
@@ -956,6 +971,7 @@ function FileBackend(utils, host) {
         if (body === undefined) {
             return undefined;
         } else {
+            registerEdit(path, body);
             if (body.trim() === '') {
                 return {};
             } else {
@@ -1011,8 +1027,8 @@ function FileBackend(utils, host) {
             return { ok: false };
         }
     }
-    function registerEdit(path) {
-        gLatestEdits[path] = getUnixMsNow();
+    function registerEdit(path, body) {
+        gLatestEdits[path] = hashString(body);
     }
     async function renameCore(id, node, newName) {
         var newPath, ok;
@@ -1059,11 +1075,14 @@ function FileBackend(utils, host) {
             }
         }
     }
-    function resetTag(path) {
-        var node;
+    async function resetTag(path) {
+        var changedOutside, node;
         node = getNodeByPath(path);
         if (node) {
-            node.tag = new Date().toISOString();
+            changedOutside = await isChangedOutside(path);
+            if (changedOutside) {
+                node.tag = new Date().toISOString();
+            }
         }
     }
     async function restoreMany() {
@@ -1220,8 +1239,6 @@ function FileBackend(utils, host) {
                             oldPath = node.path;
                             ok = await renameCore(id, node, name);
                             if (ok) {
-                                registerEdit(node.path);
-                                registerEdit(oldPath);
                                 return [
                                     204,
                                     ''
