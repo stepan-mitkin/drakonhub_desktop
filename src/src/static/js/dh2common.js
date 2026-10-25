@@ -1586,7 +1586,7 @@ function getAppRoot() {
     return gconfig.appRoot;
 }
 function getAppVersion() {
-    return '2026.10.05';
+    return '2026.10.22';
 }
 function getBaseUrl() {
     return gconfig.baseUrl;

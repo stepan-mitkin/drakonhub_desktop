@@ -4406,9 +4406,9 @@ function cleanupOnMove() {
 }
 function clearAiForm(context) {
     context.key.value = '';
+    context.workspace.value = '';
     context.model.value = '';
     context.provider.value = '';
-    context.name.value = '';
     context.description.value = '';
     saveAiDialogData({});
 }
@@ -4677,21 +4677,29 @@ function createDrakonHubWidgetConfig(widget) {
     };
 }
 async function createDrakonWithAi(parentId) {
-    var created, diagram, editBody, folder;
-    diagram = await generateWithAi();
-    if (diagram) {
-        folder = await createWithUniqueName(parentId, 'drakon', diagram.name);
+    var adds, created, diagram, diagrams, editBody, folder, name;
+    diagrams = await generateWithAi();
+    diagrams.reverse();
+    folder = undefined;
+    adds = [];
+    for (diagram of diagrams) {
+        name = utils.sanitizeFilename(diagram.name);
+        folder = await createWithUniqueName(parentId, 'drakon', name);
         if (folder) {
             created = await fetchFolder(folder.id);
             editBody = createEditFromDiagram(created.tag, diagram);
             await sendEditCore(folder.id, editBody);
-            return folder;
-        } else {
-            return undefined;
+            adds.push({
+                id: folder.id,
+                type: 'drakon',
+                name: folder.name,
+                parent: parentId
+            });
         }
-    } else {
-        return undefined;
     }
+    adds.pop();
+    reportInsert(adds);
+    return folder;
 }
 function createDwSenderAdapter(diagram, indicator) {
     var pushEdit, sender;
@@ -4853,21 +4861,26 @@ async function createGenerateWithAiDialog(onGenerated) {
         {
             id: 'claude',
             text: 'Claude'
+        },
+        {
+            id: 'qwen',
+            text: 'Qwen'
         }
     ], ai.provider);
     onProviderChange = () => setDefaultModel(context);
     context.provider.addEventListener('change', onProviderChange);
     context.model = widgets.addMiddleInput(form, tr('Model'), ai.model);
+    context.workspace = widgets.addMiddleInput(form, tr('Workspace'), ai.workspace);
     context.key = widgets.addMiddleSecretInput(form, tr('API key'), ai.key);
     forgetBlock = widgets.addButtonBlock(form);
     forget = widgets.createSimpleButton(tr('Clear form'), () => clearAiForm(context));
     html.add(forgetBlock, forget);
-    onProviderChange();
     if (ai.model) {
-        context.model.value = ai.model;
+        updateWorkspaceVisibility(context);
+    } else {
+        onProviderChange();
     }
     context.error = widgets.addMiddleError(form);
-    context.name = widgets.addMiddleInput(form, tr('Name'), ai.name);
     context.description = widgets.addMiddleTextArea(form, tr('Description'), ai.description);
 }
 function createGoToDefinition(items, folder) {
@@ -5245,6 +5258,7 @@ async function createWithUniqueName(parentId, type, name) {
                 return retry;
             }
         }
+        console.log('Could not generate unique name', name);
         return undefined;
     } else {
         return result;
@@ -5748,100 +5762,108 @@ function div() {
     return html.createElement('div', properties, args);
 }
 async function doGenerateWithAi(context) {
-    var _selectValue_2, ai, aiResponse, diagram, error, ex, fakeai, prompt, promptLines, responseObj, userRequest;
+    var _branch_, _selectValue_2, ai, aiResponse, diagrams, error, ex, fakeai, prompt, promptLines, responseObj, userRequest;
     try {
-        ai = {
-            provider: context.provider.value,
-            key: trim(context.key.value),
-            name: trim(context.name.value),
-            model: trim(context.model.value),
-            description: trim(context.description.value)
-        };
-        html.setText(context.error, '');
-        error = '';
-        if (ai.provider) {
-            if (ai.model) {
-                if (ai.key) {
-                    if (ai.name) {
-                        if (!ai.description) {
-                            context.description.focus();
-                            error = tr('Description is empty');
+        _branch_ = 'Check input';
+        while (true) {
+            switch (_branch_) {
+            case 'Check input':
+                ai = {
+                    provider: context.provider.value,
+                    workspace: trim(context.workspace.value),
+                    key: trim(context.key.value),
+                    model: trim(context.model.value),
+                    description: trim(context.description.value)
+                };
+                html.setText(context.error, '');
+                error = '';
+                if (ai.provider) {
+                    if (ai.model) {
+                        if (ai.key) {
+                            if (!ai.description) {
+                                context.description.focus();
+                                error = tr('Description is empty');
+                            }
+                        } else {
+                            context.key.focus();
+                            error = tr('API key is empty');
                         }
                     } else {
-                        context.name.focus();
-                        error = tr('Name is empty');
+                        context.model.focus();
+                        error = tr('Model is empty');
                     }
                 } else {
-                    context.key.focus();
-                    error = tr('API key is empty');
+                    error = tr('AI provider is empty');
                 }
-            } else {
-                context.model.focus();
-                error = tr('Model is empty');
-            }
-        } else {
-            error = tr('AI provider is empty');
-        }
-        if (error) {
-            html.setText(context.error, error);
-        } else {
-            await saveAiDialogData(ai);
-            promptLines = window.drakonhub_prompts.getCreateDrakonPrompt();
-            prompt = promptLines.join('\n');
-            userRequest = '## ' + ai.name + '\n\n' + ai.description;
-            console.log(prompt, userRequest);
-            fakeai = false;
-            _selectValue_2 = ai.provider;
-            if (_selectValue_2 === 'openai') {
-                showWait();
+                if (error) {
+                    html.setText(context.error, error);
+                    _branch_ = 'Exit';
+                } else {
+                    await saveAiDialogData(ai);
+                    _branch_ = 'Send request to AI';
+                }
+                break;
+            case 'Send request to AI':
+                promptLines = window.drakonhub_prompts.getCreateDrakonPrompt();
+                prompt = promptLines.join('\n');
+                userRequest = ai.description;
+                console.log(prompt, userRequest);
+                fakeai = false;
                 if (fakeai) {
                     responseObj = generateFakeAiResponse();
+                    _branch_ = 'Handle response';
                 } else {
-                    responseObj = await sendRequestToOpenAi(ai.key, ai.model, prompt, userRequest);
+                    _selectValue_2 = ai.provider;
+                    if (_selectValue_2 === 'openai') {
+                        showWait();
+                        responseObj = await sendRequestToOpenAi(ai.key, ai.model, prompt, userRequest);
+                        _branch_ = 'Handle response';
+                    } else {
+                        if (_selectValue_2 === 'claude') {
+                            showWait();
+                            responseObj = await sendRequestToClaude(ai.key, ai.model, prompt, userRequest);
+                            _branch_ = 'Handle response';
+                        } else {
+                            if (_selectValue_2 === 'qwen') {
+                                showWait();
+                                responseObj = await sendRequestToQwen(ai.workspace, ai.key, ai.model, prompt, userRequest);
+                                _branch_ = 'Handle response';
+                            } else {
+                                html.setText(context.error, 'This AI provider is not supported');
+                                _branch_ = 'Exit';
+                            }
+                        }
+                    }
                 }
+                break;
+            case 'Handle response':
                 hideWait();
-                if (responseObj.response) {
-                    aiResponse = JSON.parse(responseObj.response);
-                }
                 if (responseObj.error) {
                     html.setText(context.error, responseObj.error);
+                    _branch_ = 'Exit';
                 } else {
-                    console.log(JSON.stringify(aiResponse, null, 2));
-                    if (aiResponse.ok) {
-                        diagram = generateDrakonFromAiAst(aiResponse.algorithm);
-                        widgets.removeQuestions();
-                        context.onGenerated(diagram);
-                    } else {
-                        html.setText(context.error, aiResponse.error);
-                    }
-                }
-            } else {
-                if (_selectValue_2 === 'claude') {
-                    showWait();
-                    if (fakeai) {
-                        responseObj = generateFakeAiResponse();
-                    } else {
-                        responseObj = await sendRequestToClaude(ai.key, ai.model, prompt, userRequest);
-                    }
-                    hideWait();
                     if (responseObj.response) {
                         aiResponse = JSON.parse(removeFirstAndLastLines(responseObj.response));
                     }
-                    if (responseObj.error) {
-                        html.setText(context.error, responseObj.error);
-                    } else {
-                        console.log(JSON.stringify(aiResponse, null, 2));
-                        if (aiResponse.ok) {
-                            diagram = generateDrakonFromAiAst(aiResponse.algorithm);
-                            widgets.removeQuestions();
-                            context.onGenerated(diagram);
-                        } else {
-                            html.setText(context.error, aiResponse.error);
-                        }
-                    }
-                } else {
-                    html.setText(context.error, 'This AI provider is not supported');
+                    _branch_ = 'Generate diagram';
                 }
+                break;
+            case 'Generate diagram':
+                console.log(JSON.stringify(aiResponse, null, 2));
+                if (aiResponse.ok) {
+                    diagrams = aiResponse.algorithms.map(generateDrakonFromAiAst);
+                    widgets.removeQuestions();
+                    context.onGenerated(diagrams);
+                } else {
+                    html.setText(context.error, aiResponse.error);
+                }
+                _branch_ = 'Exit';
+                break;
+            case 'Exit':
+                _branch_ = undefined;
+                break;
+            default:
+                return;
             }
         }
     } catch (_handlerData_) {
@@ -7022,13 +7044,13 @@ function generateWithAi_create() {
         throw _value_;
     };
     function* generateWithAi_main() {
-        var _event_, diagram;
+        var _event_, diagrams;
         createGenerateWithAiDialog(me.onGenerated);
         me.state = '5';
         me._busy = false;
         _event_ = yield;
-        diagram = _event_[1];
-        _topResolve_(diagram);
+        diagrams = _event_[1];
+        _topResolve_(diagrams);
         return;
     }
     function generateWithAi_run() {
@@ -7050,7 +7072,7 @@ function generateWithAi_create() {
     me.stop = function () {
         me.state = undefined;
     };
-    me.onGenerated = function (diagram) {
+    me.onGenerated = function (diagrams) {
         var _args_;
         if (me._busy) {
             throw new Error('Synchronous reentry is not allowed');
@@ -7059,7 +7081,7 @@ function generateWithAi_create() {
         case '5':
             _args_ = [];
             _args_.push('onGenerated');
-            _args_.push(diagram);
+            _args_.push(diagrams);
             me._busy = true;
             _topGen_.next(_args_);
             break;
@@ -7096,11 +7118,10 @@ async function getAiDialogData() {
         aiSettings = loadJsonToLocalStorage('ai-settings');
     }
     if (aiSettings.provider) {
-        ai.provider = aiSettings.provider;
-        ai.key = aiSettings.key;
-        ai.model = aiSettings.model;
+        return aiSettings;
+    } else {
+        return ai;
     }
-    return ai;
 }
 function getCurrentClientType() {
     var _selectValue_2;
@@ -9089,8 +9110,12 @@ function removeFeedbackButton() {
 }
 function removeFirstAndLastLines(text) {
     var lines;
-    lines = text.split('\n');
-    return lines.slice(1, -1).join('\n');
+    if (text.startsWith('```')) {
+        lines = text.split('\n');
+        return lines.slice(1, -1).join('\n');
+    } else {
+        return text;
+    }
 }
 function removeIds(items) {
     var id, item;
@@ -9707,20 +9732,13 @@ function runMouseAction(prim, pos, link, insertion, nothing) {
     }
 }
 async function saveAiDialogData(ai) {
-    var aiSettings, copy;
+    var copy;
     copy = utils.clone(ai);
-    delete copy.key;
-    delete copy.provider;
-    delete copy.model;
     unit.globals.ai = copy;
-    aiSettings = {};
-    aiSettings.provider = ai.provider;
-    aiSettings.key = ai.key;
-    aiSettings.model = ai.model;
     if (padBridge.saveAiSettings) {
-        await padBridge.saveAiSettings(aiSettings);
+        await padBridge.saveAiSettings(copy);
     } else {
-        saveJsonToLocalStorage('ai-settings', aiSettings);
+        saveJsonToLocalStorage('ai-settings', copy);
     }
 }
 async function saveDetails(widget, usernameInput, emailInput, good, bad) {
@@ -10395,6 +10413,53 @@ async function sendRequestToOpenAi(apiKey, model, context, request) {
         return { error: error };
     }
 }
+async function sendRequestToQwen(workspaceId, apiKey, model, context, request) {
+    var body, data, error, headers, output, response, url;
+    headers = {
+        'Authorization': 'Bearer ' + apiKey,
+        'Content-Type': 'application/json',
+        'X-DashScope-WorkSpace': workspaceId
+    };
+    body = JSON.stringify({
+        model: model,
+        messages: [
+            {
+                role: 'system',
+                content: context
+            },
+            {
+                role: 'user',
+                content: request
+            }
+        ]
+    });
+    url = 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions';
+    response = await fetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: body
+    });
+    data = await response.json();
+    if (response.ok) {
+        if (data.choices && data.choices.length > 0) {
+            output = data.choices[0].message.content;
+            if (output) {
+                return { response: output };
+            } else {
+                return { error: 'Qwen returned no text response' };
+            }
+        } else {
+            return { error: 'Qwen returned no text response' };
+        }
+    } else {
+        if (data.error && data.error.message) {
+            error = data.error.message;
+        } else {
+            error = 'Qwen request failed';
+        }
+        return { error: error };
+    }
+}
 async function sendRequestWithCallback(method, url, payload, parent) {
     var response;
     response = await sendRequest(method, url, payload);
@@ -10425,17 +10490,24 @@ function setChosenUser(parent, container, user) {
     html.add(container, block);
 }
 function setDefaultModel(context) {
-    var _selectValue_2;
+    var _selectValue_2, model, wsStyle;
     _selectValue_2 = context.provider.value;
     if (_selectValue_2 === 'openai') {
-        context.model.value = 'gpt-6-luna';
+        model = 'gpt-6-luna';
     } else {
         if (_selectValue_2 === 'claude') {
-            context.model.value = 'claude-sonnet-5-5';
+            model = 'claude-sonnet-5-5';
         } else {
-            context.model.value = '';
+            if (_selectValue_2 === 'qwen') {
+                model = 'qwen-max';
+            } else {
+                wsStyle = 'none';
+            }
         }
     }
+    context.model.value = model;
+    context.key.value = '';
+    updateWorkspaceVisibility(context);
 }
 function setDefaultValue(obj, prop, value) {
     if (!utils.hasValue(obj[prop])) {
@@ -12088,6 +12160,16 @@ async function updateUser(container, userId, property, value) {
     showWait();
     await sendRequest('POST', '/api/update_user_admin', payload);
     await fillUserInfo(container, userId);
+}
+function updateWorkspaceVisibility(context) {
+    var wsStyle;
+    if (context.provider.value === 'qwen') {
+        wsStyle = 'block';
+    } else {
+        context.workspace.value = '';
+        wsStyle = 'none';
+    }
+    context.workspace.style.display = wsStyle;
 }
 function userScreen(widget, parent) {
     var buttonDiv, detailsDiv;

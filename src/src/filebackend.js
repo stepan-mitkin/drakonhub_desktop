@@ -480,6 +480,7 @@ function FileBackend(utils, host) {
                     return createNotUnique();
                 }
             }
+            delete diagram.name;
             json = JSON.stringify(diagram, null, 4);
             registerEdit(node.path, json);
             ok = await host.writeTextFile(node.path, json);
@@ -923,6 +924,7 @@ function FileBackend(utils, host) {
     }
     function normalizeDiagram(diagram) {
         var id, item, items, items2;
+        delete diagram.name;
         items = diagram.items || {};
         items2 = [];
         for (id in items) {
