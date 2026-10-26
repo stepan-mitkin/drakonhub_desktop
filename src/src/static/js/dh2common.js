@@ -1688,7 +1688,7 @@ function img(src, className) {
     }, [className]);
 }
 async function importDiagram(jsonString, filename, parentId, tr) {
-    var _selectValue_2, folder, id, internal, parsed, parsedFilename, payload, url;
+    var _selectValue_2, edit, folder, id, internal, parsed, parsedFilename, payload, url;
     parsed = checkDiagram(jsonString);
     if (parsed.error) {
         widgets.showErrorSnack(parsed.error);
@@ -1704,12 +1704,15 @@ async function importDiagram(jsonString, filename, parentId, tr) {
         if (_selectValue_2 === 'drakon' || (_selectValue_2 === 'free' || _selectValue_2 === 'graf')) {
             folder = await sendCreateFolder(parentId, internal.type, internal.name);
             id = folder.id;
-            payload = {
+            edit = {
                 editType: 'edit',
-                oldTag: '',
                 added: internal.items,
                 removed: [],
                 updated: []
+            };
+            payload = {
+                edits: [edit],
+                oldTag: ''
             };
             utils.copyFieldsWithValue(payload, internal, [
                 'params',
